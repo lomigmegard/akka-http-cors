@@ -1,7 +1,7 @@
 package ch.megard.akka.http.cors
 
-import akka.http.scaladsl.model.StatusCodes
-import akka.http.scaladsl.model.headers.{`Access-Control-Allow-Origin`, Origin, HttpOrigin}
+import akka.http.scaladsl.model.{HttpEntity, HttpMethods, StatusCodes}
+import akka.http.scaladsl.model.headers._
 import akka.http.scaladsl.server.Directives
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import ch.megard.akka.http.cors.CorsDirectives.InvalidCorsRequestRejection
@@ -10,11 +10,12 @@ import org.scalatest.{Matchers, WordSpec}
 /**
   * @author Lomig Mégard
   */
-class CorsDirectivesSpec extends WordSpec with Matchers with CorsDirectives with Directives with ScalatestRouteTest {
+class CorsDirectivesSpec extends WordSpec with Matchers with Directives with ScalatestRouteTest {
 
-  // We don't use 200 Ok to distinguish with a CORS pre-flight response.
-  val actualStatus = StatusCodes.NoContent
-  val completeActual = complete(actualStatus)
+  import CorsDirectives._
+
+  val actual = "actual"
+  val completeActual = complete(actual)
 
   val exampleOrigin = HttpOrigin("http://example.com")
 
@@ -22,25 +23,47 @@ class CorsDirectivesSpec extends WordSpec with Matchers with CorsDirectives with
 
     "not affect actual requests when not strict" in {
       Get() ~> {
-        cors(allowGenericHttpRequests = true) & completeActual
+        cors & completeActual
       } ~> check {
-        status shouldBe actualStatus
+        responseAs[String] shouldBe actual
       }
     }
 
     "reject requests without Origin when strict" in {
+      implicit val settings = CorsSettings.defaultSettings.copy(allowGenericHttpRequests = false)
       Get() ~> {
-        cors(allowGenericHttpRequests = false) & completeActual
+        cors & completeActual
       } ~> check {
         rejection shouldBe InvalidCorsRequestRejection
       }
     }
 
     "accept actual requests with Origin when strict" in {
+      implicit val settings = CorsSettings.defaultSettings.copy(allowGenericHttpRequests = false)
       Get() ~> Origin(exampleOrigin) ~> {
-        cors(allowGenericHttpRequests = false) & completeActual
+        cors & completeActual
       } ~> check {
-        status shouldBe actualStatus
+        responseAs[String] shouldBe actual
+        response.headers shouldBe Seq(
+          `Access-Control-Allow-Origin`(exampleOrigin),
+          `Access-Control-Allow-Credentials`(true)
+        )
+      }
+    }
+
+    "accept valid pre-flight requests" in {
+      implicit val settings = CorsSettings.defaultSettings.copy(allowGenericHttpRequests = false)
+      Options() ~> Origin(exampleOrigin) ~> `Access-Control-Request-Method`(HttpMethods.GET) ~> {
+        cors & completeActual
+      } ~> check {
+        responseAs[String] shouldBe empty
+        status shouldBe StatusCodes.OK
+        response.headers should contain theSameElementsAs Seq(
+          `Access-Control-Allow-Origin`(exampleOrigin),
+          `Access-Control-Allow-Methods`(settings.allowedMethods),
+          `Access-Control-Max-Age`(1800),
+          `Access-Control-Allow-Credentials`(true)
+        )
       }
     }
 
