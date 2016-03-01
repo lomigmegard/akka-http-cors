@@ -10,7 +10,11 @@ import akka.http.scaladsl.server.{Directive1, Directive, Directive0, Rejection}
 import scala.collection.immutable.Seq
 
 /**
-  * @author Lomig Mégard
+  * Provides directives that implement the CORS mechanism, enabling cross origin requests.
+  *
+  * @see <a href="https://www.w3.org/TR/cors/">CORS W3C Recommendation</a>.
+  * @see <a href="https://www.ietf.org/rfc/rfc6454.txt">RFC 6454</a>.
+  *
   */
 trait CorsDirectives {
 
@@ -20,11 +24,9 @@ trait CorsDirectives {
   import RespondWithDirectives._
   import RouteDirectives._
 
-  def cors(implicit settings: CorsSettings): Directive0 = {
-    corsDecorate(settings).map(_ => ())
-  }
+  def cors(settings: CorsSettings = CorsSettings.defaultSettings): Directive0 = corsDecorate(settings).map(_ ⇒ ())
 
-  def corsDecorate(implicit settings: CorsSettings): Directive1[CorsDecorate] = {
+  def corsDecorate(settings: CorsSettings = CorsSettings.defaultSettings): Directive1[CorsDecorate] = {
     // put all the settings in scope
     import settings._
 

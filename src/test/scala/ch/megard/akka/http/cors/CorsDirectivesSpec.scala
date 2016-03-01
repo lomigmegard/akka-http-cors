@@ -2,7 +2,7 @@ package ch.megard.akka.http.cors
 
 import akka.http.scaladsl.model.{HttpEntity, HttpMethods, StatusCodes}
 import akka.http.scaladsl.model.headers._
-import akka.http.scaladsl.server.Directives
+import akka.http.scaladsl.server.{Route, Directives}
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import ch.megard.akka.http.cors.CorsDirectives.InvalidCorsRequestRejection
 import org.scalatest.{Matchers, WordSpec}
@@ -16,32 +16,35 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
 
   val actual = "actual"
   val completeActual = complete(actual)
-
   val exampleOrigin = HttpOrigin("http://example.com")
+
+  def route(settings: CorsSettings = CorsSettings.defaultSettings): Route = cors(settings) {
+    complete(actual)
+  }
 
   "The cors directive" should {
 
     "not affect actual requests when not strict" in {
       Get() ~> {
-        cors & completeActual
+        route()
       } ~> check {
         responseAs[String] shouldBe actual
       }
     }
 
     "reject requests without Origin when strict" in {
-      implicit val settings = CorsSettings.defaultSettings.copy(allowGenericHttpRequests = false)
+      val settings = CorsSettings.defaultSettings.copy(allowGenericHttpRequests = false)
       Get() ~> {
-        cors & completeActual
+        route(settings)
       } ~> check {
         rejection shouldBe InvalidCorsRequestRejection
       }
     }
 
     "accept actual requests with Origin when strict" in {
-      implicit val settings = CorsSettings.defaultSettings.copy(allowGenericHttpRequests = false)
+      val settings = CorsSettings.defaultSettings.copy(allowGenericHttpRequests = false)
       Get() ~> Origin(exampleOrigin) ~> {
-        cors & completeActual
+        route(settings)
       } ~> check {
         responseAs[String] shouldBe actual
         response.headers shouldBe Seq(
@@ -52,9 +55,9 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
     }
 
     "accept valid pre-flight requests" in {
-      implicit val settings = CorsSettings.defaultSettings.copy(allowGenericHttpRequests = false)
+      val settings = CorsSettings.defaultSettings.copy(allowGenericHttpRequests = false)
       Options() ~> Origin(exampleOrigin) ~> `Access-Control-Request-Method`(HttpMethods.GET) ~> {
-        cors & completeActual
+        route(settings)
       } ~> check {
         responseAs[String] shouldBe empty
         status shouldBe StatusCodes.OK
