@@ -2,10 +2,9 @@ package ch.megard.akka.http.cors
 
 import akka.http.scaladsl.model.HttpMethods._
 import akka.http.scaladsl.model.headers._
-import akka.http.scaladsl.model.{HttpMethod, HttpResponse}
-import akka.http.scaladsl.server.directives.HeaderDirectives._
+import akka.http.scaladsl.model.{StatusCodes, HttpHeader, HttpMethod, HttpResponse}
+import akka.http.scaladsl.server._
 import akka.http.scaladsl.server.directives._
-import akka.http.scaladsl.server.{Directive1, Directive, Directive0, Rejection}
 
 import scala.collection.immutable.Seq
 
@@ -20,14 +19,12 @@ trait CorsDirectives {
 
   import BasicDirectives._
   import CorsDirectives._
-  import HeaderDirectives._
   import RespondWithDirectives._
   import RouteDirectives._
 
   def cors(settings: CorsSettings = CorsSettings.defaultSettings): Directive0 = corsDecorate(settings).map(_ ⇒ ())
 
   def corsDecorate(settings: CorsSettings = CorsSettings.defaultSettings): Directive1[CorsDecorate] = {
-    // put all the settings in scope
     import settings._
 
     def accessControlExposeHeaders: Option[`Access-Control-Expose-Headers`] = {
@@ -40,7 +37,9 @@ trait CorsDirectives {
       else None
     }
 
-    def accessControlMaxAge: Option[`Access-Control-Max-Age`] = maxAge.map(`Access-Control-Max-Age`.apply)
+    def accessControlMaxAge: Option[`Access-Control-Max-Age`] = {
+      maxAge.map(`Access-Control-Max-Age`.apply)
+    }
 
     def accessControlAllowHeaders(requestHeaders: Seq[String]): Option[`Access-Control-Allow-Headers`] = allowedHeaders match {
       case HttpHeaderRange.Default(headers) ⇒ Some(`Access-Control-Allow-Headers`(headers))
@@ -48,7 +47,9 @@ trait CorsDirectives {
       case _ ⇒ None
     }
 
-    def accessControlAllowMethods = `Access-Control-Allow-Methods`(allowedMethods)
+    def accessControlAllowMethods = {
+      `Access-Control-Allow-Methods`(allowedMethods)
+    }
 
     def accessControlAllowOrigin(origins: Seq[HttpOrigin]): `Access-Control-Allow-Origin` = {
       if (allowedOrigins == HttpOriginRange.* && !allowCredentials) {
@@ -71,44 +72,52 @@ trait CorsDirectives {
       }
     }
 
-    def validHeaders(headers: Seq[String]): Directive0 = optionalHeaderValueByType[`Access-Control-Request-Headers`](()).flatMap {
-      case Some(h) ⇒
-        val unsupportedHeaders = h.headers.filterNot(allowedHeaders.matches)
-        if (unsupportedHeaders.isEmpty) pass
-        else reject(CorsHeaderRejection(unsupportedHeaders))
-      case None ⇒
+    def validHeaders(headers: Seq[String]): Directive0 =  {
+      val unsupportedHeaders = headers.filterNot(allowedHeaders.matches)
+      if (unsupportedHeaders.isEmpty) {
         pass
-    }
-
-    def handleCorsRequest(origins: Seq[HttpOrigin]): Directive1[CorsDecorate] = {
-      validOrigin(origins) & {
-        val headers = Seq(accessControlAllowOrigin(origins)) ++ accessControlExposeHeaders ++ accessControlAllowCredentials
-        respondWithHeaders(headers) & provide(CorsDecorate.CorsRequest(origins): CorsDecorate)
+      } else {
+        reject(CorsHeaderRejection(unsupportedHeaders))
       }
     }
 
-    def handleCorsPreflightRequest(origins: Seq[HttpOrigin], method: HttpMethod, headers: Seq[String]): Directive1[CorsDecorate] = {
-      assert(origins.size == 1)
+    extractRequest.flatMap { request ⇒
+      import request._
 
-      validOrigin(origins) & validMethod(method) & validHeaders(headers) & {
-        val responseHeaders = Seq(accessControlAllowOrigin(origins), accessControlAllowMethods) ++
-          accessControlAllowHeaders(headers) ++ accessControlMaxAge ++ accessControlAllowCredentials
+      (method, header[Origin].map(_.origins), header[`Access-Control-Request-Method`].map(_.method)) match {
+        case (OPTIONS, Some(origins), Some(requestMethod)) if origins.size == 1 ⇒
+          // Case 1: pre-flight CORS request
 
-        complete(HttpResponse(headers = responseHeaders)).toDirective[Tuple1[CorsDecorate]]
+          val headers = header[`Access-Control-Request-Headers`].map(_.headers).getOrElse(Seq.empty)
+
+          def completePreflight = {
+            val responseHeaders = Seq(accessControlAllowOrigin(origins), accessControlAllowMethods) ++
+              accessControlAllowHeaders(headers) ++ accessControlMaxAge ++ accessControlAllowCredentials
+
+            complete(HttpResponse(StatusCodes.OK, responseHeaders))
+          }
+
+          validOrigin(origins) & validMethod(requestMethod) & validHeaders(headers) & completePreflight
+
+        case (_, Some(origins), None) ⇒
+          // Case 2: actual CORS request
+
+          val decorate: CorsDecorate = CorsDecorate.CorsRequest(origins)
+          val responseHeaders: Seq[HttpHeader] = Seq(accessControlAllowOrigin(origins)) ++
+            accessControlExposeHeaders ++ accessControlAllowCredentials
+
+          validOrigin(origins) & respondWithHeaders(responseHeaders) & provide(decorate)
+
+        case (_, None, _) if allowGenericHttpRequests ⇒
+          // Case 3a: not a CORS request, but allowed
+
+          provide(CorsDecorate.NotCorsRequest)
+
+        case _ ⇒
+          // Case 3b: not a CORS request, forbidden
+
+          reject(InvalidCorsRequestRejection)
       }
-    }
-
-    _extractMethodAndOriginsAndRequestMethod.tflatMap {
-      case (OPTIONS, Some(origins), Some(method)) if origins.size == 1 ⇒
-        _extractRequestHeaders.flatMap { headers ⇒
-          handleCorsPreflightRequest(origins, method, headers)
-        }
-      case (_, Some(origins), None) ⇒
-        handleCorsRequest(origins)
-      case (_, None, _) if allowGenericHttpRequests ⇒
-        provide(CorsDecorate.NotCorsRequest)
-      case _  ⇒
-        reject(InvalidCorsRequestRejection)
     }
   }
 
@@ -147,30 +156,28 @@ object CorsDirectives extends CorsDirectives {
     def maxAge: Option[Long]
   }
 
-  object CorsSettings extends LowPriorityCorsSettingsImplicits {
+  object CorsSettings {
 
     final case class Default(
         allowGenericHttpRequests: Boolean,
         allowCredentials: Boolean,
         allowedOrigins: HttpOriginRange,
-        allowedMethods: Seq[HttpMethod],
         allowedHeaders: HttpHeaderRange,
+        allowedMethods: Seq[HttpMethod],
         exposedHeaders: Seq[String],
         maxAge: Option[Long]
     ) extends CorsSettings
 
-  }
-
-  trait LowPriorityCorsSettingsImplicits {
-    implicit val defaultSettings = CorsSettings.Default(
+    val defaultSettings = CorsSettings.Default(
       allowGenericHttpRequests = true,
       allowCredentials = true,
       allowedOrigins = HttpOriginRange.*,
-      allowedMethods = Seq(GET, POST, HEAD, OPTIONS),
       allowedHeaders = HttpHeaderRange.*,
+      allowedMethods = Seq(GET, POST, HEAD, OPTIONS),
       exposedHeaders = Seq.empty,
       maxAge = Some(30 * 60)
     )
+
   }
 
   sealed abstract class HttpHeaderRange {
@@ -189,23 +196,4 @@ object CorsDirectives extends CorsDirectives {
       def matches(header: String): Boolean = lowercaseHeaders contains header.toLowerCase
     }
   }
-
-  private val _extractRequestHeaders: Directive1[Seq[String]] = {
-    optionalHeaderValueByType[`Access-Control-Request-Headers`](()).map(_.map(_.headers).getOrElse(Seq.empty))
-  }
-
-  private val _extractMethodAndOriginsAndRequestMethod: Directive[(HttpMethod, Option[Seq[HttpOrigin]], Option[HttpMethod])] = {
-    import BasicDirectives._
-    import HeaderDirectives._
-    import MethodDirectives._
-
-    extractMethod.flatMap { method ⇒
-      optionalHeaderValueByType[Origin](()).flatMap { origin ⇒
-        optionalHeaderValueByType[`Access-Control-Request-Method`](()).flatMap { requestMethodHeader ⇒
-          tprovide((method, origin.map(_.origins), requestMethodHeader.map(_.method)))
-        }
-      }
-    }
-  }
-
 }

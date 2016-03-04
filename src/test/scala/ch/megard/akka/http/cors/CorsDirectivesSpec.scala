@@ -17,8 +17,9 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
   val actual = "actual"
   val completeActual = complete(actual)
   val exampleOrigin = HttpOrigin("http://example.com")
+  val settings = CorsSettings.defaultSettings
 
-  def route(settings: CorsSettings = CorsSettings.defaultSettings): Route = cors(settings) {
+  def route(settings: CorsSettings): Route = cors(settings) {
     complete(actual)
   }
 
@@ -26,23 +27,21 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
 
     "not affect actual requests when not strict" in {
       Get() ~> {
-        route()
+        route(settings)
       } ~> check {
         responseAs[String] shouldBe actual
       }
     }
 
     "reject requests without Origin when strict" in {
-      val settings = CorsSettings.defaultSettings.copy(allowGenericHttpRequests = false)
       Get() ~> {
-        route(settings)
+        route(settings.copy(allowGenericHttpRequests = false))
       } ~> check {
         rejection shouldBe InvalidCorsRequestRejection
       }
     }
 
-    "accept actual requests with Origin when strict" in {
-      val settings = CorsSettings.defaultSettings.copy(allowGenericHttpRequests = false)
+    "accept actual requests with Origin" in {
       Get() ~> Origin(exampleOrigin) ~> {
         route(settings)
       } ~> check {
@@ -55,7 +54,6 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
     }
 
     "accept valid pre-flight requests" in {
-      val settings = CorsSettings.defaultSettings.copy(allowGenericHttpRequests = false)
       Options() ~> Origin(exampleOrigin) ~> `Access-Control-Request-Method`(HttpMethods.GET) ~> {
         route(settings)
       } ~> check {
