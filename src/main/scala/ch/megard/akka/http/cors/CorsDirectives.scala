@@ -99,7 +99,7 @@ trait CorsDirectives {
 
           validOrigin(origins) & validMethod(requestMethod) & validHeaders(headers) & completePreflight
 
-        case (_, Some(origins), None) ⇒
+        case (_, Some(origins), None) if origins.nonEmpty ⇒
           // Case 2: actual CORS request
 
           val decorate: CorsDecorate = CorsDecorate.CorsRequest(origins)
@@ -108,7 +108,7 @@ trait CorsDirectives {
 
           validOrigin(origins) & respondWithHeaders(responseHeaders) & provide(decorate)
 
-        case (_, None, _) if allowGenericHttpRequests ⇒
+        case _ if allowGenericHttpRequests ⇒
           // Case 3a: not a CORS request, but allowed
 
           provide(CorsDecorate.NotCorsRequest)
