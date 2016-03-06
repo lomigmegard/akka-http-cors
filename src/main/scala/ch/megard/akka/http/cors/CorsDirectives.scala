@@ -150,8 +150,8 @@ object CorsDirectives extends CorsDirectives {
     def allowGenericHttpRequests: Boolean
     def allowCredentials: Boolean
     def allowedOrigins: HttpOriginRange
-    def allowedMethods: Seq[HttpMethod]
     def allowedHeaders: HttpHeaderRange
+    def allowedMethods: Seq[HttpMethod]
     def exposedHeaders: Seq[String]
     def maxAge: Option[Long]
   }
