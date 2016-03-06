@@ -25,12 +25,12 @@ val route: Route = cors() {
 ## Configuration
 
 #### allowGenericHttpRequests
-> `Boolean` with default value `true`.
+`Boolean` with default value `true`.
 
 If `true`, allow generic requests (that are outisde the scope of the specification) to pass through the directive. Else, strict CORS filtering is applied and any invalid request will be rejected.
 
 #### allowCredentials
-- `Boolean` with default value `true`.
+`Boolean` with default value `true`.
 
 Controls the presence of the `Access-Control-Allow-Credentials` header in the response. From the [W3C page](https://www.w3.org/TR/cors/#access-control-allow-credentials-response-header):
 
@@ -39,24 +39,34 @@ Controls the presence of the `Access-Control-Allow-Credentials` header in the re
 Examples of user credentials are: cookies, HTTP authentication or client-side certificates.
 
 #### allowedOrigins
-- `HttpOriginRange` with default value `HttpOriginRange.*`.
+`HttpOriginRange` with default value `HttpOriginRange.*`.
 
-List of origins that the CORS filter must allow. Can also be set to `*` to allow any origin to access the resource. Controls the content of the `Access-Control-Allow-Origin` header using the following logic:
+List of origins that the CORS filter must allow. Can also be set to `*` to allow any origin to access the resource. Controls the content of the `Access-Control-Allow-Origin` response header using the following logic:
 * if parameter is `*` **and** credentials are not allowed, the `*` is returned.
-* otherwise, the origins given in the `Origin` request header are used to fill the `Access-Control-Allow-Origin` response header.
+* otherwise, the origins given in the `Origin` request header are echoed.
 
 #### allowedHeaders
-- `HttpHeaderRange` with default value `HttpHeaderRange.*`.
+`HttpHeaderRange` with default value `HttpHeaderRange.*`.
 
 #### allowedMethods
-- `Seq[HttpMethod]` with default value `Seq(GET, POST, HEAD, OPTIONS)`.
+`Seq[HttpMethod]` with default value `Seq(GET, POST, HEAD, OPTIONS)`.
+
+List of methods allowed by the CORS filter. Controls the content of the `Access-Control-Allow-Methods`
+response header. From the [W3C page](https://www.w3.org/TR/cors/#access-control-max-age-response-header):
+
+> The `Access-Control-Allow-Methods` header indicates, as part of the response to a preflight request, which methods can be used during the actual request.  — _W3C_
+
+The preflight request will be rejected if the `Access-Control-Request-Method` header's method is not part of the list.
 
 #### exposedHeaders
-- `Seq[String]` with default value `Seq.empty`.
+`Seq[String]` with default value `Seq.empty`.
 
 #### maxAge
-- `Option[Long]` (in seconds) with default value `Some (30 * 60)`.
+`Option[Long]` (in seconds) with default value `Some (30 * 60)`.
 
+Controls the `Access-Control-Max-Age` response header. From the [W3C page](https://www.w3.org/TR/cors/#access-control-max-age-response-header):
+
+> The `Access-Control-Max-Age` header indicates how long the results of a preflight request can be cached in a preflight result cache. — _W3C_
 
 ## References
 - https://www.w3.org/TR/cors/
