@@ -2,7 +2,8 @@ package ch.megard.akka.http.cors
 
 import akka.http.scaladsl.model.HttpMethods._
 import akka.http.scaladsl.model.headers._
-import akka.http.scaladsl.model.{StatusCodes, HttpHeader, HttpMethod, HttpResponse}
+import akka.http.scaladsl.model.{HttpHeader, HttpMethod, HttpResponse, StatusCodes}
+import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
 import akka.http.scaladsl.server.directives._
 
@@ -22,6 +23,14 @@ trait CorsDirectives {
   import RespondWithDirectives._
   import RouteDirectives._
 
+  /**
+    * Wraps its inner route with support for the CORS mechanism, enabling cross origin requests.
+    *
+    * In particular the recommendation written by the W3C in https://www.w3.org/TR/cors/ is
+    * implemented by this directive.
+    *
+    * @param settings the settings used by the CORS filter
+    */
   def cors(settings: CorsSettings = CorsSettings.defaultSettings): Directive0 = corsDecorate(settings).map(_ ⇒ ())
 
   def corsDecorate(settings: CorsSettings = CorsSettings.defaultSettings): Directive1[CorsDecorate] = {
@@ -59,27 +68,17 @@ trait CorsDirectives {
       }
     }
 
-    def validOrigin(origins: Seq[HttpOrigin]): Directive0 = origins.find(!allowedOrigins.matches(_)) match {
-      case Some(origin) ⇒ reject(CorsOriginRejection(origin))
-      case None ⇒ pass
-    }
+    /** Return an invalid origin, or `None` if they are all valid. */
+    def validateOrigin(origins: Seq[HttpOrigin]): Option[HttpOrigin] =
+      origins.find(!allowedOrigins.matches(_))
 
-    def validMethod(method: HttpMethod): Directive0 = {
-      if (allowedMethods.contains(method)) {
-        pass
-      } else {
-        reject(CorsMethodRejection(method))
-      }
-    }
+    /** Return the method if invalid, `None` otherwise. */
+    def validateMethod(method: HttpMethod): Option[HttpMethod] =
+      Some(method).filterNot(allowedMethods.contains)
 
-    def validHeaders(headers: Seq[String]): Directive0 =  {
-      val unsupportedHeaders = headers.filterNot(allowedHeaders.matches)
-      if (unsupportedHeaders.isEmpty) {
-        pass
-      } else {
-        reject(CorsHeaderRejection(unsupportedHeaders))
-      }
-    }
+    /** Return the list of invalid headers, or `None` if they are all valid. */
+    def validateHeaders(headers: Seq[String]): Option[Seq[String]] =
+      Some(headers.filterNot(allowedHeaders.matches)).filter(_.nonEmpty)
 
     extractRequest.flatMap { request ⇒
       import request._
@@ -93,11 +92,15 @@ trait CorsDirectives {
           def completePreflight = {
             val responseHeaders = Seq(accessControlAllowOrigin(origins), accessControlAllowMethods) ++
               accessControlAllowHeaders(headers) ++ accessControlMaxAge ++ accessControlAllowCredentials
-
             complete(HttpResponse(StatusCodes.OK, responseHeaders))
           }
 
-          validOrigin(origins) & validMethod(requestMethod) & validHeaders(headers) & completePreflight
+          (validateOrigin(origins), validateMethod(requestMethod), validateHeaders(headers)) match {
+            case (None, None, None) ⇒
+              completePreflight
+            case (invalidOrigin, invalidMethod, invalidHeaders) ⇒
+              reject(CorsRejection(invalidOrigin, invalidMethod, invalidHeaders))
+          }
 
         case (_, Some(origins), None) if origins.nonEmpty ⇒
           // Case 2: actual CORS request
@@ -106,17 +109,22 @@ trait CorsDirectives {
           val responseHeaders: Seq[HttpHeader] = Seq(accessControlAllowOrigin(origins)) ++
             accessControlExposeHeaders ++ accessControlAllowCredentials
 
-          validOrigin(origins) & respondWithHeaders(responseHeaders) & provide(decorate)
+          validateOrigin(origins) match {
+            case None ⇒
+              respondWithHeaders(responseHeaders) & provide(decorate)
+            case invalidOrigin ⇒
+              reject(CorsRejection(invalidOrigin, None, None))
+          }
 
         case _ if allowGenericHttpRequests ⇒
-          // Case 3a: not a CORS request, but allowed
+          // Case 3a: not a valid CORS request, but allowed
 
           provide(CorsDecorate.NotCorsRequest)
 
         case _ ⇒
-          // Case 3b: not a CORS request, forbidden
+          // Case 3b: not a valid CORS request, forbidden
 
-          reject(InvalidCorsRequestRejection)
+          reject(CorsRejection(None, None, None))
       }
     }
   }
@@ -125,10 +133,17 @@ trait CorsDirectives {
 
 object CorsDirectives extends CorsDirectives {
 
-  case object InvalidCorsRequestRejection extends Rejection
-  case class CorsOriginRejection(origin: HttpOrigin) extends Rejection
-  case class CorsMethodRejection(method: HttpMethod) extends Rejection
-  case class CorsHeaderRejection(unsupportedHeaders: Seq[String]) extends Rejection
+  def corsRejectionHandler = RejectionHandler.newBuilder().handle {
+    case CorsRejection(None, None, None) ⇒
+      complete((StatusCodes.BadRequest, "The CORS request is malformed"))
+    case CorsRejection(origin, method, headers) ⇒
+      val messages = Seq(
+        origin.map(s"invalid origin (" + _ + ")"),
+        method.map(s"invalid method (" + _.value + ")"),
+        headers.map(s"invalid headers (" + _.mkString(",") + ")")
+      ).flatten
+      complete((StatusCodes.BadRequest, "CORS: " + messages.mkString(", ")))
+  }.result()
 
   sealed abstract class CorsDecorate {
     def isCorsRequest: Boolean
@@ -146,54 +161,4 @@ object CorsDirectives extends CorsDirectives {
 
   }
 
-  abstract class CorsSettings {
-    def allowGenericHttpRequests: Boolean
-    def allowCredentials: Boolean
-    def allowedOrigins: HttpOriginRange
-    def allowedHeaders: HttpHeaderRange
-    def allowedMethods: Seq[HttpMethod]
-    def exposedHeaders: Seq[String]
-    def maxAge: Option[Long]
-  }
-
-  object CorsSettings {
-
-    final case class Default(
-        allowGenericHttpRequests: Boolean,
-        allowCredentials: Boolean,
-        allowedOrigins: HttpOriginRange,
-        allowedHeaders: HttpHeaderRange,
-        allowedMethods: Seq[HttpMethod],
-        exposedHeaders: Seq[String],
-        maxAge: Option[Long]
-    ) extends CorsSettings
-
-    val defaultSettings = CorsSettings.Default(
-      allowGenericHttpRequests = true,
-      allowCredentials = true,
-      allowedOrigins = HttpOriginRange.*,
-      allowedHeaders = HttpHeaderRange.*,
-      allowedMethods = Seq(GET, POST, HEAD, OPTIONS),
-      exposedHeaders = Seq.empty,
-      maxAge = Some(30 * 60)
-    )
-
-  }
-
-  sealed abstract class HttpHeaderRange {
-    def matches(header: String): Boolean
-  }
-
-  object HttpHeaderRange {
-    case object `*` extends HttpHeaderRange {
-      def matches(header: String) = true
-    }
-
-    def apply(headers: String*): Default = Default(Seq(headers: _*))
-
-    final case class Default(headers: Seq[String]) extends HttpHeaderRange {
-      val lowercaseHeaders = headers.map(_.toLowerCase)
-      def matches(header: String): Boolean = lowercaseHeaders contains header.toLowerCase
-    }
-  }
 }

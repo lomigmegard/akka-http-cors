@@ -4,6 +4,7 @@ import akka.http.scaladsl.model.headers._
 import akka.http.scaladsl.model.{HttpMethods, StatusCodes}
 import akka.http.scaladsl.server.{Directives, Route}
 import akka.http.scaladsl.testkit.ScalatestRouteTest
+import ch.megard.akka.http.cors.CorsDirectives.CorsDecorate.{CorsRequest, NotCorsRequest}
 import org.scalatest.{Matchers, WordSpec}
 
 import scala.collection.immutable
@@ -24,6 +25,11 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
     complete(actual)
   }
 
+  def routeDecorate(settings: CorsSettings): Route = corsDecorate(settings) {
+    case CorsRequest(origins) ⇒ complete("actual cors")
+    case NotCorsRequest       ⇒ complete("not cors")
+  }
+
   "The cors directive" should {
 
     "not affect actual requests when not strict" in {
@@ -40,7 +46,7 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
       Get() ~> {
         route(settings)
       } ~> check {
-        rejection shouldBe InvalidCorsRequestRejection
+        rejection shouldBe CorsRejection(None, None, None)
       }
     }
 
@@ -92,7 +98,7 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
       Options() ~> Origin(invalidOrigin) ~> `Access-Control-Request-Method`(GET) ~> {
         route(settings)
       } ~> check {
-        rejection shouldBe CorsOriginRejection(invalidOrigin)
+        rejection shouldBe CorsRejection(Some(invalidOrigin), None, None)
       }
     }
 
@@ -102,7 +108,7 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
       Options() ~> Origin(exampleOrigin) ~> `Access-Control-Request-Method`(invalidMethod) ~> {
         route(settings)
       } ~> check {
-        rejection shouldBe CorsMethodRejection(invalidMethod)
+        rejection shouldBe CorsRejection(None, Some(invalidMethod), None)
       }
     }
 
@@ -113,7 +119,7 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
         `Access-Control-Request-Headers`(invalidHeader) ~> {
         route(settings)
       } ~> check {
-        rejection shouldBe CorsHeaderRejection(immutable.Seq(invalidHeader))
+        rejection shouldBe CorsRejection(None, None, Some(immutable.Seq(invalidHeader)))
       }
     }
 

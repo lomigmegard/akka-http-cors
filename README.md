@@ -57,12 +57,18 @@ Examples of user credentials are: cookies, HTTP authentication or client-side ce
 #### allowedOrigins
 `HttpOriginRange` with default value `HttpOriginRange.*`.
 
-List of origins that the CORS filter must allow. Can also be set to `*` to allow any origin to access the resource. Controls the content of the `Access-Control-Allow-Origin` response header using the following logic:
-* if parameter is `*` **and** credentials are not allowed, the `*` is returned.
+List of origins that the CORS filter must allow. Can also be set to `*` to allow access to the resource from any origin. Controls the content of the `Access-Control-Allow-Origin` response header:
+* if parameter is `*` **and** credentials are not allowed, a `*` is set in `Access-Control-Allow-Origin`.
 * otherwise, the origins given in the `Origin` request header are echoed.
+
+The actual or preflight request is rejected if any of the origins from the request is not allowed.
 
 #### allowedHeaders
 `HttpHeaderRange` with default value `HttpHeaderRange.*`.
+
+ List of request headers that can be used when making an actual request. Controls the content of the `Access-Control-Allow-Headers` header in a preflight response:
+ * if parameter is `*`, the headers from `Access-Control-Request-Headers` are echoed.
+ * otherwise the parameter list is returned as part of the header.
 
 #### allowedMethods
 `Seq[HttpMethod]` with default value `Seq(GET, POST, HEAD, OPTIONS)`.
@@ -77,12 +83,12 @@ The preflight request will be rejected if the `Access-Control-Request-Method` he
 #### exposedHeaders
 `Seq[String]` with default value `Seq.empty`.
 
+List of headers (other than [simple response headers](https://www.w3.org/TR/cors/#simple-response-header)) that browsers are allowed to access. If not empty, this list is returned as part of the `Access-Control-Expose-Headers` header in the actual response.
+
 #### maxAge
 `Option[Long]` (in seconds) with default value `Some (30 * 60)`.
 
-Controls the `Access-Control-Max-Age` response header. From the [W3C page](https://www.w3.org/TR/cors/#access-control-max-age-response-header):
-
-> The `Access-Control-Max-Age` header indicates how long the results of a preflight request can be cached in a preflight result cache. — _W3C_
+When set, the amount of seconds the browser is allowed to cache the results of a preflight request. This value is returned as part of the `Access-Control-Max-Age` preflight response header. If `None`, the header is not added to the preflight response.
 
 ## References
 - [W3C Specification: CORS](https://www.w3.org/TR/cors/)
