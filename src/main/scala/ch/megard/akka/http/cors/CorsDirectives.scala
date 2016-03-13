@@ -138,9 +138,9 @@ object CorsDirectives extends CorsDirectives {
       complete((StatusCodes.BadRequest, "The CORS request is malformed"))
     case CorsRejection(origin, method, headers) ⇒
       val messages = Seq(
-        origin.map(s"invalid origin (" + _ + ")"),
-        method.map(s"invalid method (" + _.value + ")"),
-        headers.map(s"invalid headers (" + _.mkString(",") + ")")
+        origin.map(s"invalid origin '" + _ + "'"),
+        method.map(s"invalid method '" + _.value + "'"),
+        headers.map(s"invalid headers '" + _.mkString(",") + "'")
       ).flatten
       complete((StatusCodes.BadRequest, "CORS: " + messages.mkString(", ")))
   }.result()

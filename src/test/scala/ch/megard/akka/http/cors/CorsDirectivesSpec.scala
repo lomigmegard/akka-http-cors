@@ -18,7 +18,6 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
   import HttpMethods._
 
   val actual = "actual"
-  val completeActual = complete(actual)
   val exampleOrigin = HttpOrigin("http://example.com")
 
   def route(settings: CorsSettings): Route = cors(settings) {
@@ -93,7 +92,7 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
     }
 
     "reject pre-flight requests with invalid origin" in {
-      val settings = CorsSettings.defaultSettings.copy(allowedOrigins = HttpOriginRange.apply(exampleOrigin))
+      val settings = CorsSettings.defaultSettings.copy(allowedOrigins = HttpOriginRange(exampleOrigin))
       val invalidOrigin = HttpOrigin("http://invalid.com")
       Options() ~> Origin(invalidOrigin) ~> `Access-Control-Request-Method`(GET) ~> {
         route(settings)
@@ -124,4 +123,39 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
     }
 
   }
+
+  "the default rejection handler" should {
+    val settings = CorsSettings.defaultSettings
+      .copy(allowGenericHttpRequests = false)
+      .copy(allowedOrigins = HttpOriginRange(exampleOrigin))
+      .copy(allowedHeaders = HttpHeaderRange())
+    val sealedRoute = handleRejections(corsRejectionHandler) { route(settings) }
+
+    "handle the invalid CORS request rejection" in {
+      Get() ~> {
+        sealedRoute
+      } ~> check {
+        status shouldBe StatusCodes.BadRequest
+        entityAs[String] shouldBe "The CORS request is malformed"
+      }
+    }
+
+    "handle a pre-flight request with invalid origin, method and headers" in {
+      val invalidOrigin = HttpOrigin("http://invalid.com")
+      val invalidMethod = PATCH
+      val invalidHeaders = immutable.Seq("X-header", "Y-header")
+      Options() ~> Origin(invalidOrigin) ~> `Access-Control-Request-Method`(invalidMethod) ~>
+        `Access-Control-Request-Headers`(invalidHeaders) ~> {
+        sealedRoute
+      } ~> check {
+        status shouldBe StatusCodes.BadRequest
+        entityAs[String] shouldBe "CORS: " +
+          s"invalid origin '$invalidOrigin', " +
+          s"invalid method '${invalidMethod.value}', " +
+          s"invalid headers '${invalidHeaders.mkString(",")}'"
+      }
+    }
+
+  }
+
 }
