@@ -12,7 +12,8 @@ This is a Scala implementation for the server-side targeting the akka-http 2.x l
 - [ ] Tests, lots of tests.
 
 ## Quick Start
-This project is not deployed to maven. If you want to try it, just copy the unique source file inside your project.
+This project is not deployed to maven. If you want to try it, just copy the whole `cors` packagee inside your project.
+Let me know if you would like me to publish it on maven, if so just create an issue.
 
 The simplest way to enable CORS in your application is to use the `cors` directive.
 Settings are passed as a parameter to the directive, with defaults provided for convenience.
@@ -43,14 +44,12 @@ val route: Route = corsDecorate() {
 #### allowGenericHttpRequests
 `Boolean` with default value `true`.
 
-If `true`, allow generic requests (that are outisde the scope of the specification) to pass through the directive. Else, strict CORS filtering is applied and any invalid request will be rejected.
+If `true`, allow generic requests (that are outside the scope of the specification) to pass through the directive. Else, strict CORS filtering is applied and any invalid request will be rejected.
 
 #### allowCredentials
 `Boolean` with default value `true`.
 
-Controls the presence of the `Access-Control-Allow-Credentials` header in the response. From the [W3C page](https://www.w3.org/TR/cors/#access-control-allow-credentials-response-header):
-
-> The `Access-Control-Allow-Credentials` header indicates whether the response to request can be exposed when the omit credentials flag is unset. When part of the response to a preflight request it indicates that the actual request can include user credentials. — _W3C_
+Indicates whether the resource supports user credentials.  If `true`, the header `Access-Control-Allow-Credentials` is set in the response, indicating the actual request can include user credentials.
 
 Examples of user credentials are: cookies, HTTP authentication or client-side certificates.
 
@@ -73,10 +72,7 @@ The actual or preflight request is rejected if any of the origins from the reque
 #### allowedMethods
 `Seq[HttpMethod]` with default value `Seq(GET, POST, HEAD, OPTIONS)`.
 
-List of methods allowed by the CORS filter. Controls the content of the `Access-Control-Allow-Methods`
-response header. From the [W3C page](https://www.w3.org/TR/cors/#access-control-max-age-response-header):
-
-> The `Access-Control-Allow-Methods` header indicates, as part of the response to a preflight request, which methods can be used during the actual request.  — _W3C_
+List of methods that can be used when making an actual request. The list is returned as part of the `Access-Control-Allow-Methods` preflight response header.
 
 The preflight request will be rejected if the `Access-Control-Request-Method` header's method is not part of the list.
 

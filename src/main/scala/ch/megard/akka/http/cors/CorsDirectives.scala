@@ -33,6 +33,16 @@ trait CorsDirectives {
     */
   def cors(settings: CorsSettings = CorsSettings.defaultSettings): Directive0 = corsDecorate(settings).map(_ ⇒ ())
 
+  /**
+    * Wraps its inner route with support for the CORS mechanism, enabling cross origin requests.
+    * Provides to the inner route an object that indicates if the current request is a valid CORS
+    * actual request or is outside the scope of the specification.
+    *
+    * In particular the recommendation written by the W3C in https://www.w3.org/TR/cors/ is
+    * implemented by this directive.
+    *
+    * @param settings the settings used by the CORS filter
+    */
   def corsDecorate(settings: CorsSettings = CorsSettings.defaultSettings): Directive1[CorsDecorate] = {
     import settings._
 
