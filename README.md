@@ -1,5 +1,7 @@
 # akka-http-cors
 
+[![Build Status](https://travis-ci.org/lomigmegard/akka-http-cors.svg?branch=master)](https://travis-ci.org/lomigmegard/akka-http-cors)
+
 ## WIP
 This project is under development.
 
