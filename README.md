@@ -91,3 +91,6 @@ When set, the amount of seconds the browser is allowed to cache the results of a
 ## References
 - [W3C Specification: CORS](https://www.w3.org/TR/cors/)
 - [RFC-6454: The Web Origin Concept](https://tools.ietf.org/html/rfc6454)
+
+## License
+This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").
