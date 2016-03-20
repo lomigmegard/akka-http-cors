@@ -1,11 +1,8 @@
 # akka-http-cors
 
-[![Build Status](https://travis-ci.org/lomigmegard/akka-http-cors.svg?branch=master)](https://travis-ci.org/lomigmegard/akka-http-cors)
+[![Build Status](https://travis-ci.org/lomigmegard/akka-http-cors.svg?branch=master&style=flat)](https://travis-ci.org/lomigmegard/akka-http-cors)
+[![Software License](https://img.shields.io/badge/license-Apache 2-brightgreen.svg?style=flat)](LICENSE)
 
-## WIP
-This project is under development.
-
-## Introduction
 CORS (Cross Origin Resource Sharing) is a mechanism to enable cross origin requests.
 
 This is a Scala implementation for the server-side targeting the akka-http 2.x library. Main features:
@@ -13,10 +10,16 @@ This is a Scala implementation for the server-side targeting the akka-http 2.x l
 - [x] Respects the full standard defined by the W3C, even the border cases.
 - [ ] Tests, lots of tests.
 
-## Quick Start
-This project is not deployed to maven. If you want to try it, just copy the whole `cors` packagee inside your project.
-Let me know if you would like me to publish it on maven, if so just create an issue.
+## WIP
+This project is under development. Please do not use in production.
 
+## Getting Akka Http Cors
+akka-http-cors is deployed to Maven Central. Add it to your `build.sbt` or `Build.scala`:
+```scala
+libraryDependencies += "ch.megard" %% "akka-http-cors" % "0.1.0"
+```
+
+## Quick Start
 The simplest way to enable CORS in your application is to use the `cors` directive.
 Settings are passed as a parameter to the directive, with defaults provided for convenience.
 ```scala
@@ -40,6 +43,9 @@ val route: Route = corsDecorate() {
   case NotCorsRequest       ⇒ complete("not cors")
 }
 ```
+
+## Rejection
+TODO
 
 ## Configuration
 
