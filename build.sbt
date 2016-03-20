@@ -1,10 +1,15 @@
 
 name := "akka-http-cors"
 organization := "ch.megard"
-version := "0.1.0-SNAPSHOT"
+version := "0.1.0"
 
 scalaVersion := "2.11.8"
-scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
+scalacOptions ++= Seq(
+  "-unchecked",
+  "-deprecation",
+  "-target:jvm-1.8",
+  "-encoding", "utf8"
+)
 
 libraryDependencies += "com.typesafe.akka" %% "akka-http-experimental" % "2.4.2"
 
