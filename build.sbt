@@ -1,7 +1,7 @@
 
 name := "akka-http-cors"
 organization := "ch.megard"
-version := "0.1.0"
+version := "0.1.1-SNAPSHOT"
 
 scalaVersion := "2.11.8"
 scalacOptions ++= Seq(
