@@ -11,9 +11,9 @@ scalacOptions ++= Seq(
   "-encoding", "utf8"
 )
 
-libraryDependencies += "com.typesafe.akka" %% "akka-http-experimental" % "2.4.2"
+libraryDependencies += "com.typesafe.akka" %% "akka-http-experimental" % "2.4.3"
 
-libraryDependencies += "com.typesafe.akka" %% "akka-http-testkit" % "2.4.2" % "test"
+libraryDependencies += "com.typesafe.akka" %% "akka-http-testkit" % "2.4.3" % "test"
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.6" % "test"
 
 // Publishing
