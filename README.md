@@ -94,6 +94,17 @@ List of headers (other than [simple response headers](https://www.w3.org/TR/cors
 
 When set, the amount of seconds the browser is allowed to cache the results of a preflight request. This value is returned as part of the `Access-Control-Max-Age` preflight response header. If `None`, the header is not added to the preflight response.
 
+## Benchmarks
+Using the [sbt-jmh](https://github.com/ktoso/sbt-jmh) plugin, preliminary benchmarks have been performed to measure the impact of the `cors` directive on the performance.
+The first results are shown below. 
+```
+> jmh:run -i 40 -wi 30 -f2 -t1
+Benchmark                         Mode  Cnt     Score     Error  Units
+CorsBenchmark.baseline           thrpt   80  3601.121 ± 102.274  ops/s
+CorsBenchmark.default_cors       thrpt   80  3582.090 ±  95.304  ops/s
+CorsBenchmark.default_preflight  thrpt   80  3482.716 ±  89.124  ops/s
+```
+
 ## References
 - [W3C Specification: CORS](https://www.w3.org/TR/cors/)
 - [RFC-6454: The Web Origin Concept](https://tools.ietf.org/html/rfc6454)
