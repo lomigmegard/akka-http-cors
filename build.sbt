@@ -62,9 +62,8 @@ lazy val cors = Project(id = "akka-http-cors", base = file("akka-http-cors")).
   settings(commonSettings: _*).
   settings(publishSettings: _*).
   settings(
-
-    libraryDependencies += "com.typesafe.akka" %% "akka-http-experimental" % "2.4.3",
-    libraryDependencies += "com.typesafe.akka" %% "akka-http-testkit" % "2.4.3" % "test",
+    libraryDependencies += "com.typesafe.akka" %% "akka-http-experimental" % "2.4.4",
+    libraryDependencies += "com.typesafe.akka" %% "akka-http-testkit" % "2.4.4" % "test",
     libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.6" % "test"
   )
 
@@ -72,7 +71,4 @@ lazy val benchJmh = Project(id = "akka-http-cors-bench-jmh", base = file("akka-h
   dependsOn(cors).
   enablePlugins(JmhPlugin).
   settings(commonSettings: _*).
-  settings(dontPublishSettings: _*).
-  settings(
-    // other settings
-  )
+  settings(dontPublishSettings: _*)
