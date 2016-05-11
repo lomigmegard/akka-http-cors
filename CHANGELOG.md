@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.2 (unreleased)
+## 0.1.2 (2016-05-11)
 
   - Update Akka to 2.4.4.
   - Added benchmarks with results in README.

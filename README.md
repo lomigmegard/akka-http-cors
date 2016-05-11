@@ -13,7 +13,7 @@ This is a Scala implementation for the server-side targeting the akka-http 2.x l
 ## Getting Akka Http Cors
 akka-http-cors is deployed to Maven Central. Add it to your `build.sbt` or `Build.scala`:
 ```scala
-libraryDependencies += "ch.megard" %% "akka-http-cors" % "0.1.1"
+libraryDependencies += "ch.megard" %% "akka-http-cors" % "0.1.2"
 ```
 
 ## Quick Start
