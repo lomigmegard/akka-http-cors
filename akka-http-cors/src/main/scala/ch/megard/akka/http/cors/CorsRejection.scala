@@ -9,7 +9,7 @@ import scala.collection.immutable.Seq
 
 /**
   * Rejection created when a CORS request was invalid.
-  * In case of an preflight request, one to three of the causes can be marked as invalid.
+  * In case of a preflight request, one to three of the causes can be marked as invalid.
   * In case of an actual request, only the origin can be marked as invalid.
   *
   * Note: when the three causes are `None`, the request itself was invalid. For example
