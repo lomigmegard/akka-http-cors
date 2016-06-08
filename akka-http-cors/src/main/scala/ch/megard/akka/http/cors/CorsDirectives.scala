@@ -123,7 +123,7 @@ trait CorsDirectives {
             case None ⇒
               respondWithHeaders(responseHeaders) & provide(decorate)
             case invalidOrigin ⇒
-              reject(CorsRejection(invalidOrigin, None, None))
+              provide(decorate)
           }
 
         case _ if allowGenericHttpRequests ⇒
