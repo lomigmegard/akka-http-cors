@@ -13,7 +13,7 @@ This is a Scala implementation for the server-side targeting the akka-http 2.x l
 ## Getting Akka Http Cors
 akka-http-cors is deployed to Maven Central. Add it to your `build.sbt` or `Build.scala`:
 ```scala
-libraryDependencies += "ch.megard" %% "akka-http-cors" % "0.1.3"
+libraryDependencies += "ch.megard" %% "akka-http-cors" % "0.1.4"
 ```
 
 ## Quick Start
@@ -44,7 +44,7 @@ val route: Route = corsDecorate() {
 ## Rejection
 The CORS directives can reject requests using the `CorsRejection` class. Requests can be either malformed or not allowed to access the resource.
 
-A rejection handler is provided by the library to return meaningful HTTP responses. Read the [akka documentation](http://doc.akka.io/docs/akka/2.4.7/scala/http/routing-dsl/rejections.html) to learn more about rejections, or if you need to write your own handler.
+A rejection handler is provided by the library to return meaningful HTTP responses. Read the [akka documentation](http://doc.akka.io/docs/akka/2.4/scala/http/routing-dsl/rejections.html) to learn more about rejections, or if you need to write your own handler.
 ```scala
 import akka.http.scaladsl.server.directives.ExecutionDirectives._
 import ch.megard.akka.http.cors.CorsDirectives._
