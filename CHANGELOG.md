@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.0 (unreleased)
+
+  - Update Akka to 2.4.7.
+
 ## 0.1.2 (2016-05-11)
 
   - Update Akka to 2.4.4.
