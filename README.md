@@ -13,7 +13,7 @@ This is a Scala implementation for the server-side targeting the akka-http 2.x l
 ## Getting Akka Http Cors
 akka-http-cors is deployed to Maven Central. Add it to your `build.sbt` or `Build.scala`:
 ```scala
-libraryDependencies += "ch.megard" %% "akka-http-cors" % "0.1.2"
+libraryDependencies += "ch.megard" %% "akka-http-cors" % "0.1.3"
 ```
 
 ## Quick Start
@@ -44,7 +44,7 @@ val route: Route = corsDecorate() {
 ## Rejection
 The CORS directives can reject requests using the `CorsRejection` class. Requests can be either malformed or not allowed to access the resource.
 
-A rejection handler is provided by the library to return meaningful HTTP responses. Read the [akka documentation](http://doc.akka.io/docs/akka/2.4.4/scala/http/routing-dsl/rejections.html) to learn more about rejections, or if you need to write your own handler.
+A rejection handler is provided by the library to return meaningful HTTP responses. Read the [akka documentation](http://doc.akka.io/docs/akka/2.4.7/scala/http/routing-dsl/rejections.html) to learn more about rejections, or if you need to write your own handler.
 ```scala
 import akka.http.scaladsl.server.directives.ExecutionDirectives._
 import ch.megard.akka.http.cors.CorsDirectives._
@@ -104,14 +104,24 @@ List of headers (other than [simple response headers](https://www.w3.org/TR/cors
 When set, the amount of seconds the browser is allowed to cache the results of a preflight request. This value is returned as part of the `Access-Control-Max-Age` preflight response header. If `None`, the header is not added to the preflight response.
 
 ## Benchmarks
-Using the [sbt-jmh](https://github.com/ktoso/sbt-jmh) plugin, preliminary benchmarks have been performed to measure the impact of the `cors` directive on the performance.
-The first results are shown below.
+Using the [sbt-jmh](https://github.com/ktoso/sbt-jmh) plugin, preliminary benchmarks have been performed to measure the impact of the `cors` directive on the performance. The first results are shown below.
+
+#### v0.1.2 (Akka 2.4.4)
 ```
 > jmh:run -i 40 -wi 30 -f2 -t1
 Benchmark                         Mode  Cnt     Score     Error  Units
 CorsBenchmark.baseline           thrpt   80  3601.121 ± 102.274  ops/s
 CorsBenchmark.default_cors       thrpt   80  3582.090 ±  95.304  ops/s
 CorsBenchmark.default_preflight  thrpt   80  3482.716 ±  89.124  ops/s
+```
+
+#### v0.1.3 (Akka 2.4.7)
+```
+> jmh:run -i 40 -wi 30 -f2 -t1
+Benchmark                         Mode  Cnt     Score     Error  Units
+CorsBenchmark.baseline           thrpt   80  3657.762 ± 141.409  ops/s
+CorsBenchmark.default_cors       thrpt   80  3687.351 ±  35.176  ops/s
+CorsBenchmark.default_preflight  thrpt   80  3645.629 ±  30.411  ops/s
 ```
 
 ## References
