@@ -7,7 +7,12 @@ lazy val commonSettings = Seq(
     "-unchecked",
     "-deprecation",
     "-target:jvm-1.8",
-    "-encoding", "utf8"
+    "-encoding", "utf8",
+    "-Xfuture",
+    "-Yno-adapted-args",
+    "-Ywarn-dead-code",
+    "-Ywarn-numeric-widen",
+    "-Ywarn-unused"
   )
 )
 
@@ -64,7 +69,7 @@ lazy val cors = Project(id = "akka-http-cors", base = file("akka-http-cors")).
   settings(
     libraryDependencies += "com.typesafe.akka" %% "akka-http-experimental" % "2.4.10",
     libraryDependencies += "com.typesafe.akka" %% "akka-http-testkit" % "2.4.10" % "test",
-    libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.6" % "test"
+    libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % "test"
   )
 
 lazy val benchJmh = Project(id = "akka-http-cors-bench-jmh", base = file("akka-http-cors-bench-jmh")).
