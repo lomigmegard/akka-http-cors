@@ -10,6 +10,18 @@ This is a Scala implementation for the server-side targeting the akka-http 2.x l
 - [x] Respects the full standard defined by the W3C, even the border cases.
 - [ ] Tests, lots of tests.
 
+## Versions
+
+| Version  | Release date | Akka version | Scala versions         |
+| -------- | ------------ | ------------ | ---------------------- |
+| `0.1.7`  | unreleased   | `2.4.10`     | `2.11.8`, `2.12.0-RC1` |
+| `0.1.6`  | 2016-09-10   | `2.4.10`     | `2.11.8`               |
+| `0.1.5`  | 2016-08-24   | `2.4.9`      | `2.11.8`               |
+| `0.1.4`  | 2016-07-08   | `2.4.8`      | `2.11.8`               |
+| `0.1.0`  | 2016-03-20   | `2.4.2`      | `2.11.8`               |
+
+Some less interesting versions are not listed in the above table. The complete list can be found in the [CHANGELOG](CHANGELOG.md) file.
+
 ## Getting Akka Http Cors
 akka-http-cors is deployed to Maven Central. Add it to your `build.sbt` or `Build.scala`:
 ```scala
