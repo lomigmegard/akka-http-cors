@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.7 (unreleased)
+## 0.1.7 (2016-10-02)
 
   - Cross compile with Scala 2.12.0-RC1.
   - Update Akka to 2.4.11.
