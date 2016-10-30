@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.8 (2016-10-30)
+
+  - Cross compile with Scala 2.12.0-RC2.
+
 ## 0.1.7 (2016-10-02)
 
   - Cross compile with Scala 2.12.0-RC1.
