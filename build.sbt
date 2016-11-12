@@ -70,7 +70,7 @@ lazy val cors = Project(id = "akka-http-cors", base = file("akka-http-cors")).
   settings(
     libraryDependencies += "com.typesafe.akka" %% "akka-http" % "10.0.0-RC2",
     libraryDependencies += "com.typesafe.akka" %% "akka-http-testkit" % "10.0.0-RC2" % "test",
-    libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % "test"
+    libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
   )
 
 lazy val benchJmh = Project(id = "akka-http-cors-bench-jmh", base = file("akka-http-cors-bench-jmh")).
