@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.10 (2016-11-23)
+
+  - Update akka-http to 10.0.0.
+
 ## 0.1.9 (2016-11-10)
 
   - Cross compile with Scala 2.12.0.
