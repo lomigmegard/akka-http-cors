@@ -2,8 +2,8 @@
 lazy val commonSettings = Seq(
   organization := "ch.megard",
   version := "0.1.10-SNAPSHOT",
-  scalaVersion := "2.11.8",
-  crossScalaVersions := Seq(scalaVersion.value, "2.12.0"),
+  scalaVersion := "2.12.0",
+  crossScalaVersions := Seq(scalaVersion.value, "2.11.8"),
   scalacOptions ++= Seq(
     "-unchecked",
     "-deprecation",
@@ -60,11 +60,11 @@ lazy val dontPublishSettings = Seq(
 )
 
 lazy val root = (project in file(".")).
-  aggregate(cors, benchJmh).
+  aggregate(`akka-http-cors`, `akka-http-cors-bench-jmh`).
   settings(commonSettings: _*).
   settings(dontPublishSettings: _*)
 
-lazy val cors = Project(id = "akka-http-cors", base = file("akka-http-cors")).
+lazy val `akka-http-cors` = project.
   settings(commonSettings: _*).
   settings(publishSettings: _*).
   settings(
@@ -73,8 +73,8 @@ lazy val cors = Project(id = "akka-http-cors", base = file("akka-http-cors")).
     libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
   )
 
-lazy val benchJmh = Project(id = "akka-http-cors-bench-jmh", base = file("akka-http-cors-bench-jmh")).
-  dependsOn(cors).
+lazy val `akka-http-cors-bench-jmh` = project.
+  dependsOn(`akka-http-cors`).
   enablePlugins(JmhPlugin).
   settings(commonSettings: _*).
   settings(dontPublishSettings: _*)
