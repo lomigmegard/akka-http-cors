@@ -5,7 +5,7 @@
 
 CORS (Cross Origin Resource Sharing) is a mechanism to enable cross origin requests.
 
-This is a Scala implementation for the server-side targeting the akka-http 2.x library. Main features:
+This is a Scala implementation for the server-side targeting the Akka Http library. Main features:
 - [x] Works without any additional configuration. Sensible defaults are provided.
 - [x] Respects the full standard defined by the W3C, even the border cases.
 - [ ] Tests, lots of tests.
