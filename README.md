@@ -62,7 +62,7 @@ A rejection handler is provided by the library to return meaningful HTTP respons
 import akka.http.scaladsl.server.directives.ExecutionDirectives._
 import ch.megard.akka.http.cors.CorsDirectives._
 
-val route: Route = rejectionHandler(corsRejectionHandler) {
+val route: Route = handleRejections(corsRejectionHandler) {
   cors() {
     complete(...)
   }
