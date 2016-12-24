@@ -3,6 +3,7 @@
 ## 0.1.11 (unreleased)
 
   - Update Scala to 2.12.1.
+  - Update akka-http to 10.0.1.
 
 ## 0.1.10 (2016-11-23)
 
