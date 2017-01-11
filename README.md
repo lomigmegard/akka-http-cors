@@ -33,7 +33,11 @@ libraryDependencies += "ch.megard" %% "akka-http-cors" % "0.1.10"
 ## Quick Start
 The simplest way to enable CORS in your application is to use the `cors` directive.
 Settings are passed as a parameter to the directive, with defaults provided for convenience.
+
+Customize the `import` statement to your needs if you don't want to import everything.
 ```scala
+import ch.megard.akka.http.cors.CorsDirectives._
+
 val route: Route = cors() {
   complete(...)
 }
