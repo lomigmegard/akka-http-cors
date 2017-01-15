@@ -60,7 +60,7 @@ lazy val dontPublishSettings = Seq(
 )
 
 lazy val root = (project in file(".")).
-  aggregate(`akka-http-cors`, `akka-http-cors-bench-jmh`).
+  aggregate(`akka-http-cors`, `akka-http-cors-example`, `akka-http-cors-bench-jmh`).
   settings(commonSettings: _*).
   settings(dontPublishSettings: _*)
 
@@ -71,6 +71,14 @@ lazy val `akka-http-cors` = project.
     libraryDependencies += "com.typesafe.akka" %% "akka-http" % "10.0.1",
     libraryDependencies += "com.typesafe.akka" %% "akka-http-testkit" % "10.0.1" % "test",
     libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
+  )
+
+lazy val `akka-http-cors-example` = project.
+  dependsOn(`akka-http-cors`).
+  settings(commonSettings: _*).
+  settings(dontPublishSettings: _*).
+  settings(
+    //libraryDependencies += "ch.megard" %% "akka-http-cors" % version.value
   )
 
 lazy val `akka-http-cors-bench-jmh` = project.
