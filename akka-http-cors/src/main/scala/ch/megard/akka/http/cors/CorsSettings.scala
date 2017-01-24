@@ -1,15 +1,21 @@
 package ch.megard.akka.http.cors
 
+import java.util.Optional
+
 import akka.http.scaladsl.model.HttpMethod
 import akka.http.scaladsl.model.HttpMethods._
 import akka.http.scaladsl.model.headers.HttpOriginRange
 
 import scala.collection.immutable.Seq
+import scala.collection.JavaConverters._
+import scala.compat.java8.OptionConverters
 
 /**
   * Settings used by the CORS directives.
+  *
+  * Public API but not intended for subclassing.
   */
-abstract class CorsSettings {
+abstract class CorsSettings extends ch.megard.akka.http.cors.japi.CorsSettings {
 
   /**
     * If `true`, allow generic requests (that are outside the scope of the specification)
@@ -95,6 +101,18 @@ abstract class CorsSettings {
     * @see <a href="https://www.w3.org/TR/cors/#access-control-max-age-response-header">Access-Control-Max-Age</a>
     */
   def maxAge: Option[Long]
+
+
+  /* Java APIs */
+
+  override def getAllowGenericHttpRequests = allowGenericHttpRequests
+  override def getAllowCredentials = allowCredentials
+  override def getAllowedOrigins = allowedOrigins
+  override def getAllowedHeaders = allowedHeaders
+  override def getAllowedMethods = (allowedMethods: Seq[akka.http.javadsl.model.HttpMethod]).asJava
+  override def getExposedHeaders = exposedHeaders.asJava
+  override def getMaxAge = OptionConverters.toJava(maxAge)
+
 }
 
 object CorsSettings {
@@ -107,7 +125,32 @@ object CorsSettings {
     allowedMethods: Seq[HttpMethod],
     exposedHeaders: Seq[String],
     maxAge: Option[Long]
-  ) extends CorsSettings
+  ) extends CorsSettings {
+
+    // Currently the easiest way to go from Java models to their Scala equivalent is to cast.
+    // See https://github.com/akka/akka-http/issues/661 for a potential opening of the JavaMapping API.
+    override def withAllowGenericHttpRequests(newValue: Boolean) = {
+      copy(allowGenericHttpRequests = newValue)
+    }
+    override def withAllowCredentials(newValue: Boolean) = {
+      copy(allowCredentials = newValue)
+    }
+    override def withAllowedOrigins(newValue: akka.http.javadsl.model.headers.HttpOriginRange) = {
+      copy(allowedOrigins = newValue.asInstanceOf[HttpOriginRange])
+    }
+    override def withAllowedHeaders(newValue: ch.megard.akka.http.cors.japi.HttpHeaderRange) = {
+      copy(allowedHeaders = newValue.asInstanceOf[HttpHeaderRange])
+    }
+    override def withAllowedMethods(newValue: java.lang.Iterable[akka.http.javadsl.model.HttpMethod]) = {
+      copy(allowedMethods = newValue.asScala.toList.asInstanceOf[List[HttpMethod]])
+    }
+    override def withExposedHeaders(newValue: java.lang.Iterable[String]) = {
+      copy(exposedHeaders = newValue.asScala.toList)
+    }
+    override def withMaxAge(newValue: Optional[Long]) = {
+      copy(maxAge = OptionConverters.toScala(newValue))
+    }
+  }
 
   val defaultSettings = CorsSettings.Default(
     allowGenericHttpRequests = true,
