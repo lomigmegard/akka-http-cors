@@ -1,9 +1,13 @@
-package ch.megard.akka.http.cors
+package ch.megard.akka.http.cors.scaladsl
 
 import akka.http.scaladsl.model.HttpMethod
 import akka.http.scaladsl.model.headers.HttpOrigin
 import akka.http.scaladsl.server.Rejection
 
+import ch.megard.akka.http.cors.javadsl
+
+import scala.collection.JavaConverters._
+import scala.compat.java8.OptionConverters
 
 import scala.collection.immutable.Seq
 
@@ -16,4 +20,8 @@ import scala.collection.immutable.Seq
   * the `Origin` header can be missing.
   */
 case class CorsRejection(origin: Option[HttpOrigin], method: Option[HttpMethod], headers: Option[Seq[String]])
-  extends Rejection
+  extends javadsl.CorsRejection with Rejection {
+  override def getOrigin = OptionConverters.toJava(origin)
+  override def getMethod = OptionConverters.toJava(method)
+  override def getHeaders = OptionConverters.toJava(headers.map(_.asJava))
+}

@@ -1,4 +1,4 @@
-package ch.megard.akka.http.cors.japi;
+package ch.megard.akka.http.cors.javadsl;
 
 
 import akka.NotUsed;
@@ -13,10 +13,11 @@ import akka.http.javadsl.server.AllDirectives;
 import akka.http.javadsl.server.Route;
 import akka.stream.ActorMaterializer;
 import akka.stream.javadsl.Flow;
+import ch.megard.akka.http.cors.javadsl.settings.CorsSettings;
 
 import java.util.NoSuchElementException;
 
-import static ch.megard.akka.http.cors.japi.CorsDirectives.*;
+import static ch.megard.akka.http.cors.javadsl.CorsDirectives.*;
 
 /**
  * Example of a Java HTTP server using the CORS directive.
