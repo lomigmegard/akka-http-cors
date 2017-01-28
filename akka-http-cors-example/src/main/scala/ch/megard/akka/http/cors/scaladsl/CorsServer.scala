@@ -1,4 +1,4 @@
-package ch.megard.akka.http.cors
+package ch.megard.akka.http.cors.scaladsl
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
@@ -6,6 +6,7 @@ import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.model.headers.{HttpOrigin, HttpOriginRange}
 import akka.http.scaladsl.server.{Directives, ExceptionHandler, RejectionHandler, Route}
 import akka.stream.ActorMaterializer
+import ch.megard.akka.http.cors.scaladsl.settings.CorsSettings
 
 /**
   * Example of a Scala HTTP server using the CORS directive.

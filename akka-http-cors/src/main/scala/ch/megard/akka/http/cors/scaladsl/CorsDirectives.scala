@@ -1,11 +1,12 @@
-package ch.megard.akka.http.cors
+package ch.megard.akka.http.cors.scaladsl
 
 import akka.http.scaladsl.model.HttpMethods._
 import akka.http.scaladsl.model.headers._
 import akka.http.scaladsl.model.{HttpHeader, HttpMethod, HttpResponse, StatusCodes}
-import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
 import akka.http.scaladsl.server.directives._
+import ch.megard.akka.http.cors.scaladsl.model.HttpHeaderRange
+import ch.megard.akka.http.cors.scaladsl.settings.CorsSettings
 
 import scala.collection.immutable.Seq
 
@@ -142,6 +143,8 @@ trait CorsDirectives {
 }
 
 object CorsDirectives extends CorsDirectives {
+
+  import RouteDirectives._
 
   def corsRejectionHandler = RejectionHandler.newBuilder().handle {
     case CorsRejection(None, None, None) ⇒

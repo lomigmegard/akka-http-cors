@@ -1,13 +1,15 @@
-package ch.megard.akka.http.cors
+package ch.megard.akka.http.cors.scaladsl.settings
 
 import java.util.Optional
 
 import akka.http.scaladsl.model.HttpMethod
 import akka.http.scaladsl.model.HttpMethods._
 import akka.http.scaladsl.model.headers.HttpOriginRange
+import ch.megard.akka.http.cors.javadsl
+import ch.megard.akka.http.cors.scaladsl.model.HttpHeaderRange
 
-import scala.collection.immutable.Seq
 import scala.collection.JavaConverters._
+import scala.collection.immutable.Seq
 import scala.compat.java8.OptionConverters
 
 /**
@@ -15,7 +17,7 @@ import scala.compat.java8.OptionConverters
   *
   * Public API but not intended for subclassing.
   */
-abstract class CorsSettings extends ch.megard.akka.http.cors.japi.CorsSettings {
+abstract class CorsSettings extends javadsl.settings.CorsSettings {
 
   /**
     * If `true`, allow generic requests (that are outside the scope of the specification)
@@ -138,7 +140,7 @@ object CorsSettings {
     override def withAllowedOrigins(newValue: akka.http.javadsl.model.headers.HttpOriginRange) = {
       copy(allowedOrigins = newValue.asInstanceOf[HttpOriginRange])
     }
-    override def withAllowedHeaders(newValue: ch.megard.akka.http.cors.japi.HttpHeaderRange) = {
+    override def withAllowedHeaders(newValue: javadsl.model.HttpHeaderRange) = {
       copy(allowedHeaders = newValue.asInstanceOf[HttpHeaderRange])
     }
     override def withAllowedMethods(newValue: java.lang.Iterable[akka.http.javadsl.model.HttpMethod]) = {

@@ -1,9 +1,11 @@
-package ch.megard.akka.http.cors.japi
+package ch.megard.akka.http.cors.javadsl.settings
 
 import java.util.Optional
 
 import akka.http.javadsl.model.HttpMethod
 import akka.http.javadsl.model.headers.HttpOriginRange
+import ch.megard.akka.http.cors.javadsl.model.HttpHeaderRange
+import ch.megard.akka.http.cors.scaladsl
 
 /**
   * Public API but not intended for subclassing
@@ -13,7 +15,7 @@ abstract class CorsSettings {
   def getAllowGenericHttpRequests: Boolean
   def getAllowCredentials: Boolean
   def getAllowedOrigins: HttpOriginRange
-  def getAllowedHeaders: ch.megard.akka.http.cors.japi.HttpHeaderRange
+  def getAllowedHeaders: HttpHeaderRange
   def getAllowedMethods: java.lang.Iterable[HttpMethod]
   def getExposedHeaders: java.lang.Iterable[String]
   def getMaxAge: Optional[Long]
@@ -30,6 +32,6 @@ abstract class CorsSettings {
 
 object CorsSettings {
 
-  def defaultSettings: CorsSettings = ch.megard.akka.http.cors.CorsSettings.defaultSettings
+  def defaultSettings: CorsSettings = scaladsl.settings.CorsSettings.defaultSettings
 
 }

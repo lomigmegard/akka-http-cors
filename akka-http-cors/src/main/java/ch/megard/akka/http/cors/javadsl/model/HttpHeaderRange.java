@@ -1,7 +1,7 @@
-package ch.megard.akka.http.cors.japi;
+package ch.megard.akka.http.cors.javadsl.model;
 
 import akka.http.impl.util.Util;
-import ch.megard.akka.http.cors.HttpHeaderRange$;
+import ch.megard.akka.http.cors.scaladsl.model.HttpHeaderRange$;
 
 
 /**

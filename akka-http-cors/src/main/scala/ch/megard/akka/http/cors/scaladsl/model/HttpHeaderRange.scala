@@ -1,11 +1,13 @@
-package ch.megard.akka.http.cors
+package ch.megard.akka.http.cors.scaladsl.model
 
 import java.util.Locale
+
+import ch.megard.akka.http.cors.javadsl
 
 import scala.collection.immutable.Seq
 
 
-abstract class HttpHeaderRange extends ch.megard.akka.http.cors.japi.HttpHeaderRange
+abstract class HttpHeaderRange extends javadsl.model.HttpHeaderRange
 
 object HttpHeaderRange {
   case object `*` extends HttpHeaderRange {
