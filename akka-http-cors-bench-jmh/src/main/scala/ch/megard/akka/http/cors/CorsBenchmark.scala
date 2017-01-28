@@ -10,6 +10,7 @@ import akka.http.scaladsl.model.headers.{Origin, `Access-Control-Request-Method`
 import akka.http.scaladsl.server.Directives
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
+import ch.megard.akka.http.cors.scaladsl.CorsDirectives
 import com.typesafe.config.ConfigFactory
 import org.openjdk.jmh.annotations._
 

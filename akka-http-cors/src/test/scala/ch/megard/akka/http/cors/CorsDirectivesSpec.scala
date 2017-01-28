@@ -4,7 +4,10 @@ import akka.http.scaladsl.model.headers._
 import akka.http.scaladsl.model.{HttpMethods, StatusCodes}
 import akka.http.scaladsl.server.{Directives, Route}
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import ch.megard.akka.http.cors.CorsDirectives.CorsDecorate.{CorsRequest, NotCorsRequest}
+import ch.megard.akka.http.cors.scaladsl.CorsDirectives.CorsDecorate._
+import ch.megard.akka.http.cors.scaladsl.CorsRejection
+import ch.megard.akka.http.cors.scaladsl.model.HttpHeaderRange
+import ch.megard.akka.http.cors.scaladsl.settings.CorsSettings
 import org.scalatest.{Matchers, WordSpec}
 
 import scala.collection.immutable
@@ -14,8 +17,8 @@ import scala.collection.immutable
   */
 class CorsDirectivesSpec extends WordSpec with Matchers with Directives with ScalatestRouteTest {
 
-  import CorsDirectives._
   import HttpMethods._
+  import ch.megard.akka.http.cors.scaladsl.CorsDirectives._
 
   val actual = "actual"
   val exampleOrigin = HttpOrigin("http://example.com")
