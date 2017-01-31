@@ -14,7 +14,7 @@ This is a Scala implementation for the server-side targeting the Akka Http libra
 
 | Version  | Release date | Akka Http version | Scala versions         |
 | -------- | ------------ | ----------------- | ---------------------- |
-| `0.1.11` | unreleased   | `10.0.2`          | `2.11.8`, `2.12.1`     |
+| `0.1.11` | unreleased   | `10.0.3`          | `2.11.8`, `2.12.1`     |
 | `0.1.10` | 2016-11-23   | `10.0.0`          | `2.11.8`, `2.12.0`     |
 | `0.1.8`  | 2016-10-30   | `2.4.11`          | `2.11.8`, `2.12.0-RC2` |
 | `0.1.6`  | 2016-09-10   | `2.4.10`          | `2.11.8`               |
