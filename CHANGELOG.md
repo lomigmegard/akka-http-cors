@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.11 (unreleased)
+## 0.1.11 (2017-01-31)
 
   - Update Scala to 2.12.1.
   - Update akka-http to 10.0.3.
