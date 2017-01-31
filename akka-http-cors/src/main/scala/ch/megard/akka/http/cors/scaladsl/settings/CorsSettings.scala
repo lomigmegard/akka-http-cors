@@ -36,7 +36,7 @@ abstract class CorsSettings extends javadsl.settings.CorsSettings {
     *
     * Default: `true`
     *
-    * @see <a href="https://www.w3.org/TR/cors/#access-control-allow-credentials-response-header">Access-Control-Allow-Credentials</a>
+    * @see [[https://www.w3.org/TR/cors/#access-control-allow-credentials-response-header Access-Control-Allow-Credentials]]
     */
   def allowCredentials: Boolean
 
@@ -52,7 +52,7 @@ abstract class CorsSettings extends javadsl.settings.CorsSettings {
     *
     * Default: `HttpOriginRange.*`
     *
-    * @see <a href="https://www.w3.org/TR/cors/#access-control-allow-origin-response-header">Access-Control-Allow-Origin</a>
+    * @see [[https://www.w3.org/TR/cors/#access-control-allow-origin-response-header Access-Control-Allow-Origin]]
     */
   def allowedOrigins: HttpOriginRange
 
@@ -64,7 +64,7 @@ abstract class CorsSettings extends javadsl.settings.CorsSettings {
     *
     * Default: `HttpHeaderRange.*`
     *
-    * @see <a href="https://www.w3.org/TR/cors/#access-control-allow-headers-response-header">Access-Control-Allow-Headers</a>
+    * @see [[https://www.w3.org/TR/cors/#access-control-allow-headers-response-header Access-Control-Allow-Headers]]
     */
   def allowedHeaders: HttpHeaderRange
 
@@ -77,7 +77,7 @@ abstract class CorsSettings extends javadsl.settings.CorsSettings {
     *
     * Default: `Seq(GET, POST, HEAD, OPTIONS)`
     *
-    * @see <a href="https://www.w3.org/TR/cors/#access-control-allow-methods-response-header">Access-Control-Allow-Methods</a>
+    * @see [[https://www.w3.org/TR/cors/#access-control-allow-methods-response-header Access-Control-Allow-Methods]]
     */
   def allowedMethods: Seq[HttpMethod]
 
@@ -88,8 +88,8 @@ abstract class CorsSettings extends javadsl.settings.CorsSettings {
     *
     * Default: `Seq.empty`
     *
-    * @see <a href="https://www.w3.org/TR/cors/#simple-response-header">Simple response headers</a>.
-    * @see <a href="https://www.w3.org/TR/cors/#access-control-expose-headers-response-header">Access-Control-Expose-Headers</a>
+    * @see [[https://www.w3.org/TR/cors/#simple-response-header Simple response headers]]
+    * @see [[https://www.w3.org/TR/cors/#access-control-expose-headers-response-header Access-Control-Expose-Headers]]
     */
   def exposedHeaders: Seq[String]
 
@@ -100,7 +100,7 @@ abstract class CorsSettings extends javadsl.settings.CorsSettings {
     *
     * Default: `Some(30 * 60)`
     *
-    * @see <a href="https://www.w3.org/TR/cors/#access-control-max-age-response-header">Access-Control-Max-Age</a>
+    * @see [[https://www.w3.org/TR/cors/#access-control-max-age-response-header Access-Control-Max-Age]]
     */
   def maxAge: Option[Long]
 

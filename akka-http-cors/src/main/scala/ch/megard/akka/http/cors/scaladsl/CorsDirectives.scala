@@ -13,8 +13,8 @@ import scala.collection.immutable.Seq
 /**
   * Provides directives that implement the CORS mechanism, enabling cross origin requests.
   *
-  * @see <a href="https://www.w3.org/TR/cors/">CORS W3C Recommendation</a>.
-  * @see <a href="https://www.ietf.org/rfc/rfc6454.txt">RFC 6454</a>.
+  * @see [[https://www.w3.org/TR/cors/ CORS W3C Recommendation]]
+  * @see [[https://www.ietf.org/rfc/rfc6454.txt RFC 6454]]
   *
   */
 trait CorsDirectives {
