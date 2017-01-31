@@ -33,9 +33,8 @@ libraryDependencies += "ch.megard" %% "akka-http-cors" % "0.1.11"
 The simplest way to enable CORS in your application is to use the `cors` directive.
 Settings are passed as a parameter to the directive, with defaults provided for convenience.
 
-Customize the `import` statement to your needs if you don't want to import everything.
 ```scala
-import ch.megard.akka.http.cors.CorsDirectives._
+import ch.megard.akka.http.cors.scaladsl.CorsDirectives._
 
 val route: Route = cors() {
   complete(...)
@@ -64,7 +63,7 @@ The CORS directives can reject requests using the `CorsRejection` class. Request
 A rejection handler is provided by the library to return meaningful HTTP responses. Read the [akka documentation](http://doc.akka.io/docs/akka/2.4/scala/http/routing-dsl/rejections.html) to learn more about rejections, or if you need to write your own handler.
 ```scala
 import akka.http.scaladsl.server.directives.ExecutionDirectives._
-import ch.megard.akka.http.cors.CorsDirectives._
+import ch.megard.akka.http.cors.scaladsl.CorsDirectives._
 
 val route: Route = handleRejections(corsRejectionHandler) {
   cors() {
