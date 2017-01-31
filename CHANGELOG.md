@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.1 (unreleased)
+
+
 ## 0.1.11 (2017-01-31)
 
   - Update Scala to 2.12.1.
