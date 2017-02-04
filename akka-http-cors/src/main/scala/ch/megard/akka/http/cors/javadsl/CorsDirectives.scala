@@ -2,7 +2,7 @@ package ch.megard.akka.http.cors.javadsl
 
 import java.util.function.Supplier
 
-import akka.http.javadsl.server.Route
+import akka.http.javadsl.server.{RejectionHandler, Route}
 import akka.http.javadsl.server.directives.RouteAdapter
 import ch.megard.akka.http.cors.javadsl.settings.CorsSettings
 import ch.megard.akka.http.cors.scaladsl
@@ -20,4 +20,6 @@ object CorsDirectives {
     }
   }
 
+  def corsRejectionHandler: RejectionHandler =
+    new RejectionHandler(scaladsl.CorsDirectives.corsRejectionHandler)
 }
