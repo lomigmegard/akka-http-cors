@@ -34,7 +34,7 @@ The simplest way to enable CORS in your application is to use the `cors` directi
 Settings are passed as a parameter to the directive, with defaults provided for convenience.
 
 ```scala
-import ch.megard.akka.http.cors.scaladsl.CorsDirectives._
+import ch.megard.akka.http.cors.CorsDirectives._
 
 val route: Route = cors() {
   complete(...)
