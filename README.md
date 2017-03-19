@@ -60,7 +60,7 @@ val route: Route = corsDecorate() {
 ## Rejection
 The CORS directives can reject requests using the `CorsRejection` class. Requests can be either malformed or not allowed to access the resource.
 
-A rejection handler is provided by the library to return meaningful HTTP responses. Read the [akka documentation](http://doc.akka.io/docs/akka/2.4/scala/http/routing-dsl/rejections.html) to learn more about rejections, or if you need to write your own handler.
+A rejection handler is provided by the library to return meaningful HTTP responses. Read the [akka documentation](http://doc.akka.io/docs/akka-http/current/scala/http/routing-dsl/rejections.html) to learn more about rejections, or if you need to write your own handler.
 ```scala
 import akka.http.scaladsl.server.directives.ExecutionDirectives._
 import ch.megard.akka.http.cors.scaladsl.CorsDirectives._
