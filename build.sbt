@@ -68,8 +68,8 @@ lazy val `akka-http-cors` = project.
   settings(commonSettings: _*).
   settings(publishSettings: _*).
   settings(
-    libraryDependencies += "com.typesafe.akka" %% "akka-http" % "10.0.4",
-    libraryDependencies += "com.typesafe.akka" %% "akka-http-testkit" % "10.0.4" % "test",
+    libraryDependencies += "com.typesafe.akka" %% "akka-http" % "10.0.5",
+    libraryDependencies += "com.typesafe.akka" %% "akka-http-testkit" % "10.0.5" % "test",
     libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
   )
 
