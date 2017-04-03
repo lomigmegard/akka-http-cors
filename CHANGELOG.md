@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.1 (unreleased)
+## 0.2.1 (2017-04-03)
 
   - Add Java API (#8)
   - Update akka-http to 10.0.5.
