@@ -1,7 +1,7 @@
 # akka-http-cors
 
 [![Build Status](https://travis-ci.org/lomigmegard/akka-http-cors.svg?branch=master&style=flat)](https://travis-ci.org/lomigmegard/akka-http-cors)
-[![Software License](https://img.shields.io/badge/license-Apache 2-brightgreen.svg?style=flat)](LICENSE)
+[![Software License](https://img.shields.io/badge/license-Apache%202-brightgreen.svg?style=flat)](LICENSE)
 
 CORS (Cross Origin Resource Sharing) is a mechanism to enable cross origin requests.
 
