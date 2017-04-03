@@ -57,7 +57,7 @@ val route: Route = corsDecorate() {
 }
 ```
 
-A [full example](akka-http-cors-example/src/main/java/ch/megard/akka/http/cors/scaladsl/CorsServer.scala), with proper exception and rejection handling, is available in the `akka-http-cors-example` sub-project. 
+A [full example](akka-http-cors-example/src/main/scala/ch/megard/akka/http/cors/scaladsl/CorsServer.scala), with proper exception and rejection handling, is available in the `akka-http-cors-example` sub-project. 
 
 ## Rejection
 The CORS directives can reject requests using the `CorsRejection` class. Requests can be either malformed or not allowed to access the resource.
