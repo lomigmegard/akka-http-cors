@@ -1,7 +1,7 @@
 # akka-http-cors
 
 [![Build Status](https://travis-ci.org/lomigmegard/akka-http-cors.svg?branch=master&style=flat)](https://travis-ci.org/lomigmegard/akka-http-cors)
-[![Software License](https://img.shields.io/badge/license-Apache 2-brightgreen.svg?style=flat)](LICENSE)
+[![Software License](https://img.shields.io/badge/license-Apache%202-brightgreen.svg?style=flat)](LICENSE)
 
 CORS (Cross Origin Resource Sharing) is a mechanism to enable cross origin requests.
 
@@ -14,10 +14,10 @@ This is a Scala implementation for the server-side targeting the Akka Http libra
 
 | Version  | Release date | Akka Http version | Scala versions         |
 | -------- | ------------ | ----------------- | ---------------------- |
+| `0.2.1 ` | 2017-04-03   | `10.0.5`          | `2.11.8`, `2.12.1`     |
 | `0.1.11` | 2017-01-31   | `10.0.3`          | `2.11.8`, `2.12.1`     |
 | `0.1.8`  | 2016-10-30   | `2.4.11`          | `2.11.8`, `2.12.0-RC2` |
 | `0.1.6`  | 2016-09-10   | `2.4.10`          | `2.11.8`               |
-| `0.1.5`  | 2016-08-24   | `2.4.9`           | `2.11.8`               |
 | `0.1.4`  | 2016-07-08   | `2.4.8`           | `2.11.8`               |
 | `0.1.0`  | 2016-03-20   | `2.4.2`           | `2.11.8`               |
 
@@ -26,7 +26,7 @@ Some less interesting versions are not listed in the above table. The complete l
 ## Getting Akka Http Cors
 akka-http-cors is deployed to Maven Central. Add it to your `build.sbt` or `Build.scala`:
 ```scala
-libraryDependencies += "ch.megard" %% "akka-http-cors" % "0.1.11"
+libraryDependencies += "ch.megard" %% "akka-http-cors" % "0.2.1"
 ```
 
 ## Quick Start
@@ -34,7 +34,7 @@ The simplest way to enable CORS in your application is to use the `cors` directi
 Settings are passed as a parameter to the directive, with defaults provided for convenience.
 
 ```scala
-import ch.megard.akka.http.cors.CorsDirectives._
+import ch.megard.akka.http.cors.scaladsl.CorsDirectives._
 
 val route: Route = cors() {
   complete(...)
@@ -57,6 +57,8 @@ val route: Route = corsDecorate() {
 }
 ```
 
+A [full example](akka-http-cors-example/src/main/scala/ch/megard/akka/http/cors/scaladsl/CorsServer.scala), with proper exception and rejection handling, is available in the `akka-http-cors-example` sub-project. 
+
 ## Rejection
 The CORS directives can reject requests using the `CorsRejection` class. Requests can be either malformed or not allowed to access the resource.
 
@@ -71,6 +73,10 @@ val route: Route = handleRejections(corsRejectionHandler) {
   }
 }
 ```
+
+## Java support
+
+Starting from version `0.2.1` Java is supported, mirroring the Scala API. For usage, look at the full [Java CorsServer example](akka-http-cors-example/src/main/java/ch/megard/akka/http/cors/javadsl/CorsServer.java).
 
 ## Configuration
 
