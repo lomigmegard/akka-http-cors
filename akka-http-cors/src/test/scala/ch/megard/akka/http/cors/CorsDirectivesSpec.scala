@@ -28,7 +28,7 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
   }
 
   def routeDecorate(settings: CorsSettings): Route = corsDecorate(settings) {
-    case CorsRequest(origins) ⇒ complete("actual cors")
+    case CorsRequest(origins) ⇒ complete("actual cors from " + origins)
     case NotCorsRequest       ⇒ complete("not cors")
   }
 

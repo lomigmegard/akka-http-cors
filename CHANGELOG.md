@@ -1,9 +1,21 @@
 # Changelog
 
+## 0.2.2 (unreleased)
+
+  - Update Scala to 2.12.2 and 2.11.11.
+  - Update akka-http to 10.0.6.
+
 ## 0.2.1 (2017-04-03)
 
   - Add Java API (#8)
   - Update akka-http to 10.0.5.
+  
+### Migrate from 0.1 to 0.2
+The API remains the same, but classes have moved in new packages to accommodate the Java API.
+
+  - Directives are now in `ch.megard.akka.http.cors.scaladsl`;
+  - Models are now in `ch.megard.akka.http.cors.scaladsl.model`;
+  - Settings are now in `ch.megard.akka.http.cors.scaladsl.settings`.
 
 ## 0.1.11 (2017-01-31)
 
