@@ -146,6 +146,14 @@ CorsBenchmark.default_cors       thrpt   80  3687.351 ±  35.176  ops/s
 CorsBenchmark.default_preflight  thrpt   80  3645.629 ±  30.411  ops/s
 ```
 
+#### v0.2.2 (Akka HTTP 10.0.6)
+```
+> jmh:run -i 40 -wi 30 -f2 -t1
+Benchmark                         Mode  Cnt     Score     Error  Units
+CorsBenchmark.baseline           thrpt   80  9730.001 ±  25.281  ops/s
+CorsBenchmark.default_cors       thrpt   80  9159.320 ±  25.459  ops/s
+CorsBenchmark.default_preflight  thrpt   80  9172.938 ±  26.794  ops/s
+```
 ## References
 - [W3C Specification: CORS](https://www.w3.org/TR/cors/)
 - [RFC-6454: The Web Origin Concept](https://tools.ietf.org/html/rfc6454)
