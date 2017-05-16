@@ -128,6 +128,8 @@ When set, the amount of seconds the browser is allowed to cache the results of a
 ## Benchmarks
 Using the [sbt-jmh](https://github.com/ktoso/sbt-jmh) plugin, preliminary benchmarks have been performed to measure the impact of the `cors` directive on the performance. The first results are shown below.
 
+Results are not all coming from the same machine.
+
 #### v0.1.2 (Akka 2.4.4)
 ```
 > jmh:run -i 40 -wi 30 -f2 -t1
