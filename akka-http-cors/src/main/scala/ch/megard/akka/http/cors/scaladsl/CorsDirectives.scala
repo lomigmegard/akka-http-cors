@@ -95,7 +95,7 @@ trait CorsDirectives {
       import request._
 
       (method, header[Origin].map(_.origins), header[`Access-Control-Request-Method`].map(_.method)) match {
-        case (OPTIONS, Some(origins), Some(requestMethod)) if origins.size == 1 ⇒
+        case (OPTIONS, Some(origins), Some(requestMethod)) if origins.lengthCompare(1) == 0 ⇒
           // Case 1: pre-flight CORS request
 
           val headers = header[`Access-Control-Request-Headers`].map(_.headers).getOrElse(Seq.empty)

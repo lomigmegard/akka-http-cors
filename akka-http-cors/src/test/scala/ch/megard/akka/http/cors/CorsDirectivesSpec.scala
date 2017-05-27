@@ -125,6 +125,14 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
       }
     }
 
+    "reject pre-flight requests with multiple origins" in {
+      val settings = CorsSettings.defaultSettings.copy(allowGenericHttpRequests = false)
+      Options() ~> Origin(exampleOrigin, exampleOrigin) ~> `Access-Control-Request-Method`(GET) ~> {
+        route(settings)
+      } ~> check {
+        rejection shouldBe CorsRejection(None, None, None)
+      }
+    }
   }
 
   "the default rejection handler" should {
