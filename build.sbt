@@ -53,9 +53,9 @@ lazy val publishSettings = Seq(
 )
 
 lazy val dontPublishSettings = Seq(
-  //publishSigned := (),
-  publish := (),
-  publishLocal := (),
+  //publishSigned := (()),
+  publish := (()),
+  publishLocal := (()),
   publishArtifact := false
 )
 
@@ -72,7 +72,7 @@ lazy val `akka-http-cors` = project.
   settings(
     libraryDependencies += "com.typesafe.akka" %% "akka-http" % akkaHttpVersion,
     libraryDependencies += "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpVersion % "test",
-    libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.3" % "test"
+    libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.4" % "test"
   )
 
 lazy val `akka-http-cors-example` = project.
