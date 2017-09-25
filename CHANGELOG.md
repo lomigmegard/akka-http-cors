@@ -1,9 +1,10 @@
 # Changelog
 
-## 0.2.2 (unreleased)
+## 0.2.2 (2017-09-25)
 
   - Update Scala to 2.12.3 and 2.11.11.
   - Update akka-http to 10.0.10.
+  - Update sbt to 1.0.x major release.
 
 ## 0.2.1 (2017-04-03)
 
