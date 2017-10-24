@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.3 (unreleased)
+
+ - Update Scala to 2.12.4.
+
 ## 0.2.2 (2017-09-25)
 
   - Update Scala to 2.12.3 and 2.11.11.
