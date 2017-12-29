@@ -1,7 +1,8 @@
 # Changelog
 
-## 0.2.3 (unreleased)
+## 0.3.0 (unreleased)
 
+ - Directives now clean existing CORS-related headers when responding to an actual request (#28).
  - Update Scala to 2.12.4 and 2.11.12.
  - Update akka-http to 10.0.11.
 
