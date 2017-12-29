@@ -21,7 +21,6 @@ trait CorsDirectives {
 
   import BasicDirectives._
   import CorsDirectives._
-  import RespondWithDirectives._
   import RouteDirectives._
 
   /**
@@ -117,12 +116,17 @@ trait CorsDirectives {
           // Case 2: actual CORS request
 
           val decorate: CorsDecorate = CorsDecorate.CorsRequest(origins)
-          val responseHeaders: Seq[HttpHeader] = Seq(accessControlAllowOrigin(origins)) ++
-            accessControlExposeHeaders ++ accessControlAllowCredentials
+          val cleanAndAddHeaders: Seq[HttpHeader] => Seq[HttpHeader] = { oldHeaders =>
+            val filteredHeaders = oldHeaders.filterNot(h => CorsDirectives.headersToClean.exists(h.is))
+            List(accessControlAllowOrigin(origins)) ++
+              accessControlExposeHeaders ++
+              accessControlAllowCredentials ++
+              filteredHeaders
+          }
 
           validateOrigin(origins) match {
             case None ⇒
-              respondWithHeaders(responseHeaders) & provide(decorate)
+              mapResponseHeaders(cleanAndAddHeaders) & provide(decorate)
             case invalidOrigin ⇒
               reject(CorsRejection(invalidOrigin, None, None))
           }
@@ -145,6 +149,15 @@ trait CorsDirectives {
 object CorsDirectives extends CorsDirectives {
 
   import RouteDirectives._
+
+  private val headersToClean: List[String] = List(
+    `Access-Control-Allow-Origin`,
+    `Access-Control-Expose-Headers`,
+    `Access-Control-Allow-Credentials`,
+    `Access-Control-Allow-Methods`,
+    `Access-Control-Allow-Headers`,
+    `Access-Control-Max-Age`
+  ).map(_.lowercaseName)
 
   def corsRejectionHandler = RejectionHandler.newBuilder().handle {
     case CorsRejection(None, None, None) ⇒

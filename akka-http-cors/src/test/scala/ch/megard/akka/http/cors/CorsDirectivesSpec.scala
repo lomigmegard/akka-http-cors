@@ -1,7 +1,7 @@
 package ch.megard.akka.http.cors
 
 import akka.http.scaladsl.model.headers._
-import akka.http.scaladsl.model.{HttpMethods, StatusCodes}
+import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.{Directives, Route}
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import ch.megard.akka.http.cors.scaladsl.CorsDirectives.CorsDecorate._
@@ -10,7 +10,7 @@ import ch.megard.akka.http.cors.scaladsl.model.HttpHeaderRange
 import ch.megard.akka.http.cors.scaladsl.settings.CorsSettings
 import org.scalatest.{Matchers, WordSpec}
 
-import scala.collection.immutable
+import scala.collection.immutable.Seq
 
 /**
   * @author Lomig Mégard
@@ -22,9 +22,10 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
 
   val actual = "actual"
   val exampleOrigin = HttpOrigin("http://example.com")
+  val exampleStatus = StatusCodes.Created
 
-  def route(settings: CorsSettings): Route = cors(settings) {
-    complete(actual)
+  def route(settings: CorsSettings, responseHeaders: Seq[HttpHeader] = Nil): Route = cors(settings) {
+    complete(HttpResponse(exampleStatus, responseHeaders, HttpEntity(actual)))
   }
 
   def routeDecorate(settings: CorsSettings): Route = corsDecorate(settings) {
@@ -36,10 +37,14 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
 
     "not affect actual requests when not strict" in {
       val settings = CorsSettings.defaultSettings
+      val responseHeaders = Seq(Host("my-host"), `Access-Control-Max-Age`(60))
       Get() ~> {
-        route(settings)
+        route(settings, responseHeaders)
       } ~> check {
         responseAs[String] shouldBe actual
+        response.status shouldBe exampleStatus
+        // response headers should be untouched, including the CORS-related ones
+        response.headers shouldBe responseHeaders
       }
     }
 
@@ -58,9 +63,35 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
         route(settings)
       } ~> check {
         responseAs[String] shouldBe actual
+        response.status shouldBe exampleStatus
         response.headers should contain theSameElementsAs Seq(
           `Access-Control-Allow-Origin`(exampleOrigin),
           `Access-Control-Allow-Credentials`(true)
+        )
+      }
+    }
+
+    "remove CORS-related headers from the original response before adding the new ones" in {
+      val settings = CorsSettings.defaultSettings.copy(exposedHeaders = Seq("X-good"))
+      val responseHeaders = Seq(
+        Host("my-host"), // untouched
+        `Access-Control-Allow-Origin`("http://bad.com"), // replaced
+        `Access-Control-Expose-Headers`("X-bad"), // replaced
+        `Access-Control-Allow-Credentials`(false), // replaced
+        `Access-Control-Allow-Methods`(HttpMethods.POST), // removed
+        `Access-Control-Allow-Headers`("X-bad"), // removed
+        `Access-Control-Max-Age`(60) // removed
+      )
+      Get() ~> Origin(exampleOrigin) ~> {
+        route(settings, responseHeaders)
+      } ~> check {
+        responseAs[String] shouldBe actual
+        response.status shouldBe exampleStatus
+        response.headers should contain theSameElementsAs Seq(
+          `Access-Control-Allow-Origin`(exampleOrigin),
+          `Access-Control-Expose-Headers`("X-good"),
+          `Access-Control-Allow-Credentials`(true),
+          Host("my-host")
         )
       }
     }
@@ -70,7 +101,7 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
       Options() ~> Origin(exampleOrigin) ~> `Access-Control-Request-Method`(GET) ~> {
         route(settings)
       } ~> check {
-        responseAs[String] shouldBe empty
+        response.entity shouldBe HttpEntity.Empty
         status shouldBe StatusCodes.OK
         response.headers should contain theSameElementsAs Seq(
           `Access-Control-Allow-Origin`(exampleOrigin),
@@ -87,6 +118,7 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
         route(settings)
       } ~> check {
         responseAs[String] shouldBe actual
+        response.status shouldBe exampleStatus
         response.headers should contain theSameElementsAs Seq(
           `Access-Control-Allow-Origin`(exampleOrigin),
           `Access-Control-Allow-Credentials`(true)
@@ -121,7 +153,7 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
         `Access-Control-Request-Headers`(invalidHeader) ~> {
         route(settings)
       } ~> check {
-        rejection shouldBe CorsRejection(None, None, Some(immutable.Seq(invalidHeader)))
+        rejection shouldBe CorsRejection(None, None, Some(Seq(invalidHeader)))
       }
     }
 
@@ -154,7 +186,7 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
     "handle a pre-flight request with invalid origin, method and headers" in {
       val invalidOrigin = HttpOrigin("http://invalid.com")
       val invalidMethod = PATCH
-      val invalidHeaders = immutable.Seq("X-header", "Y-header")
+      val invalidHeaders = Seq("X-header", "Y-header")
       Options() ~> Origin(invalidOrigin) ~> `Access-Control-Request-Method`(invalidMethod) ~>
         `Access-Control-Request-Headers`(invalidHeaders) ~> {
         sealedRoute
