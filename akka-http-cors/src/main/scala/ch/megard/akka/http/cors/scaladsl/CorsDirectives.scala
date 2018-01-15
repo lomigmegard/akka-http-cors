@@ -112,7 +112,7 @@ trait CorsDirectives {
               reject(CorsRejection(invalidOrigin, invalidMethod, invalidHeaders))
           }
 
-        case (_, Some(origins), None) if origins.nonEmpty ⇒
+        case (_, Some(origins), None) if origins.nonEmpty || header[Origin].head.value() == "null" ⇒
           // Case 2: actual CORS request
 
           val decorate: CorsDecorate = CorsDecorate.CorsRequest(origins)
