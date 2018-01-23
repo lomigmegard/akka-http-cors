@@ -12,9 +12,6 @@ import org.scalatest.{Matchers, WordSpec}
 
 import scala.collection.immutable.Seq
 
-/**
-  * @author Lomig Mégard
-  */
 class CorsDirectivesSpec extends WordSpec with Matchers with Directives with ScalatestRouteTest {
 
   import HttpMethods._
@@ -66,6 +63,35 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
         response.status shouldBe exampleStatus
         response.headers should contain theSameElementsAs Seq(
           `Access-Control-Allow-Origin`(exampleOrigin),
+          `Access-Control-Allow-Credentials`(true)
+        )
+      }
+    }
+
+    "return `Access-Control-Allow-Origin: *` to actual request only when credentials are not allowed" in {
+      val settings = CorsSettings.defaultSettings.copy(allowCredentials = false)
+      Get() ~> Origin(exampleOrigin) ~> {
+        route(settings)
+      } ~> check {
+        responseAs[String] shouldBe actual
+        response.status shouldBe exampleStatus
+        response.headers shouldBe Seq(
+          `Access-Control-Allow-Origin`.*
+        )
+      }
+    }
+
+    "return `Access-Control-Expose-Headers` to actual request with all the exposed headers in the settings" in {
+      val exposedHeaders = Seq("X-a", "X-b", "X-c")
+      val settings = CorsSettings.defaultSettings.copy(exposedHeaders = exposedHeaders)
+      Get() ~> Origin(exampleOrigin) ~> {
+        route(settings)
+      } ~> check {
+        responseAs[String] shouldBe actual
+        response.status shouldBe exampleStatus
+        response.headers shouldBe Seq(
+          `Access-Control-Allow-Origin`(exampleOrigin),
+          `Access-Control-Expose-Headers`(exposedHeaders),
           `Access-Control-Allow-Credentials`(true)
         )
       }
