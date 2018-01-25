@@ -78,17 +78,31 @@ trait CorsDirectives {
       }
     }
 
-    /** Return an invalid origin, or `None` if they are all valid. */
-    def validateOrigin(origins: Seq[HttpOrigin]): Option[HttpOrigin] =
-      origins.find(!allowedOrigins.matches(_))
+    /** Return the invalid origins, or `None` if one is valid. */
+    def validateOrigins(origins: Seq[HttpOrigin]): Option[CorsRejection.Cause] =
+      if (allowedOrigins == HttpOriginRange.* || origins.exists(allowedOrigins.matches)) {
+        None
+      } else {
+        Some(CorsRejection.InvalidOrigin(origins))
+      }
 
     /** Return the method if invalid, `None` otherwise. */
-    def validateMethod(method: HttpMethod): Option[HttpMethod] =
-      Some(method).filterNot(allowedMethods.contains)
+    def validateMethod(method: HttpMethod): Option[CorsRejection.Cause] =
+      if (allowedMethods.contains(method)) {
+        None
+      } else {
+        Some(CorsRejection.InvalidMethod(method))
+      }
 
     /** Return the list of invalid headers, or `None` if they are all valid. */
-    def validateHeaders(headers: Seq[String]): Option[Seq[String]] =
-      Some(headers.filterNot(allowedHeaders.matches)).filter(_.nonEmpty)
+    def validateHeaders(headers: Seq[String]): Option[CorsRejection.Cause] = {
+      val invalidHeaders = headers.filterNot(allowedHeaders.matches)
+      if (invalidHeaders.isEmpty) {
+        None
+      } else {
+        Some(CorsRejection.InvalidHeaders(invalidHeaders))
+      }
+    }
 
     extractRequest.flatMap { request ⇒
       import request._
@@ -105,15 +119,12 @@ trait CorsDirectives {
             complete(HttpResponse(StatusCodes.OK, responseHeaders))
           }
 
-          (validateOrigin(origins), validateMethod(requestMethod), validateHeaders(headers)) match {
-            case (None, None, None) ⇒
-              completePreflight
-            case (invalidOrigin, invalidMethod, invalidHeaders) ⇒
-              reject(CorsRejection(invalidOrigin, invalidMethod, invalidHeaders))
-          }
+          List(validateOrigins(origins), validateMethod(requestMethod), validateHeaders(headers))
+            .collectFirst { case Some(cause) => CorsRejection(cause) }
+            .fold(completePreflight)(reject(_))
 
-        case (_, Some(origins), None) if origins.nonEmpty ⇒
-          // Case 2: actual CORS request
+        case (_, Some(origins), None) ⇒
+          // Case 2: simple/actual CORS request
 
           val decorate: CorsDecorate = CorsDecorate.CorsRequest(origins)
           val cleanAndAddHeaders: Seq[HttpHeader] => Seq[HttpHeader] = { oldHeaders =>
@@ -124,11 +135,11 @@ trait CorsDirectives {
               filteredHeaders
           }
 
-          validateOrigin(origins) match {
+          validateOrigins(origins) match {
             case None ⇒
               mapResponseHeaders(cleanAndAddHeaders) & provide(decorate)
-            case invalidOrigin ⇒
-              reject(CorsRejection(invalidOrigin, None, None))
+            case Some(cause) ⇒
+              reject(CorsRejection(cause))
           }
 
         case _ if allowGenericHttpRequests ⇒
@@ -139,7 +150,7 @@ trait CorsDirectives {
         case _ ⇒
           // Case 3b: not a valid CORS request, forbidden
 
-          reject(CorsRejection(None, None, None))
+          reject(CorsRejection(CorsRejection.Malformed))
       }
     }
   }
@@ -160,15 +171,19 @@ object CorsDirectives extends CorsDirectives {
   ).map(_.lowercaseName)
 
   def corsRejectionHandler = RejectionHandler.newBuilder().handle {
-    case CorsRejection(None, None, None) ⇒
-      complete((StatusCodes.BadRequest, "The CORS request is malformed"))
-    case CorsRejection(origin, method, headers) ⇒
-      val messages = Seq(
-        origin.map("invalid origin '" + _ + "'"),
-        method.map("invalid method '" + _.value + "'"),
-        headers.map("invalid headers '" + _.mkString(",") + "'")
-      ).flatten
-      complete((StatusCodes.BadRequest, "CORS: " + messages.mkString(", ")))
+    case CorsRejection(cause) ⇒
+      val message = cause match {
+        case CorsRejection.Malformed ⇒
+          "malformed request"
+        case CorsRejection.InvalidOrigin(origins) ⇒
+          val listOrNull = if (origins.isEmpty) "null" else origins.mkString(" ")
+          s"invalid origin '$listOrNull'"
+        case CorsRejection.InvalidMethod(method) ⇒
+          s"invalid method '${method.value}'"
+        case CorsRejection.InvalidHeaders(headers) ⇒
+          s"invalid headers '${headers.mkString(" ")}'"
+      }
+      complete((StatusCodes.BadRequest, s"CORS: $message"))
   }.result()
 
   sealed abstract class CorsDecorate {

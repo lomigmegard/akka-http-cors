@@ -1,21 +1,49 @@
 package ch.megard.akka.http.cors.javadsl
 
-import java.util.Optional
-
 import akka.http.javadsl.model.HttpMethod
 import akka.http.javadsl.model.headers.HttpOrigin
 import akka.http.javadsl.server.CustomRejection
 
 /**
   * Rejection created by the CORS directives.
-  * In case of a preflight request, one to three of the causes can be marked as invalid.
-  * In case of an actual request, only the origin can be marked as invalid.
-  *
-  * Note: when the three causes are `empty`, the request itself was invalid. For example
-  * the `Origin` header can be missing.
+  * Signal the CORS request was rejected. The reason of the rejection is specified in the cause.
   */
 trait CorsRejection extends CustomRejection {
-  def getOrigin: Optional[HttpOrigin]
-  def getMethod: Optional[HttpMethod]
-  def getHeaders: Optional[java.util.List[String]]
+  def cause: CorsRejection.Cause
+}
+
+object CorsRejection {
+
+  /**
+    * Signals the cause of the failed CORS request.
+    */
+  trait Cause
+
+  /**
+    * Signals the CORS request was malformed.
+    */
+  trait Malformed extends Cause
+
+  /**
+    * Signals the CORS request was rejected because its origin was invalid.
+    * An empty list means the Origin header was `null`.
+    */
+  trait InvalidOrigin extends Cause {
+    def getOrigins: java.util.List[HttpOrigin]
+  }
+
+  /**
+    * Signals the CORS request was rejected because its method was invalid.
+    */
+  trait InvalidMethod extends Cause {
+    def getMethod: HttpMethod
+  }
+
+  /**
+    * Signals the CORS request was rejected because its headers were invalid.
+    */
+  trait InvalidHeaders extends Cause {
+    def getHeaders: java.util.List[String]
+  }
+
 }
