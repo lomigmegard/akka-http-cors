@@ -3,17 +3,17 @@ package ch.megard.akka.http.cors.scaladsl.settings
 import java.util.Optional
 import java.util.concurrent.TimeUnit
 
-import akka.http.scaladsl.model.{HttpMethod, HttpMethods}
 import akka.http.scaladsl.model.headers.{HttpOrigin, HttpOriginRange}
+import akka.http.scaladsl.model.{HttpMethod, HttpMethods}
 import ch.megard.akka.http.cors.javadsl
 import ch.megard.akka.http.cors.scaladsl.model.HttpHeaderRange
+import com.typesafe.config.ConfigException.{Missing, WrongType}
 import com.typesafe.config.{Config, ConfigFactory}
-import com.typesafe.config.ConfigException.Missing
 
 import scala.collection.JavaConverters._
 import scala.collection.immutable.Seq
 import scala.compat.java8.OptionConverters
-import scala.util.{Try, Success, Failure}
+import scala.util.{Failure, Success, Try}
 
 /**
   * Settings used by the CORS directives.
@@ -126,29 +126,43 @@ object CorsSettings {
 
   def apply(config: Config) = fromSubConfig(config.getConfig(prefix))
 
+  private def parseStringList(config: Config, path: String): List[String] = {
+    Try(config.getStringList(path)) match {
+      case Success(array) => array.asScala.toList
+      case Failure(_: WrongType) => config.getString(path).split(" ").toList
+      case Failure(f) => throw f
+    }
+  }
+
+  private def parseSeconds(config: Config, path: String): Option[Long] = Try(config.getLong(path)) match {
+    case Success(age) => Some(age)
+    case Failure(_: Missing) => None
+    case Failure(_: WrongType) => Try(config.getDuration(path, TimeUnit.SECONDS)) match {
+      case Success(age) => Some(age)
+      case Failure(f) => throw f
+    }
+    case Failure(f) => throw f
+  }
+
   def fromSubConfig(config: Config) = CorsSettings.Default(
     allowGenericHttpRequests = config.getBoolean("allow-generic-http-requests"),
     allowCredentials = config.getBoolean("allow-credentials"),
-    allowedOrigins = config.getStringList("allowed-origins").asScala.toList match {
+    allowedOrigins = parseStringList(config, "allowed-origins") match {
       case List("*") => HttpOriginRange.*
       case origins => HttpOriginRange(origins.map(HttpOrigin(_)): _*)
     },
-    allowedHeaders = config.getStringList("allowed-headers").asScala.toList match {
+    allowedHeaders = parseStringList(config, "allowed-headers") match {
       case List("*") => HttpHeaderRange.*
       case headers => HttpHeaderRange(headers: _*)
     },
-    allowedMethods = config.getStringList("allowed-methods").asScala.toList.map(method =>
+    allowedMethods = parseStringList(config, "allowed-methods").map(method =>
       HttpMethods.getForKey(method) match {
         case Some(httpMethod) => httpMethod
         case None => HttpMethod.custom(method)
       }
     ),
     exposedHeaders = config.getStringList("exposed-headers").asScala.toList,
-    maxAge = Try(config.getDuration("max-age", TimeUnit.SECONDS)) match {
-      case Success(duration) => Some(duration)
-      case Failure(_: Missing) => None
-      case Failure(f) => throw f
-    }
+    maxAge = parseSeconds(config, "max-age")
   )
 
   val defaultSettings = apply(ConfigFactory.load())
