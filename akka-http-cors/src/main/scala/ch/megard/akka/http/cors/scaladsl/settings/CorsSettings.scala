@@ -13,7 +13,7 @@ import com.typesafe.config.{Config, ConfigFactory}
 import scala.collection.JavaConverters._
 import scala.collection.immutable.Seq
 import scala.compat.java8.OptionConverters
-import scala.util.{Failure, Success, Try}
+import scala.util.Try
 
 /**
   * Settings used by the CORS directives.
@@ -122,7 +122,7 @@ abstract class CorsSettings extends javadsl.settings.CorsSettings {
 
 object CorsSettings {
 
-  private val prefix = "akka.http.cors"
+  private val prefix = "akka-http-cors"
 
   def apply(config: Config) = fromSubConfig(config.getConfig(prefix))
 

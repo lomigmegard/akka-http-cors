@@ -12,7 +12,7 @@ class CorsSettingsSpec extends WordSpec with Matchers {
 
   private val validConfigStr =
     """
-      |akka.http.cors {
+      |akka-http-cors {
       |  allow-generic-http-requests = true
       |  allow-credentials = true
       |  allowed-origins = "*"
@@ -39,7 +39,7 @@ class CorsSettingsSpec extends WordSpec with Matchers {
 
     "support space separated list of origins" in {
       val config = validConfig.withValue(
-        "akka.http.cors.allowed-origins",
+        "akka-http-cors.allowed-origins",
         ConfigValueFactory.fromAnyRef("http://test.com http://any.com")
       )
       val corsSettings = CorsSettings(config)
@@ -51,20 +51,20 @@ class CorsSettingsSpec extends WordSpec with Matchers {
 
     "support numeric values on max-age as seconds" in {
       val corsSettings = CorsSettings(
-        validConfig.withValue("akka.http.cors.max-age", ConfigValueFactory.fromAnyRef(1800))
+        validConfig.withValue("akka-http-cors.max-age", ConfigValueFactory.fromAnyRef(1800))
       )
       corsSettings.maxAge shouldBe Some(1800)
     }
 
     "support null value on max-age" in {
       val corsSettings = CorsSettings(
-        validConfig.withValue("akka.http.cors.max-age", ConfigValueFactory.fromAnyRef(null))
+        validConfig.withValue("akka-http-cors.max-age", ConfigValueFactory.fromAnyRef(null))
       )
       corsSettings.maxAge shouldBe None
     }
 
     "support undefined on max-age" in {
-      val corsSettings = CorsSettings(validConfig.withoutPath("akka.http.cors.max-age"))
+      val corsSettings = CorsSettings(validConfig.withoutPath("akka-http-cors.max-age"))
       corsSettings.maxAge shouldBe None
     }
   }
