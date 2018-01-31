@@ -126,23 +126,21 @@ object CorsSettings {
 
   def apply(config: Config) = fromSubConfig(config.getConfig(prefix))
 
-  private def parseStringList(config: Config, path: String): List[String] = {
-    Try(config.getStringList(path)) match {
-      case Success(array) => array.asScala.toList
-      case Failure(_: WrongType) => config.getString(path).split(" ").toList
-      case Failure(f) => throw f
-    }
-  }
+  private def parseStringList(config: Config, path: String): List[String] =
+    Try(config.getStringList(path).asScala.toList)
+      .recover {
+        case _: WrongType => config.getString(path).split(" ").toList
+      }
+      .get
 
-  private def parseSeconds(config: Config, path: String): Option[Long] = Try(config.getLong(path)) match {
-    case Success(age) => Some(age)
-    case Failure(_: Missing) => None
-    case Failure(_: WrongType) => Try(config.getDuration(path, TimeUnit.SECONDS)) match {
-      case Success(age) => Some(age)
-      case Failure(f) => throw f
-    }
-    case Failure(f) => throw f
-  }
+
+  private def parseSeconds(config: Config, path: String): Option[Long] =
+    Try(Some(config.getLong(path)))
+      .recover {
+        case _: WrongType => Some(config.getDuration(path, TimeUnit.SECONDS))
+        case _: Missing => None
+      }
+      .get
 
   def fromSubConfig(config: Config) = CorsSettings.Default(
     allowGenericHttpRequests = config.getBoolean("allow-generic-http-requests"),
@@ -161,7 +159,7 @@ object CorsSettings {
         case None => HttpMethod.custom(method)
       }
     ),
-    exposedHeaders = config.getStringList("exposed-headers").asScala.toList,
+    exposedHeaders = parseStringList(config, "exposed-headers"),
     maxAge = parseSeconds(config, "max-age")
   )
 

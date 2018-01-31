@@ -3,7 +3,7 @@ package ch.megard.akka.http.cors.scaladsl.settings
 import akka.http.scaladsl.model.HttpMethods
 import akka.http.scaladsl.model.headers.{HttpOrigin, HttpOriginRange}
 import ch.megard.akka.http.cors.scaladsl.model.HttpHeaderRange
-import com.typesafe.config.{ConfigException, ConfigFactory, ConfigValueFactory}
+import com.typesafe.config.{ConfigFactory, ConfigValueFactory}
 import org.scalatest.{Matchers, WordSpec}
 
 class CorsSettingsSpec extends WordSpec with Matchers {
@@ -33,6 +33,7 @@ class CorsSettingsSpec extends WordSpec with Matchers {
       corsSettings.allowedOrigins shouldBe HttpOriginRange.*
       corsSettings.allowedHeaders shouldBe HttpHeaderRange.*
       corsSettings.allowedMethods shouldBe List(GET, POST, HEAD, OPTIONS)
+      corsSettings.exposedHeaders shouldBe List.empty
       corsSettings.maxAge shouldBe Some(1800)
     }
 
@@ -65,12 +66,6 @@ class CorsSettingsSpec extends WordSpec with Matchers {
     "support undefined on max-age" in {
       val corsSettings = CorsSettings(validConfig.withoutPath("akka.http.cors.max-age"))
       corsSettings.maxAge shouldBe None
-    }
-
-    "throw an exception on invalid input for max-age" in {
-      an[ConfigException] should be thrownBy CorsSettings(
-        validConfig.withValue("akka.http.cors.max-age", ConfigValueFactory.fromAnyRef("x minutes"))
-      )
     }
   }
 
