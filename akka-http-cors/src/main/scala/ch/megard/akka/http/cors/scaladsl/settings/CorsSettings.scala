@@ -1,16 +1,19 @@
 package ch.megard.akka.http.cors.scaladsl.settings
 
 import java.util.Optional
+import java.util.concurrent.TimeUnit
 
-import akka.http.scaladsl.model.HttpMethod
-import akka.http.scaladsl.model.HttpMethods._
-import akka.http.scaladsl.model.headers.HttpOriginRange
+import akka.http.scaladsl.model.headers.{HttpOrigin, HttpOriginRange}
+import akka.http.scaladsl.model.{HttpMethod, HttpMethods}
 import ch.megard.akka.http.cors.javadsl
 import ch.megard.akka.http.cors.scaladsl.model.HttpHeaderRange
+import com.typesafe.config.ConfigException.{Missing, WrongType}
+import com.typesafe.config.{Config, ConfigFactory}
 
 import scala.collection.JavaConverters._
 import scala.collection.immutable.Seq
 import scala.compat.java8.OptionConverters
+import scala.util.Try
 
 /**
   * Settings used by the CORS directives.
@@ -119,6 +122,49 @@ abstract class CorsSettings extends javadsl.settings.CorsSettings {
 
 object CorsSettings {
 
+  private val prefix = "akka-http-cors"
+
+  def apply(config: Config) = fromSubConfig(config.getConfig(prefix))
+
+  private def parseStringList(config: Config, path: String): List[String] =
+    Try(config.getStringList(path).asScala.toList)
+      .recover {
+        case _: WrongType => config.getString(path).split(" ").toList
+      }
+      .get
+
+
+  private def parseSeconds(config: Config, path: String): Option[Long] =
+    Try(Some(config.getLong(path)))
+      .recover {
+        case _: WrongType => Some(config.getDuration(path, TimeUnit.SECONDS))
+        case _: Missing => None
+      }
+      .get
+
+  def fromSubConfig(config: Config) = CorsSettings.Default(
+    allowGenericHttpRequests = config.getBoolean("allow-generic-http-requests"),
+    allowCredentials = config.getBoolean("allow-credentials"),
+    allowedOrigins = parseStringList(config, "allowed-origins") match {
+      case List("*") => HttpOriginRange.*
+      case origins => HttpOriginRange(origins.map(HttpOrigin(_)): _*)
+    },
+    allowedHeaders = parseStringList(config, "allowed-headers") match {
+      case List("*") => HttpHeaderRange.*
+      case headers => HttpHeaderRange(headers: _*)
+    },
+    allowedMethods = parseStringList(config, "allowed-methods").map(method =>
+      HttpMethods.getForKey(method) match {
+        case Some(httpMethod) => httpMethod
+        case None => HttpMethod.custom(method)
+      }
+    ),
+    exposedHeaders = parseStringList(config, "exposed-headers"),
+    maxAge = parseSeconds(config, "max-age")
+  )
+
+  val defaultSettings = apply(ConfigFactory.load())
+
   final case class Default(
     allowGenericHttpRequests: Boolean,
     allowCredentials: Boolean,
@@ -153,15 +199,5 @@ object CorsSettings {
       copy(maxAge = OptionConverters.toScala(newValue))
     }
   }
-
-  val defaultSettings = CorsSettings.Default(
-    allowGenericHttpRequests = true,
-    allowCredentials = true,
-    allowedOrigins = HttpOriginRange.*,
-    allowedHeaders = HttpHeaderRange.*,
-    allowedMethods = Seq(GET, POST, HEAD, OPTIONS),
-    exposedHeaders = Seq.empty,
-    maxAge = Some(30 * 60)
-  )
 
 }
