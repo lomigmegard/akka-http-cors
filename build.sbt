@@ -64,13 +64,15 @@ lazy val root = (project in file(".")).
   settings(commonSettings: _*).
   settings(dontPublishSettings: _*)
 
-lazy val akkaHttpVersion = "10.0.11"
+lazy val akkaVersion = "2.5.11"
+lazy val akkaHttpVersion = "10.1.0"
 
 lazy val `akka-http-cors` = project.
   settings(commonSettings: _*).
   settings(publishSettings: _*).
   settings(
     libraryDependencies += "com.typesafe.akka" %% "akka-http" % akkaHttpVersion,
+    libraryDependencies += "com.typesafe.akka" %% "akka-stream" % akkaVersion % "provided",
     libraryDependencies += "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpVersion % "test",
     libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.4" % "test"
   )
@@ -80,6 +82,7 @@ lazy val `akka-http-cors-example` = project.
   settings(commonSettings: _*).
   settings(dontPublishSettings: _*).
   settings(
+    libraryDependencies += "com.typesafe.akka" %% "akka-stream" % akkaVersion
     //libraryDependencies += "ch.megard" %% "akka-http-cors" % version.value
   )
 
@@ -87,4 +90,7 @@ lazy val `akka-http-cors-bench-jmh` = project.
   dependsOn(`akka-http-cors`).
   enablePlugins(JmhPlugin).
   settings(commonSettings: _*).
-  settings(dontPublishSettings: _*)
+  settings(dontPublishSettings: _*).
+  settings(
+    libraryDependencies += "com.typesafe.akka" %% "akka-stream" % akkaVersion
+  )

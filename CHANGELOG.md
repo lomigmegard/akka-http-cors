@@ -6,7 +6,7 @@
   - Support `Origin: null` in simple/actual requests (#31).
   - The `CorsRejection` class has been refactored to be cleaner.
   - Update Scala to 2.12.4 and 2.11.12.
-  - Update akka-http to 10.0.11.
+  - Update akka-http to 10.1.0, removal of Akka 2.4 support (#34).
 
 ### Migrate from 0.2 to 0.3
 
