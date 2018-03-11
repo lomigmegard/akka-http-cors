@@ -1,6 +1,6 @@
 package ch.megard.akka.http.cors.scaladsl.settings
 
-import akka.http.scaladsl.model.HttpMethods
+import akka.http.scaladsl.model.{HttpMethod, HttpMethods}
 import akka.http.scaladsl.model.headers.{HttpOrigin, HttpOriginRange}
 import ch.megard.akka.http.cors.scaladsl.model.HttpHeaderRange
 import com.typesafe.config.{ConfigFactory, ConfigValueFactory}
@@ -17,13 +17,13 @@ class CorsSettingsSpec extends WordSpec with Matchers {
       |  allow-credentials = true
       |  allowed-origins = "*"
       |  allowed-headers = "*"
-      |  allowed-methods = ["GET", "POST", "HEAD", "OPTIONS"]
+      |  allowed-methods = ["GET", "OPTIONS", "XXX"]
       |  exposed-headers = []
       |  max-age = 30 minutes
       |}
     """.stripMargin
 
-  private val validConfig = ConfigFactory.load(validConfigStr)
+  private val validConfig = ConfigFactory.parseString(validConfigStr)
 
   "The CorsSettings object" should {
     "return valid cors settings from a valid config object" in {
@@ -32,7 +32,7 @@ class CorsSettingsSpec extends WordSpec with Matchers {
       corsSettings.allowCredentials shouldBe true
       corsSettings.allowedOrigins shouldBe HttpOriginRange.*
       corsSettings.allowedHeaders shouldBe HttpHeaderRange.*
-      corsSettings.allowedMethods shouldBe List(GET, POST, HEAD, OPTIONS)
+      corsSettings.allowedMethods shouldBe List(GET, OPTIONS, HttpMethod.custom("XXX"))
       corsSettings.exposedHeaders shouldBe List.empty
       corsSettings.maxAge shouldBe Some(1800)
     }

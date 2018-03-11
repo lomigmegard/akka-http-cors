@@ -46,7 +46,7 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
     }
 
     "reject requests without Origin header when strict" in {
-      val settings = CorsSettings.defaultSettings.copy(allowGenericHttpRequests = false)
+      val settings = CorsSettings.defaultSettings.withAllowGenericHttpRequests(false)
       Get() ~> {
         route(settings)
       } ~> check {
@@ -83,7 +83,7 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
     }
 
     "return `Access-Control-Allow-Origin: *` to actual request only when credentials are not allowed" in {
-      val settings = CorsSettings.defaultSettings.copy(allowCredentials = false)
+      val settings = CorsSettings.defaultSettings.withAllowCredentials(false)
       Get() ~> Origin(exampleOrigin) ~> {
         route(settings)
       } ~> check {
@@ -97,7 +97,7 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
 
     "return `Access-Control-Expose-Headers` to actual request with all the exposed headers in the settings" in {
       val exposedHeaders = Seq("X-a", "X-b", "X-c")
-      val settings = CorsSettings.defaultSettings.copy(exposedHeaders = exposedHeaders)
+      val settings = CorsSettings.defaultSettings.withExposedHeaders(exposedHeaders)
       Get() ~> Origin(exampleOrigin) ~> {
         route(settings)
       } ~> check {
@@ -112,7 +112,7 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
     }
 
     "remove CORS-related headers from the original response before adding the new ones" in {
-      val settings = CorsSettings.defaultSettings.copy(exposedHeaders = Seq("X-good"))
+      val settings = CorsSettings.defaultSettings.withExposedHeaders(Seq("X-good"))
       val responseHeaders = Seq(
         Host("my-host"), // untouched
         `Access-Control-Allow-Origin`("http://bad.com"), // replaced
@@ -168,7 +168,7 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
 
     "reject actual requests with invalid origin" when {
       "the origin is null" in {
-        val settings = CorsSettings.defaultSettings.copy(allowedOrigins = HttpOriginRange(exampleOrigin))
+        val settings = CorsSettings.defaultSettings.withAllowedOrigins(HttpOriginRange(exampleOrigin))
         Get() ~> Origin(Seq.empty) ~> {
           route(settings)
         } ~> check {
@@ -176,7 +176,7 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
         }
       }
       "there is one origin" in {
-        val settings = CorsSettings.defaultSettings.copy(allowedOrigins = HttpOriginRange(exampleOrigin))
+        val settings = CorsSettings.defaultSettings.withAllowedOrigins(HttpOriginRange(exampleOrigin))
         val invalidOrigin = HttpOrigin("http://invalid.com")
         Get() ~> Origin(invalidOrigin) ~> {
           route(settings)
@@ -187,7 +187,7 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
     }
 
     "reject pre-flight requests with invalid origin" in {
-      val settings = CorsSettings.defaultSettings.copy(allowedOrigins = HttpOriginRange(exampleOrigin))
+      val settings = CorsSettings.defaultSettings.withAllowedOrigins(HttpOriginRange(exampleOrigin))
       val invalidOrigin = HttpOrigin("http://invalid.com")
       Options() ~> Origin(invalidOrigin) ~> `Access-Control-Request-Method`(GET) ~> {
         route(settings)
@@ -207,7 +207,7 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
     }
 
     "reject pre-flight requests with invalid header" in {
-      val settings = CorsSettings.defaultSettings.copy(allowedHeaders = HttpHeaderRange())
+      val settings = CorsSettings.defaultSettings.withAllowedHeaders(HttpHeaderRange())
       val invalidHeader = "X-header"
       Options() ~> Origin(exampleOrigin) ~> `Access-Control-Request-Method`(GET) ~>
         `Access-Control-Request-Headers`(invalidHeader) ~> {
@@ -218,7 +218,7 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
     }
 
     "reject pre-flight requests with multiple origins" in {
-      val settings = CorsSettings.defaultSettings.copy(allowGenericHttpRequests = false)
+      val settings = CorsSettings.defaultSettings.withAllowGenericHttpRequests(false)
       Options() ~> Origin(exampleOrigin, exampleOrigin) ~> `Access-Control-Request-Method`(GET) ~> {
         route(settings)
       } ~> check {
@@ -229,9 +229,9 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
 
   "the default rejection handler" should {
     val settings = CorsSettings.defaultSettings
-      .copy(allowGenericHttpRequests = false)
-      .copy(allowedOrigins = HttpOriginRange(exampleOrigin))
-      .copy(allowedHeaders = HttpHeaderRange())
+      .withAllowGenericHttpRequests(false)
+      .withAllowedOrigins(HttpOriginRange(exampleOrigin))
+      .withAllowedHeaders(HttpHeaderRange())
     val sealedRoute = handleRejections(corsRejectionHandler) { route(settings) }
 
     "handle the malformed request cause" in {

@@ -24,9 +24,8 @@ object CorsServer {
     import Directives._
 
     // Your CORS settings
-    val corsSettings = CorsSettings.defaultSettings.copy(
-      allowedOrigins = HttpOriginRange(HttpOrigin("http://example.com"))
-    )
+    val corsSettings = CorsSettings.defaultSettings
+      .withAllowedOrigins(HttpOriginRange(HttpOrigin("http://example.com")))
 
     // Your rejection handler
     val rejectionHandler = corsRejectionHandler withFallback RejectionHandler.default

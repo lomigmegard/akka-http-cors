@@ -2,15 +2,20 @@ package ch.megard.akka.http.cors.javadsl.settings
 
 import java.util.Optional
 
+import akka.actor.ActorSystem
+import akka.annotation.DoNotInherit
 import akka.http.javadsl.model.HttpMethod
 import akka.http.javadsl.model.headers.HttpOriginRange
 import ch.megard.akka.http.cors.javadsl.model.HttpHeaderRange
 import ch.megard.akka.http.cors.scaladsl
+import ch.megard.akka.http.cors.scaladsl.settings.CorsSettingsImpl
+import com.typesafe.config.Config
 
 /**
   * Public API but not intended for subclassing
   */
-abstract class CorsSettings {
+@DoNotInherit
+abstract class CorsSettings { self: CorsSettingsImpl ⇒
 
   def getAllowGenericHttpRequests: Boolean
   def getAllowCredentials: Boolean
@@ -31,6 +36,10 @@ abstract class CorsSettings {
 }
 
 object CorsSettings {
+
+  def create(config: Config): CorsSettings = scaladsl.settings.CorsSettings(config)
+  def create(configOverrides: String): CorsSettings = scaladsl.settings.CorsSettings(configOverrides)
+  def create(system: ActorSystem): CorsSettings = create(system.settings.config)
 
   def defaultSettings: CorsSettings = scaladsl.settings.CorsSettings.defaultSettings
 
