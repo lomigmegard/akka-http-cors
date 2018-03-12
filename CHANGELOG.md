@@ -5,8 +5,9 @@
   - Directives now clean existing CORS-related headers when responding to an actual request (#28).
   - Support `Origin: null` in simple/actual requests (#31).
   - The `CorsRejection` class has been refactored to be cleaner.
-  - Update Scala to 2.12.4 and 2.11.12.
   - Update akka-http to 10.1.0, removal of Akka 2.4 support (#34).
+  - Update Scala to 2.12.4 and 2.11.12.
+  - Add cross-compilation with Scala 2.13.0-M3.
 
 ### Migrate from 0.2 to 0.3
 
