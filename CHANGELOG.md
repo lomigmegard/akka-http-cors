@@ -2,6 +2,9 @@
 
 ## 0.3.0 (unreleased)
 
+This release breaks source compatibility, planning for the 1.0 release.
+
+  - Settings are read from a configuration file (#13).
   - Directives now clean existing CORS-related headers when responding to an actual request (#28).
   - Support `Origin: null` in simple/actual requests (#31).
   - The `CorsRejection` class has been refactored to be cleaner.
@@ -11,6 +14,8 @@
 
 ### Migrate from 0.2 to 0.3
 
+  - Now that it is possible, prefer overriding settings in a `application.conf` file.
+  - To update programmatically the settings, use the new `with...()` methods instead of the `copy()` method. 
   - Custom rejection handlers must be updated to reflect the new `CorsRejection` class.
 
 ## 0.2.2 (2017-09-25)
