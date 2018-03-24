@@ -193,10 +193,7 @@ object CorsSettings {
         case headers => HttpHeaderRange(headers: _*)
       },
       allowedMethods = parseStringList("allowed-methods").map(method =>
-        HttpMethods.getForKey(method) match {
-          case Some(httpMethod) => httpMethod
-          case None => HttpMethod.custom(method)
-        }
+        HttpMethods.getForKey(method).getOrElse(HttpMethod.custom(method))
       ),
       exposedHeaders = parseStringList("exposed-headers"),
       maxAge = parseSeconds("max-age")
