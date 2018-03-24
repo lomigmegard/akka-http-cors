@@ -5,34 +5,29 @@
 
 CORS (Cross Origin Resource Sharing) is a mechanism to enable cross origin requests.
 
-This is a Scala implementation for the server-side targeting the Akka Http library. Main features:
-- [x] Works without any additional configuration. Sensible defaults are provided.
-- [x] Respects the full standard defined by the W3C, even the border cases.
-- [ ] Tests, lots of tests.
+This is a Scala/Java implementation for the server-side targeting the [akka-http](https://github.com/akka/akka-http) library.
 
 ## Versions
 
-| Version  | Release date | Akka Http version | Scala versions         |
-| -------- | ------------ | ----------------- | ---------------------- |
-| `0.2.2 ` | 2017-09-25   | `10.0.10`         | `2.11.11`, `2.12.3`    |
-| `0.2.1 ` | 2017-04-03   | `10.0.5`          | `2.11.8`, `2.12.1`     |
-| `0.1.11` | 2017-01-31   | `10.0.3`          | `2.11.8`, `2.12.1`     |
-| `0.1.8`  | 2016-10-30   | `2.4.11`          | `2.11.8`, `2.12.0-RC2` |
-| `0.1.6`  | 2016-09-10   | `2.4.10`          | `2.11.8`               |
-| `0.1.4`  | 2016-07-08   | `2.4.8`           | `2.11.8`               |
-| `0.1.0`  | 2016-03-20   | `2.4.2`           | `2.11.8`               |
+| Version  | Release date | Akka Http version | Scala versions                   |
+| -------- | ------------ | ----------------- | -------------------------------- |
+| `0.3.0 ` | 2018-03-24   | `10.1.0`          | `2.11.12`, `2.12.5`, `2.13.0-M3` |
+| `0.2.2 ` | 2017-09-25   | `10.0.10`         | `2.11.11`, `2.12.3`              |
+| `0.2.1 ` | 2017-04-03   | `10.0.5`          | `2.11.8`, `2.12.1`               |
+| `0.1.11` | 2017-01-31   | `10.0.3`          | `2.11.8`, `2.12.1`               |
+| `0.1.0`  | 2016-03-20   | `2.4.2`           | `2.11.8`                         |
 
 Some less interesting versions are not listed in the above table. The complete list can be found in the [CHANGELOG](CHANGELOG.md) file.
 
 ## Getting Akka Http Cors
 akka-http-cors is deployed to Maven Central. Add it to your `build.sbt` or `Build.scala`:
 ```scala
-libraryDependencies += "ch.megard" %% "akka-http-cors" % "0.2.2"
+libraryDependencies += "ch.megard" %% "akka-http-cors" % "0.3.0"
 ```
 
 ## Quick Start
 The simplest way to enable CORS in your application is to use the `cors` directive.
-Settings are passed as a parameter to the directive, with defaults provided for convenience.
+Settings are passed as a parameter to the directive, with your overrides loaded from the `application.conf`.
 
 ```scala
 import ch.megard.akka.http.cors.scaladsl.CorsDirectives._
@@ -42,19 +37,11 @@ val route: Route = cors() {
 }
 ```
 
-The default settings can be used as a baseline to customize the CORS directive behaviour:
+The settings can be updated programmatically too.
 ```scala
-val settings = CorsSettings.defaultSettings.copy(allowGenericHttpRequests = false)
+val settings = CorsSettings.defaultSettings.withAllowGenericHttpRequests(false)
 val strictRoute: Route = cors(settings) {
   complete(...)
-}
-```
-
-A second directive, `corsDecorate`, implements the same behaviour as the first one but additionally provides information about the current request to the inner route.
-```scala
-val route: Route = corsDecorate() {
-  case CorsRequest(origins) ⇒ complete("actual")
-  case NotCorsRequest       ⇒ complete("not cors")
 }
 ```
 
@@ -80,6 +67,8 @@ val route: Route = handleRejections(corsRejectionHandler) {
 Starting from version `0.2.1` Java is supported, mirroring the Scala API. For usage, look at the full [Java CorsServer example](akka-http-cors-example/src/main/java/ch/megard/akka/http/cors/javadsl/CorsServer.java).
 
 ## Configuration
+
+[Reference configuration](akka-http-cors/src/main/resources/reference.conf).
 
 #### allowGenericHttpRequests
 `Boolean` with default value `true`.
