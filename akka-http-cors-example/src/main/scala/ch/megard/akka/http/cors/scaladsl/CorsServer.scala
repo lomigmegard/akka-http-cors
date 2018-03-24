@@ -3,10 +3,8 @@ package ch.megard.akka.http.cors.scaladsl
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.StatusCodes
-import akka.http.scaladsl.model.headers.{HttpOrigin, HttpOriginRange}
 import akka.http.scaladsl.server.{Directives, ExceptionHandler, RejectionHandler, Route}
 import akka.stream.ActorMaterializer
-import ch.megard.akka.http.cors.scaladsl.settings.CorsSettings
 
 /**
   * Example of a Scala HTTP server using the CORS directive.
@@ -23,9 +21,7 @@ object CorsServer {
     import CorsDirectives._
     import Directives._
 
-    // Your CORS settings
-    val corsSettings = CorsSettings.defaultSettings
-      .withAllowedOrigins(HttpOriginRange(HttpOrigin("http://example.com")))
+    // Your CORS settings are loaded from `application.conf`
 
     // Your rejection handler
     val rejectionHandler = corsRejectionHandler withFallback RejectionHandler.default
@@ -41,7 +37,7 @@ object CorsServer {
     // Note how rejections and exceptions are handled *before* the CORS directive (in the inner route).
     // This is required to have the correct CORS headers in the response even when an error occurs.
     handleErrors {
-      cors(corsSettings) {
+      cors() {
         handleErrors {
           path("ping") {
             complete("pong")
