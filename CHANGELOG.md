@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.1 (unreleased)
+
+  - Update akka-http to 10.1.1.
+
 ## 0.3.0 (2018-03-24)
 
 This release breaks source compatibility, planning for the 1.0 release.
