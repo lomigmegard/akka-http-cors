@@ -71,6 +71,12 @@ lazy val `akka-http-cors` = project.
   settings(commonSettings: _*).
   settings(publishSettings: _*).
   settings(
+
+    // Java 9 Automatic-Module-Name (http://openjdk.java.net/projects/jigsaw/spec/issues/#AutomaticModuleNames)
+    packageOptions in (Compile, packageBin) += Package.ManifestAttributes(
+      "Automatic-Module-Name" -> "ch.megard.akka.http.cors"
+    ),
+
     libraryDependencies += "com.typesafe.akka" %% "akka-http" % akkaHttpVersion,
     libraryDependencies += "com.typesafe.akka" %% "akka-stream" % akkaVersion % "provided",
     libraryDependencies += "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpVersion % "test",
