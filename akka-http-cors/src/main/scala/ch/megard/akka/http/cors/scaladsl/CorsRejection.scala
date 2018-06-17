@@ -22,8 +22,7 @@ object CorsRejection {
   sealed trait Cause extends javadsl.CorsRejection.Cause
 
   /**
-    * Signals the CORS request was rejected because its origin was invalid.
-    * An empty list mean the Origin header was `null`.
+    * Signals the CORS request was malformed.
     */
   case object Malformed extends javadsl.CorsRejection.Malformed with Cause
 
