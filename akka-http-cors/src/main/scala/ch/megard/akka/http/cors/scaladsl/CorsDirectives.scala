@@ -5,7 +5,6 @@ import akka.http.scaladsl.model.headers._
 import akka.http.scaladsl.model.{HttpHeader, HttpMethod, HttpResponse, StatusCodes}
 import akka.http.scaladsl.server._
 import akka.http.scaladsl.server.directives._
-import ch.megard.akka.http.cors.scaladsl.model.HttpHeaderRange
 import ch.megard.akka.http.cors.scaladsl.settings.CorsSettings
 
 import scala.collection.immutable.Seq
@@ -47,38 +46,6 @@ trait CorsDirectives {
   def corsDecorate(settings: CorsSettings = CorsSettings.defaultSettings): Directive1[CorsDecorate] = {
     import settings._
 
-    def accessControlExposeHeaders: Option[`Access-Control-Expose-Headers`] = {
-      if (exposedHeaders.nonEmpty) Some(`Access-Control-Expose-Headers`(exposedHeaders))
-      else None
-    }
-
-    def accessControlAllowCredentials: Option[`Access-Control-Allow-Credentials`] = {
-      if (allowCredentials) Some(`Access-Control-Allow-Credentials`(true))
-      else None
-    }
-
-    def accessControlMaxAge: Option[`Access-Control-Max-Age`] = {
-      maxAge.map(`Access-Control-Max-Age`.apply)
-    }
-
-    def accessControlAllowHeaders(requestHeaders: Seq[String]): Option[`Access-Control-Allow-Headers`] = allowedHeaders match {
-      case HttpHeaderRange.Default(headers) ⇒ Some(`Access-Control-Allow-Headers`(headers))
-      case HttpHeaderRange.* if requestHeaders.nonEmpty ⇒ Some(`Access-Control-Allow-Headers`(requestHeaders))
-      case _ ⇒ None
-    }
-
-    def accessControlAllowMethods = {
-      `Access-Control-Allow-Methods`(allowedMethods)
-    }
-
-    def accessControlAllowOrigin(origins: Seq[HttpOrigin]): `Access-Control-Allow-Origin` = {
-      if (allowedOrigins == HttpOriginRange.* && !allowCredentials) {
-        `Access-Control-Allow-Origin`.*
-      } else {
-        `Access-Control-Allow-Origin`.forRange(HttpOriginRange.Default(origins))
-      }
-    }
-
     /** Return the invalid origins, or `None` if one is valid. */
     def validateOrigins(origins: Seq[HttpOrigin]): Option[CorsRejection.Cause] =
       if (allowedOrigins == HttpOriginRange.* || origins.exists(allowedOrigins.matches)) {
@@ -114,26 +81,16 @@ trait CorsDirectives {
 
           val headers = header[`Access-Control-Request-Headers`].map(_.headers).getOrElse(Seq.empty)
 
-          def completePreflight = {
-            val responseHeaders = Seq(accessControlAllowOrigin(origins), accessControlAllowMethods) ++
-              accessControlAllowHeaders(headers) ++ accessControlMaxAge ++ accessControlAllowCredentials
-            complete(HttpResponse(StatusCodes.OK, responseHeaders))
-          }
-
           List(validateOrigins(origins), validateMethod(requestMethod), validateHeaders(headers))
             .collectFirst { case Some(cause) => CorsRejection(cause) }
-            .fold(completePreflight)(reject(_))
+            .fold(complete(HttpResponse(StatusCodes.OK, preflightResponseHeaders(origins, headers))))(reject(_))
 
         case (_, Some(origins), None) ⇒
           // Case 2: simple/actual CORS request
 
           val decorate: CorsDecorate = CorsDecorate.CorsRequest(origins)
           val cleanAndAddHeaders: Seq[HttpHeader] => Seq[HttpHeader] = { oldHeaders =>
-            val filteredHeaders = oldHeaders.filterNot(h => CorsDirectives.headersToClean.exists(h.is))
-            List(accessControlAllowOrigin(origins)) ++
-              accessControlExposeHeaders ++
-              accessControlAllowCredentials ++
-              filteredHeaders
+            actualResponseHeaders(origins) ++ oldHeaders.filterNot(h => CorsDirectives.headersToClean.exists(h.is))
           }
 
           validateOrigins(origins) match {

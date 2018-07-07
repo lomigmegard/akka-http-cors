@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit
 import akka.actor.ActorSystem
 import akka.annotation.DoNotInherit
 import akka.http.scaladsl.model.headers.{HttpOrigin, HttpOriginRange}
-import akka.http.scaladsl.model.{HttpMethod, HttpMethods}
+import akka.http.scaladsl.model.{HttpHeader, HttpMethod, HttpMethods}
 import ch.megard.akka.http.cors.javadsl
 import ch.megard.akka.http.cors.scaladsl.model.HttpHeaderRange
 import com.typesafe.config.ConfigException.{Missing, WrongType}
@@ -151,6 +151,9 @@ abstract class CorsSettings private[akka] () extends javadsl.settings.CorsSettin
   def withAllowedMethods(newValue: Seq[HttpMethod]): CorsSettings = copy(allowedMethods = newValue)
   def withExposedHeaders(newValue: Seq[String]): CorsSettings = copy(exposedHeaders = newValue)
   def withMaxAge(newValue: Option[Long]): CorsSettings = copy(maxAge = newValue)
+
+  private[akka] def preflightResponseHeaders(origins: Seq[HttpOrigin], requestHeaders: Seq[String]): List[HttpHeader]
+  private[akka] def actualResponseHeaders(origins: Seq[HttpOrigin]): List[HttpHeader]
 
 }
 
