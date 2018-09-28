@@ -5,6 +5,6 @@ jdk:
   - oraclejdk9
   - oraclejdk10
 scala:
-  - 2.12.6
+  - 2.12.7
   - 2.11.12
   - 2.13.0-M3

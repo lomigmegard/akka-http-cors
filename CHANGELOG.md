@@ -5,7 +5,7 @@
   - Java 9: add `Automatic-Module-Name: ch.megard.akka.http.cors` in the `MANIFEST.MF` (#35).
   - Deprecate method `corsDecorate()` (#38).
   - Update akka-http to 10.1.3.
-  - Update Scala to 2.12.6.
+  - Update Scala to 2.12.7.
 
 ## 0.3.0 (2018-03-24)
 
