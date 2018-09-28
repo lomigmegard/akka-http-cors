@@ -13,8 +13,8 @@ lazy val commonSettings = Seq(
     "-Yno-adapted-args",
     "-Ywarn-dead-code",
     "-Ywarn-numeric-widen",
-    "-Ywarn-unused"
-  )
+    "-Ywarn-unused",
+  ),
 )
 
 lazy val publishSettings = Seq(
@@ -49,28 +49,28 @@ lazy val publishSettings = Seq(
         <url>http://lomig.megard.ch</url>
       </developer>
     </developers>
-  }
+  },
 )
 
 lazy val dontPublishSettings = Seq(
   //publishSigned := (()),
   publish := (()),
   publishLocal := (()),
-  publishArtifact := false
+  publishArtifact := false,
 )
 
-lazy val root = (project in file(".")).
-  aggregate(`akka-http-cors`, `akka-http-cors-example`, `akka-http-cors-bench-jmh`).
-  settings(commonSettings: _*).
-  settings(dontPublishSettings: _*)
+lazy val root = (project in file("."))
+  .aggregate(`akka-http-cors`, `akka-http-cors-example`, `akka-http-cors-bench-jmh`)
+  .settings(commonSettings)
+  .settings(dontPublishSettings)
 
 lazy val akkaVersion = "2.5.17"
 lazy val akkaHttpVersion = "10.1.3"
 
-lazy val `akka-http-cors` = project.
-  settings(commonSettings: _*).
-  settings(publishSettings: _*).
-  settings(
+lazy val `akka-http-cors` = project
+  .settings(commonSettings)
+  .settings(publishSettings)
+  .settings(
 
     // Java 9 Automatic-Module-Name (http://openjdk.java.net/projects/jigsaw/spec/issues/#AutomaticModuleNames)
     packageOptions in (Compile, packageBin) += Package.ManifestAttributes(
@@ -80,23 +80,23 @@ lazy val `akka-http-cors` = project.
     libraryDependencies += "com.typesafe.akka" %% "akka-http" % akkaHttpVersion,
     libraryDependencies += "com.typesafe.akka" %% "akka-stream" % akkaVersion % "provided",
     libraryDependencies += "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpVersion % "test",
-    libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5-M1" % "test"
+    libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5-M1" % "test",
   )
 
-lazy val `akka-http-cors-example` = project.
-  dependsOn(`akka-http-cors`).
-  settings(commonSettings: _*).
-  settings(dontPublishSettings: _*).
-  settings(
+lazy val `akka-http-cors-example` = project
+  .dependsOn(`akka-http-cors`)
+  .settings(commonSettings)
+  .settings(dontPublishSettings)
+  .settings(
     libraryDependencies += "com.typesafe.akka" %% "akka-stream" % akkaVersion
     //libraryDependencies += "ch.megard" %% "akka-http-cors" % version.value
   )
 
-lazy val `akka-http-cors-bench-jmh` = project.
-  dependsOn(`akka-http-cors`).
-  enablePlugins(JmhPlugin).
-  settings(commonSettings: _*).
-  settings(dontPublishSettings: _*).
-  settings(
+lazy val `akka-http-cors-bench-jmh` = project
+  .dependsOn(`akka-http-cors`)
+  .enablePlugins(JmhPlugin)
+  .settings(commonSettings)
+  .settings(dontPublishSettings)
+  .settings(
     libraryDependencies += "com.typesafe.akka" %% "akka-stream" % akkaVersion
   )
