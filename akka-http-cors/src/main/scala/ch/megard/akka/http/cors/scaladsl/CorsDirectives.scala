@@ -43,6 +43,7 @@ trait CorsDirectives {
     *
     * @param settings the settings used by the CORS filter
     */
+  @deprecated("this method will be removed in 0.4.0, see issue #38", "0.3.1")
   def corsDecorate(settings: CorsSettings = CorsSettings.defaultSettings): Directive1[CorsDecorate] = {
     import settings._
 
@@ -187,15 +188,18 @@ object CorsDirectives extends CorsDirectives {
   }.result()
 
   sealed abstract class CorsDecorate {
+    @deprecated("this method will be removed in 0.4.0, see issue #38", "0.3.1")
     def isCorsRequest: Boolean
   }
 
   object CorsDecorate {
 
+    @deprecated("this class will be removed in 0.4.0, see issue #38", "0.3.1")
     case class CorsRequest(origins: Seq[HttpOrigin]) extends CorsDecorate {
       def isCorsRequest = true
     }
 
+    @deprecated("this class will be removed in 0.4.0, see issue #38", "0.3.1")
     case object NotCorsRequest extends CorsDecorate {
       def isCorsRequest = false
     }
