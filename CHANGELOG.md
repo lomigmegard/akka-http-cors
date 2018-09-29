@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.3.1 (unreleased)
+## 0.3.1 (2018-09-29)
 
   - Java 9: add `Automatic-Module-Name: ch.megard.akka.http.cors` in the `MANIFEST.MF` (#35).
   - Deprecate method `corsDecorate()` (#38).
