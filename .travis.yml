@@ -1,9 +1,9 @@
 language: scala
 sudo: false
 jdk:
-  - oraclejdk8
-  - oraclejdk9
-  - oraclejdk10
+  - openjdk8
+  - openjdk9
+  - openjdk10
 scala:
   - 2.12.7
   - 2.11.12
