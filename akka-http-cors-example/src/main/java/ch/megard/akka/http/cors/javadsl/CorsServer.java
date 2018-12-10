@@ -1,18 +1,11 @@
 package ch.megard.akka.http.cors.javadsl;
 
 
-import akka.NotUsed;
-import akka.actor.ActorSystem;
-import akka.http.javadsl.ConnectHttp;
-import akka.http.javadsl.Http;
-import akka.http.javadsl.model.HttpRequest;
-import akka.http.javadsl.model.HttpResponse;
 import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.server.*;
-import akka.stream.ActorMaterializer;
-import akka.stream.javadsl.Flow;
 
 import java.util.NoSuchElementException;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -22,20 +15,14 @@ import static ch.megard.akka.http.cors.javadsl.CorsDirectives.corsRejectionHandl
 /**
  * Example of a Java HTTP server using the CORS directive.
  */
-public class CorsServer extends AllDirectives {
+public class CorsServer extends HttpApp {
 
-    public static void main(String[] args) {
-        final ActorSystem system = ActorSystem.create();
-        final Http http = Http.get(system);
-        final ActorMaterializer materializer = ActorMaterializer.create(system);
-
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
         final CorsServer app = new CorsServer();
-
-        final Flow<HttpRequest, HttpResponse, NotUsed> routeFlow = app.createRoute().flow(system, materializer);
-        http.bindAndHandle(routeFlow, ConnectHttp.toHost("127.0.0.1", 9000), materializer);
+        app.startServer("127.0.0.1", 9000);
     }
 
-    private Route createRoute() {
+    protected Route routes() {
 
         // Your CORS settings are loaded from `application.conf`
 
