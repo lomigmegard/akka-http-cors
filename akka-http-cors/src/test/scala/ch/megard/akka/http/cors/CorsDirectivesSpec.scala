@@ -68,6 +68,30 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
       }
     }
 
+    "accept pre-flight requests with a null origin when allowed-origins = `*`" in {
+      val settings = CorsSettings.defaultSettings
+      Options() ~> Origin(Seq.empty) ~> `Access-Control-Request-Method`(GET) ~> {
+        route(settings)
+      } ~> check {
+        status shouldBe StatusCodes.OK
+        response.headers should contain theSameElementsAs Seq(
+          `Access-Control-Allow-Origin`.`null`,
+          `Access-Control-Allow-Methods`(settings.allowedMethods),
+          `Access-Control-Max-Age`(1800),
+          `Access-Control-Allow-Credentials`(true)
+        )
+      }
+    }
+
+    "reject pre-flight requests with a null origin when allowed-origins != `*`" in {
+      val settings = CorsSettings.defaultSettings.withAllowedOrigins(HttpOriginRange(exampleOrigin))
+      Options() ~> Origin(Seq.empty) ~> `Access-Control-Request-Method`(GET) ~> {
+        route(settings)
+      } ~> check {
+        rejection shouldBe CorsRejection(CorsRejection.InvalidOrigin(Seq.empty))
+      }
+    }
+
     "accept actual requests with a null Origin" in {
       val settings = CorsSettings.defaultSettings
       Get() ~> Origin(Seq.empty) ~> {
