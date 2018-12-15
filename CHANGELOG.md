@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.2 (unreleased)
+
+  - Support `Origin: null` in preflight requests (#43).
+  - Update akka-http to 10.1.5.
+  - Update Scala to 2.12.8
+
 ## 0.3.1 (2018-09-29)
 
   - Java 9: add `Automatic-Module-Name: ch.megard.akka.http.cors` in the `MANIFEST.MF` (#35).
