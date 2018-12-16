@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.3.2 (unreleased)
+## 0.3.2 (2018-12-16)
 
   - Support `Origin: null` in preflight requests (#43).
   - Update akka-http to 10.1.5.
