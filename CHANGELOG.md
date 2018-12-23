@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+  - Update akka-http to 10.1.6.
+
 ## 0.3.3 (2018-12-17)
 
   - Fix: Java 1.8 support broken in 0.3.2 (#44).
