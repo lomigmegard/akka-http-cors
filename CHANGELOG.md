@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-  - Update akka-http to 10.1.6.
+  - Update akka-http to 10.1.7.
 
 ## 0.3.3 (2018-12-17)
 
