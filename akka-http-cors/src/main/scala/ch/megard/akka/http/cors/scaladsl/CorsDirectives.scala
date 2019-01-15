@@ -75,11 +75,11 @@ trait CorsDirectives {
     extractRequest.flatMap { request ⇒
       import request._
 
-      (method, header[Origin].map(_.origins), header[`Access-Control-Request-Method`].map(_.method)) match {
+      (method, header[Origin].map(_.origins.toSeq), header[`Access-Control-Request-Method`].map(_.method)) match {
         case (OPTIONS, Some(origins), Some(requestMethod)) if origins.lengthCompare(1) <= 0 ⇒
           // Case 1: pre-flight CORS request
 
-          val headers = header[`Access-Control-Request-Headers`].map(_.headers).getOrElse(Seq.empty)
+          val headers = header[`Access-Control-Request-Headers`].map(_.headers.toSeq).getOrElse(Seq.empty)
 
           List(validateOrigins(origins), validateMethod(requestMethod), validateHeaders(headers))
             .collectFirst { case Some(cause) => CorsRejection(cause) }
