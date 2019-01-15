@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.4 (2019-01-17)
 
   - Cross compile with Scala 2.13.0-M5 (#40).
   - Update akka-http to 10.1.7.
