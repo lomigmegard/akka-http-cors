@@ -1,8 +1,8 @@
 package ch.megard.akka.http.cors.scaladsl.settings
 
+import akka.http.scaladsl.model.headers.HttpOrigin
 import akka.http.scaladsl.model.{HttpMethod, HttpMethods}
-import akka.http.scaladsl.model.headers.{HttpOrigin, HttpOriginRange}
-import ch.megard.akka.http.cors.scaladsl.model.HttpHeaderRange
+import ch.megard.akka.http.cors.scaladsl.model.{HttpHeaderRange, HttpOriginMatcher}
 import com.typesafe.config.{ConfigFactory, ConfigValueFactory}
 import org.scalatest.{Matchers, WordSpec}
 
@@ -30,7 +30,7 @@ class CorsSettingsSpec extends WordSpec with Matchers {
       val corsSettings = CorsSettings(validConfig)
       corsSettings.allowGenericHttpRequests shouldBe true
       corsSettings.allowCredentials shouldBe true
-      corsSettings.allowedOrigins shouldBe HttpOriginRange.*
+      corsSettings.allowedOrigins shouldBe HttpOriginMatcher.*
       corsSettings.allowedHeaders shouldBe HttpHeaderRange.*
       corsSettings.allowedMethods shouldBe List(GET, OPTIONS, HttpMethod.custom("XXX"))
       corsSettings.exposedHeaders shouldBe List.empty
@@ -43,10 +43,19 @@ class CorsSettingsSpec extends WordSpec with Matchers {
         ConfigValueFactory.fromAnyRef("http://test.com http://any.com")
       )
       val corsSettings = CorsSettings(config)
-      corsSettings.allowedOrigins shouldBe HttpOriginRange(
+      corsSettings.allowedOrigins shouldBe HttpOriginMatcher(
         HttpOrigin("http://test.com"),
         HttpOrigin("http://any.com")
       )
+    }
+
+    "support wildcard subdomains" in {
+      val config = validConfig.withValue(
+        "akka-http-cors.allowed-origins",
+        ConfigValueFactory.fromAnyRef("http://*.test.com")
+      )
+      val corsSettings = CorsSettings(config)
+      corsSettings.allowedOrigins.matches(HttpOrigin("http://sub.test.com")) shouldBe true
     }
 
     "support numeric values on max-age as seconds" in {

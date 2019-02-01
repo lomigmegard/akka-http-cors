@@ -5,8 +5,7 @@ import java.util.Optional
 import akka.actor.ActorSystem
 import akka.annotation.DoNotInherit
 import akka.http.javadsl.model.HttpMethod
-import akka.http.javadsl.model.headers.HttpOriginRange
-import ch.megard.akka.http.cors.javadsl.model.HttpHeaderRange
+import ch.megard.akka.http.cors.javadsl.model.{HttpHeaderRange, HttpOriginMatcher}
 import ch.megard.akka.http.cors.scaladsl
 import ch.megard.akka.http.cors.scaladsl.settings.CorsSettingsImpl
 import com.typesafe.config.Config
@@ -19,7 +18,7 @@ abstract class CorsSettings { self: CorsSettingsImpl ⇒
 
   def getAllowGenericHttpRequests: Boolean
   def getAllowCredentials: Boolean
-  def getAllowedOrigins: HttpOriginRange
+  def getAllowedOrigins: HttpOriginMatcher
   def getAllowedHeaders: HttpHeaderRange
   def getAllowedMethods: java.lang.Iterable[HttpMethod]
   def getExposedHeaders: java.lang.Iterable[String]
@@ -27,7 +26,7 @@ abstract class CorsSettings { self: CorsSettingsImpl ⇒
 
   def withAllowGenericHttpRequests(newValue: Boolean): CorsSettings
   def withAllowCredentials(newValue: Boolean): CorsSettings
-  def withAllowedOrigins(newValue: HttpOriginRange): CorsSettings
+  def withAllowedOrigins(newValue: HttpOriginMatcher): CorsSettings
   def withAllowedHeaders(newValue: HttpHeaderRange): CorsSettings
   def withAllowedMethods(newValue: java.lang.Iterable[HttpMethod]): CorsSettings
   def withExposedHeaders(newValue: java.lang.Iterable[String]): CorsSettings

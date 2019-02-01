@@ -5,10 +5,10 @@ import java.util.concurrent.TimeUnit
 
 import akka.actor.ActorSystem
 import akka.annotation.DoNotInherit
-import akka.http.scaladsl.model.headers.{HttpOrigin, HttpOriginRange}
+import akka.http.scaladsl.model.headers.HttpOrigin
 import akka.http.scaladsl.model.{HttpHeader, HttpMethod, HttpMethods}
 import ch.megard.akka.http.cors.javadsl
-import ch.megard.akka.http.cors.scaladsl.model.HttpHeaderRange
+import ch.megard.akka.http.cors.scaladsl.model.{HttpHeaderRange, HttpOriginMatcher}
 import com.typesafe.config.ConfigException.{Missing, WrongType}
 import com.typesafe.config.{Config, ConfigFactory}
 
@@ -60,7 +60,7 @@ abstract class CorsSettings private[akka] () extends javadsl.settings.CorsSettin
     *
     * @see [[https://www.w3.org/TR/cors/#access-control-allow-origin-response-header Access-Control-Allow-Origin]]
     */
-  def allowedOrigins: HttpOriginRange
+  def allowedOrigins: HttpOriginMatcher
 
   /**
     * List of request headers that can be used when making an actual request. Controls
@@ -129,8 +129,8 @@ abstract class CorsSettings private[akka] () extends javadsl.settings.CorsSettin
   override def withAllowCredentials(newValue: Boolean): CorsSettings = {
     copy(allowCredentials = newValue)
   }
-  override def withAllowedOrigins(newValue: akka.http.javadsl.model.headers.HttpOriginRange): CorsSettings = {
-    copy(allowedOrigins = newValue.asInstanceOf[HttpOriginRange])
+  override def withAllowedOrigins(newValue: javadsl.model.HttpOriginMatcher): CorsSettings = {
+    copy(allowedOrigins = newValue.asInstanceOf[HttpOriginMatcher])
   }
   override def withAllowedHeaders(newValue: javadsl.model.HttpHeaderRange): CorsSettings = {
     copy(allowedHeaders = newValue.asInstanceOf[HttpHeaderRange])
@@ -146,7 +146,7 @@ abstract class CorsSettings private[akka] () extends javadsl.settings.CorsSettin
   }
 
   // overloads for Scala idiomatic use
-  def withAllowedOrigins(newValue: HttpOriginRange): CorsSettings = copy(allowedOrigins = newValue)
+  def withAllowedOrigins(newValue: HttpOriginMatcher): CorsSettings = copy(allowedOrigins = newValue)
   def withAllowedHeaders(newValue: HttpHeaderRange): CorsSettings = copy(allowedHeaders = newValue)
   def withAllowedMethods(newValue: Seq[HttpMethod]): CorsSettings = copy(allowedMethods = newValue)
   def withExposedHeaders(newValue: Seq[String]): CorsSettings = copy(exposedHeaders = newValue)
@@ -184,12 +184,13 @@ object CorsSettings {
         }
         .get
 
+
     CorsSettingsImpl(
       allowGenericHttpRequests = config.getBoolean("allow-generic-http-requests"),
       allowCredentials = config.getBoolean("allow-credentials"),
       allowedOrigins = parseStringList("allowed-origins") match {
-        case List("*") => HttpOriginRange.*
-        case origins => HttpOriginRange(origins.map(HttpOrigin(_)): _*)
+        case List("*") => HttpOriginMatcher.*
+        case origins => HttpOriginMatcher(origins.map(HttpOrigin(_)): _*)
       },
       allowedHeaders = parseStringList("allowed-headers") match {
         case List("*") => HttpHeaderRange.*

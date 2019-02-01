@@ -15,7 +15,7 @@ object HttpHeaderRange {
   }
 
   final case class Default(headers: Seq[String]) extends HttpHeaderRange {
-    val lowercaseHeaders = headers.map(_.toLowerCase(Locale.ROOT))
+    val lowercaseHeaders: Seq[String] = headers.map(_.toLowerCase(Locale.ROOT))
     def matches(header: String): Boolean = lowercaseHeaders contains header.toLowerCase(Locale.ROOT)
   }
 

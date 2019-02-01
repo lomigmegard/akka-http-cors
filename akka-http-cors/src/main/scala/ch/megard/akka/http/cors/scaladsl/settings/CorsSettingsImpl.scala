@@ -2,7 +2,7 @@ package ch.megard.akka.http.cors.scaladsl.settings
 
 import akka.http.scaladsl.model.{HttpHeader, HttpMethod}
 import akka.http.scaladsl.model.headers._
-import ch.megard.akka.http.cors.scaladsl.model.HttpHeaderRange
+import ch.megard.akka.http.cors.scaladsl.model.{HttpHeaderRange, HttpOriginMatcher}
 
 import scala.collection.immutable.Seq
 
@@ -10,7 +10,7 @@ import scala.collection.immutable.Seq
 private[akka] final case class CorsSettingsImpl(
     allowGenericHttpRequests: Boolean,
     allowCredentials: Boolean,
-    allowedOrigins: HttpOriginRange,
+    allowedOrigins: HttpOriginMatcher,
     allowedHeaders: HttpHeaderRange,
     allowedMethods: Seq[HttpMethod],
     exposedHeaders: Seq[String],
@@ -45,7 +45,7 @@ private[akka] final case class CorsSettingsImpl(
     }
 
   private def accessControlAllowOrigin(origins: Seq[HttpOrigin]): `Access-Control-Allow-Origin` =
-    if (allowedOrigins == HttpOriginRange.* && !allowCredentials)
+    if (allowedOrigins == HttpOriginMatcher.* && !allowCredentials)
       `Access-Control-Allow-Origin`.*
     else
       `Access-Control-Allow-Origin`.forRange(HttpOriginRange.Default(origins))
