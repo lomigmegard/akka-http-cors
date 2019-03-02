@@ -53,10 +53,13 @@ abstract class CorsSettings private[akka] () extends javadsl.settings.CorsSettin
     * are not allowed, a `*` is set in `Access-Control-Allow-Origin`. Otherwise, the
     * origins given in the `Origin` request header are echoed.
     *
+    * Hostname starting with `*.` will match any sub-domain.
+    * The scheme and the port are always strictly matched.
+    *
     * The actual or preflight request is rejected if any of the origins from the request
     * is not allowed.
     *
-    * Default: `HttpOriginRange.*`
+    * Default: `HttpOriginMatcher.*`
     *
     * @see [[https://www.w3.org/TR/cors/#access-control-allow-origin-response-header Access-Control-Allow-Origin]]
     */

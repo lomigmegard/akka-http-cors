@@ -84,11 +84,13 @@ Indicates whether the resource supports user credentials.  If `true`, the header
 Examples of user credentials are: cookies, HTTP authentication or client-side certificates.
 
 #### allowedOrigins
-`HttpOriginRange` with default value `HttpOriginRange.*`.
+`HttpOriginMatcher` with default value `HttpOriginMatcher.*`.
 
 List of origins that the CORS filter must allow. Can also be set to `*` to allow access to the resource from any origin. Controls the content of the `Access-Control-Allow-Origin` response header:
 * if parameter is `*` **and** credentials are not allowed, a `*` is set in `Access-Control-Allow-Origin`.
 * otherwise, the origins given in the `Origin` request header are echoed.
+
+Hostname starting with `*.` will match any sub-domain. The scheme and the port are always strictly matched.
 
 The actual or preflight request is rejected if any of the origins from the request is not allowed.
 
