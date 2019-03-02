@@ -20,7 +20,6 @@ import scala.collection.immutable.Seq
 trait CorsDirectives {
 
   import BasicDirectives._
-  import CorsDirectives._
   import RouteDirectives._
 
   /**
@@ -31,20 +30,7 @@ trait CorsDirectives {
     *
     * @param settings the settings used by the CORS filter
     */
-  def cors(settings: CorsSettings = CorsSettings.defaultSettings): Directive0 = corsDecorate(settings).map(_ ⇒ ())
-
-  /**
-    * Wraps its inner route with support for the CORS mechanism, enabling cross origin requests.
-    * Provides to the inner route an object that indicates if the current request is a valid CORS
-    * actual request or is outside the scope of the specification.
-    *
-    * In particular the recommendation written by the W3C in https://www.w3.org/TR/cors/ is
-    * implemented by this directive.
-    *
-    * @param settings the settings used by the CORS filter
-    */
-  @deprecated("this method will be removed in 0.4.0, see issue #38", "0.3.1")
-  def corsDecorate(settings: CorsSettings = CorsSettings.defaultSettings): Directive1[CorsDecorate] = {
+  def cors(settings: CorsSettings = CorsSettings.defaultSettings): Directive0 = {
     import settings._
 
     /** Return the invalid origins, or `None` if one is valid. */
@@ -89,14 +75,13 @@ trait CorsDirectives {
         case (_, Some(origins), None) ⇒
           // Case 2: simple/actual CORS request
 
-          val decorate: CorsDecorate = CorsDecorate.CorsRequest(origins)
           val cleanAndAddHeaders: Seq[HttpHeader] => Seq[HttpHeader] = { oldHeaders =>
             actualResponseHeaders(origins) ++ oldHeaders.filterNot(h => CorsDirectives.headersToClean.exists(h.is))
           }
 
           validateOrigins(origins) match {
             case None ⇒
-              mapResponseHeaders(cleanAndAddHeaders) & provide(decorate)
+              mapResponseHeaders(cleanAndAddHeaders)
             case Some(cause) ⇒
               reject(CorsRejection(cause))
           }
@@ -104,7 +89,7 @@ trait CorsDirectives {
         case _ if allowGenericHttpRequests ⇒
           // Case 3a: not a valid CORS request, but allowed
 
-          provide(CorsDecorate.NotCorsRequest)
+          pass
 
         case _ ⇒
           // Case 3b: not a valid CORS request, forbidden
@@ -144,24 +129,5 @@ object CorsDirectives extends CorsDirectives {
       }
       complete((StatusCodes.BadRequest, s"CORS: $message"))
   }.result()
-
-  sealed abstract class CorsDecorate {
-    @deprecated("this method will be removed in 0.4.0, see issue #38", "0.3.1")
-    def isCorsRequest: Boolean
-  }
-
-  object CorsDecorate {
-
-    @deprecated("this class will be removed in 0.4.0, see issue #38", "0.3.1")
-    case class CorsRequest(origins: Seq[HttpOrigin]) extends CorsDecorate {
-      def isCorsRequest = true
-    }
-
-    @deprecated("this class will be removed in 0.4.0, see issue #38", "0.3.1")
-    case object NotCorsRequest extends CorsDecorate {
-      def isCorsRequest = false
-    }
-
-  }
 
 }
