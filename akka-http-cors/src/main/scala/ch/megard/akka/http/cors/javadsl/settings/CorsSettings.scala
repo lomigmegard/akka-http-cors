@@ -14,7 +14,7 @@ import com.typesafe.config.Config
   * Public API but not intended for subclassing
   */
 @DoNotInherit
-abstract class CorsSettings { self: CorsSettingsImpl ⇒
+abstract class CorsSettings { self: CorsSettingsImpl =>
 
   def getAllowGenericHttpRequests: Boolean
   def getAllowCredentials: Boolean

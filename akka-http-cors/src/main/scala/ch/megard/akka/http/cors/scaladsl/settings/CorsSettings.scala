@@ -23,7 +23,7 @@ import scala.util.Try
   * Public API but not intended for subclassing.
   */
 @DoNotInherit
-abstract class CorsSettings private[akka] () extends javadsl.settings.CorsSettings { self: CorsSettingsImpl ⇒
+abstract class CorsSettings private[akka] () extends javadsl.settings.CorsSettings { self: CorsSettingsImpl =>
 
   /**
     * If `true`, allow generic requests (that are outside the scope of the specification)

@@ -39,9 +39,9 @@ private[akka] final case class CorsSettingsImpl(
 
   private def accessControlAllowHeaders(requestHeaders: Seq[String]): Option[`Access-Control-Allow-Headers`] =
     allowedHeaders match {
-      case HttpHeaderRange.Default(headers) ⇒ Some(`Access-Control-Allow-Headers`(headers))
-      case HttpHeaderRange.* if requestHeaders.nonEmpty ⇒ Some(`Access-Control-Allow-Headers`(requestHeaders))
-      case _ ⇒ None
+      case HttpHeaderRange.Default(headers) => Some(`Access-Control-Allow-Headers`(headers))
+      case HttpHeaderRange.* if requestHeaders.nonEmpty => Some(`Access-Control-Allow-Headers`(requestHeaders))
+      case _ => None
     }
 
   private def accessControlAllowOrigin(origins: Seq[HttpOrigin]): `Access-Control-Allow-Origin` =
