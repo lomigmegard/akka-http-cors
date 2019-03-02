@@ -1,12 +1,12 @@
 package ch.megard.akka.http.cors
 
-import akka.http.scaladsl.model.headers._
 import akka.http.scaladsl.model._
+import akka.http.scaladsl.model.headers._
 import akka.http.scaladsl.server.{Directives, Route}
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import ch.megard.akka.http.cors.scaladsl.CorsDirectives.CorsDecorate._
 import ch.megard.akka.http.cors.scaladsl.CorsRejection
-import ch.megard.akka.http.cors.scaladsl.model.HttpHeaderRange
+import ch.megard.akka.http.cors.scaladsl.model.{HttpHeaderRange, HttpOriginMatcher}
 import ch.megard.akka.http.cors.scaladsl.settings.CorsSettings
 import org.scalatest.{Matchers, WordSpec}
 
@@ -84,7 +84,7 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
     }
 
     "reject pre-flight requests with a null origin when allowed-origins != `*`" in {
-      val settings = CorsSettings.defaultSettings.withAllowedOrigins(HttpOriginRange(exampleOrigin))
+      val settings = CorsSettings.defaultSettings.withAllowedOrigins(HttpOriginMatcher(exampleOrigin))
       Options() ~> Origin(Seq.empty) ~> `Access-Control-Request-Method`(GET) ~> {
         route(settings)
       } ~> check {
@@ -101,6 +101,23 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
         response.status shouldBe exampleStatus
         response.headers should contain theSameElementsAs Seq(
           `Access-Control-Allow-Origin`.`null`,
+          `Access-Control-Allow-Credentials`(true)
+        )
+      }
+    }
+
+    "accept actual requests with an Origin matching an allowed subdomain" in {
+      val subdomainMatcher = HttpOriginMatcher(HttpOrigin("http://*.example.com"))
+      val subdomainOrigin = HttpOrigin("http://sub.example.com")
+
+      val settings = CorsSettings.defaultSettings.withAllowedOrigins(subdomainMatcher)
+      Get() ~> Origin(subdomainOrigin) ~> {
+        route(settings)
+      } ~> check {
+        responseAs[String] shouldBe actual
+        response.status shouldBe exampleStatus
+        response.headers should contain theSameElementsAs Seq(
+          `Access-Control-Allow-Origin`(subdomainOrigin),
           `Access-Control-Allow-Credentials`(true)
         )
       }
@@ -192,7 +209,7 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
 
     "reject actual requests with invalid origin" when {
       "the origin is null" in {
-        val settings = CorsSettings.defaultSettings.withAllowedOrigins(HttpOriginRange(exampleOrigin))
+        val settings = CorsSettings.defaultSettings.withAllowedOrigins(HttpOriginMatcher(exampleOrigin))
         Get() ~> Origin(Seq.empty) ~> {
           route(settings)
         } ~> check {
@@ -200,7 +217,7 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
         }
       }
       "there is one origin" in {
-        val settings = CorsSettings.defaultSettings.withAllowedOrigins(HttpOriginRange(exampleOrigin))
+        val settings = CorsSettings.defaultSettings.withAllowedOrigins(HttpOriginMatcher(exampleOrigin))
         val invalidOrigin = HttpOrigin("http://invalid.com")
         Get() ~> Origin(invalidOrigin) ~> {
           route(settings)
@@ -211,7 +228,7 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
     }
 
     "reject pre-flight requests with invalid origin" in {
-      val settings = CorsSettings.defaultSettings.withAllowedOrigins(HttpOriginRange(exampleOrigin))
+      val settings = CorsSettings.defaultSettings.withAllowedOrigins(HttpOriginMatcher(exampleOrigin))
       val invalidOrigin = HttpOrigin("http://invalid.com")
       Options() ~> Origin(invalidOrigin) ~> `Access-Control-Request-Method`(GET) ~> {
         route(settings)
@@ -254,7 +271,7 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
   "the default rejection handler" should {
     val settings = CorsSettings.defaultSettings
       .withAllowGenericHttpRequests(false)
-      .withAllowedOrigins(HttpOriginRange(exampleOrigin))
+      .withAllowedOrigins(HttpOriginMatcher(exampleOrigin))
       .withAllowedHeaders(HttpHeaderRange())
     val sealedRoute = handleRejections(corsRejectionHandler) { route(settings) }
 

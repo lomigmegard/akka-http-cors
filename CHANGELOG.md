@@ -1,5 +1,9 @@
 # Changelog
 
+## (unreleased)
+
+  - Support subdomain wildcard matcher in allowed origins (#25).
+
 ## 0.3.4 (2019-01-17)
 
   - Cross compile with Scala 2.13.0-M5 (#40).

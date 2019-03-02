@@ -5,6 +5,7 @@ import akka.http.scaladsl.model.headers._
 import akka.http.scaladsl.model.{HttpHeader, HttpMethod, HttpResponse, StatusCodes}
 import akka.http.scaladsl.server._
 import akka.http.scaladsl.server.directives._
+import ch.megard.akka.http.cors.scaladsl.model.HttpOriginMatcher
 import ch.megard.akka.http.cors.scaladsl.settings.CorsSettings
 
 import scala.collection.immutable.Seq
@@ -48,7 +49,7 @@ trait CorsDirectives {
 
     /** Return the invalid origins, or `None` if one is valid. */
     def validateOrigins(origins: Seq[HttpOrigin]): Option[CorsRejection.Cause] =
-      if (allowedOrigins == HttpOriginRange.* || origins.exists(allowedOrigins.matches)) {
+      if (allowedOrigins == HttpOriginMatcher.* || origins.exists(allowedOrigins.matches)) {
         None
       } else {
         Some(CorsRejection.InvalidOrigin(origins))
