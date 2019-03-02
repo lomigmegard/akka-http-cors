@@ -3,6 +3,7 @@
 ## (unreleased)
 
   - Support subdomain wildcard matcher in allowed origins (#25).
+  - Remove directive `corsDecorate()` (#38).
 
 ## 0.3.4 (2019-01-17)
 

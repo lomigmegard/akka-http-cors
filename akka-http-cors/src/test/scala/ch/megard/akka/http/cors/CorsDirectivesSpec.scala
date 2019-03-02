@@ -4,7 +4,6 @@ import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.headers._
 import akka.http.scaladsl.server.{Directives, Route}
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import ch.megard.akka.http.cors.scaladsl.CorsDirectives.CorsDecorate._
 import ch.megard.akka.http.cors.scaladsl.CorsRejection
 import ch.megard.akka.http.cors.scaladsl.model.{HttpHeaderRange, HttpOriginMatcher}
 import ch.megard.akka.http.cors.scaladsl.settings.CorsSettings
@@ -23,11 +22,6 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
 
   def route(settings: CorsSettings, responseHeaders: Seq[HttpHeader] = Nil): Route = cors(settings) {
     complete(HttpResponse(exampleStatus, responseHeaders, HttpEntity(actual)))
-  }
-
-  def routeDecorate(settings: CorsSettings): Route = corsDecorate(settings) {
-    case CorsRequest(origins) ⇒ complete("actual cors from " + origins)
-    case NotCorsRequest       ⇒ complete("not cors")
   }
 
   "The cors directive" should {
