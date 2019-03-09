@@ -2,7 +2,7 @@
 
 FROM openjdk:8
 
-ENV SBT_VERSION 1.2.7
+ENV SBT_VERSION 1.2.8
 
 RUN \
   curl -L -o sbt-$SBT_VERSION.deb https://dl.bintray.com/sbt/debian/sbt-$SBT_VERSION.deb && \
