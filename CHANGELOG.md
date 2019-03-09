@@ -1,9 +1,13 @@
 # Changelog
 
-## (unreleased)
+## 0.4.0 (2019-03-09)
 
   - Support subdomain wildcard matcher in allowed origins (#25).
   - Remove directive `corsDecorate()` (#38).
+  
+### Migrate from 0.3 to 0.4
+
+  - Use `HttpOriginMatcher` instead of `HttpOriginRange` in the settings.
 
 ## 0.3.4 (2019-01-17)
 
