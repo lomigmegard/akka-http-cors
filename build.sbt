@@ -62,7 +62,7 @@ lazy val root = (project in file("."))
   .settings(commonSettings)
   .settings(dontPublishSettings)
 
-lazy val akkaVersion = "2.5.21"
+lazy val akkaVersion = "2.5.22"
 lazy val akkaHttpVersion = "10.1.8"
 
 lazy val `akka-http-cors` = project
