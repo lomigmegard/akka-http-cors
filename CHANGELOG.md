@@ -1,5 +1,9 @@
 # Changelog
 
+## unreleased
+
+  - Update akka-http to 10.1.8.
+
 ## 0.4.0 (2019-03-09)
 
   - Support subdomain wildcard matcher in allowed origins (#25).
