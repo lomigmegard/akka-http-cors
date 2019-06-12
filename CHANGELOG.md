@@ -2,7 +2,8 @@
 
 ## unreleased
 
-  - Update akka-http to 10.1.8.
+  - Cross compile with Scala 2.13.0.
+  - Update akka-http to 10.1.8. 
 
 ## 0.4.0 (2019-03-09)
 
