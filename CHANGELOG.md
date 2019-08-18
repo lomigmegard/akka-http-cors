@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.2 (unreleased)
+
+  - Update Scala to 2.12.9
+
 ## 0.4.1 (2019-06-12)
 
   - Cross compile with Scala 2.13.0.
