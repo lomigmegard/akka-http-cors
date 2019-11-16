@@ -6,7 +6,6 @@ import ch.megard.akka.http.cors.javadsl
 
 import scala.collection.immutable.Seq
 
-
 abstract class HttpHeaderRange extends javadsl.model.HttpHeaderRange
 
 object HttpHeaderRange {
@@ -15,7 +14,7 @@ object HttpHeaderRange {
   }
 
   final case class Default(headers: Seq[String]) extends HttpHeaderRange {
-    val lowercaseHeaders: Seq[String] = headers.map(_.toLowerCase(Locale.ROOT))
+    val lowercaseHeaders: Seq[String]    = headers.map(_.toLowerCase(Locale.ROOT))
     def matches(header: String): Boolean = lowercaseHeaders contains header.toLowerCase(Locale.ROOT)
   }
 

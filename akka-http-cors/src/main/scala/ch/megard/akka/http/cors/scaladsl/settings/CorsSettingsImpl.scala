@@ -7,7 +7,7 @@ import ch.megard.akka.http.cors.scaladsl.model.{HttpHeaderRange, HttpOriginMatch
 import scala.collection.immutable.Seq
 
 /** INTERNAL API */
-private[akka] final case class CorsSettingsImpl(
+final private[akka] case class CorsSettingsImpl(
     allowGenericHttpRequests: Boolean,
     allowCredentials: Boolean,
     allowedOrigins: HttpOriginMatcher,
@@ -16,7 +16,6 @@ private[akka] final case class CorsSettingsImpl(
     exposedHeaders: Seq[String],
     maxAge: Option[Long]
 ) extends CorsSettings {
-
   override def productPrefix = "CorsSettings"
 
   private def accessControlExposeHeaders: Option[`Access-Control-Expose-Headers`] =
@@ -39,9 +38,9 @@ private[akka] final case class CorsSettingsImpl(
 
   private def accessControlAllowHeaders(requestHeaders: Seq[String]): Option[`Access-Control-Allow-Headers`] =
     allowedHeaders match {
-      case HttpHeaderRange.Default(headers) => Some(`Access-Control-Allow-Headers`(headers))
+      case HttpHeaderRange.Default(headers)             => Some(`Access-Control-Allow-Headers`(headers))
       case HttpHeaderRange.* if requestHeaders.nonEmpty => Some(`Access-Control-Allow-Headers`(requestHeaders))
-      case _ => None
+      case _                                            => None
     }
 
   private def accessControlAllowOrigin(origins: Seq[HttpOrigin]): `Access-Control-Allow-Origin` =
@@ -61,10 +60,9 @@ private[akka] final case class CorsSettingsImpl(
   def preflightResponseHeaders(origins: Seq[HttpOrigin], requestHeaders: Seq[String]): List[HttpHeader] =
     accessControlAllowHeaders(requestHeaders) match {
       case Some(h) => h :: accessControlAllowOrigin(origins) :: basePreflightResponseHeaders
-      case None => accessControlAllowOrigin(origins) :: basePreflightResponseHeaders
+      case None    => accessControlAllowOrigin(origins) :: basePreflightResponseHeaders
     }
 
   def actualResponseHeaders(origins: Seq[HttpOrigin]): List[HttpHeader] =
     accessControlAllowOrigin(origins) :: baseActualResponseHeaders
-
 }

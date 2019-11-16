@@ -13,7 +13,6 @@ trait CorsRejection extends CustomRejection {
 }
 
 object CorsRejection {
-
   /**
     * Signals the cause of the failed CORS request.
     */
@@ -45,5 +44,4 @@ object CorsRejection {
   trait InvalidHeaders extends Cause {
     def getHeaders: java.util.List[String]
   }
-
 }

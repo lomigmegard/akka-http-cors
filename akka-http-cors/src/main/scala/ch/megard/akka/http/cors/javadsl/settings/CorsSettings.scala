@@ -31,15 +31,12 @@ abstract class CorsSettings { self: CorsSettingsImpl =>
   def withAllowedMethods(newValue: java.lang.Iterable[HttpMethod]): CorsSettings
   def withExposedHeaders(newValue: java.lang.Iterable[String]): CorsSettings
   def withMaxAge(newValue: Optional[Long]): CorsSettings
-
 }
 
 object CorsSettings {
-
-  def create(config: Config): CorsSettings = scaladsl.settings.CorsSettings(config)
+  def create(config: Config): CorsSettings          = scaladsl.settings.CorsSettings(config)
   def create(configOverrides: String): CorsSettings = scaladsl.settings.CorsSettings(configOverrides)
-  def create(system: ActorSystem): CorsSettings = create(system.settings.config)
+  def create(system: ActorSystem): CorsSettings     = create(system.settings.config)
 
   def defaultSettings: CorsSettings = scaladsl.settings.CorsSettings.defaultSettings
-
 }

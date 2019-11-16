@@ -113,16 +113,15 @@ abstract class CorsSettings private[akka] () extends javadsl.settings.CorsSettin
     */
   def maxAge: Option[Long]
 
-
   /* Java APIs */
 
   override def getAllowGenericHttpRequests = allowGenericHttpRequests
-  override def getAllowCredentials = allowCredentials
-  override def getAllowedOrigins = allowedOrigins
-  override def getAllowedHeaders = allowedHeaders
-  override def getAllowedMethods = (allowedMethods: Seq[akka.http.javadsl.model.HttpMethod]).asJava
-  override def getExposedHeaders = exposedHeaders.asJava
-  override def getMaxAge = OptionConverters.toJava(maxAge)
+  override def getAllowCredentials         = allowCredentials
+  override def getAllowedOrigins           = allowedOrigins
+  override def getAllowedHeaders           = allowedHeaders
+  override def getAllowedMethods           = (allowedMethods: Seq[akka.http.javadsl.model.HttpMethod]).asJava
+  override def getExposedHeaders           = exposedHeaders.asJava
+  override def getMaxAge                   = OptionConverters.toJava(maxAge)
 
   // Currently the easiest way to go from Java models to their Scala equivalent is to cast.
   // See https://github.com/akka/akka-http/issues/661 for a potential opening of the JavaMapping API.
@@ -150,63 +149,53 @@ abstract class CorsSettings private[akka] () extends javadsl.settings.CorsSettin
 
   // overloads for Scala idiomatic use
   def withAllowedOrigins(newValue: HttpOriginMatcher): CorsSettings = copy(allowedOrigins = newValue)
-  def withAllowedHeaders(newValue: HttpHeaderRange): CorsSettings = copy(allowedHeaders = newValue)
-  def withAllowedMethods(newValue: Seq[HttpMethod]): CorsSettings = copy(allowedMethods = newValue)
-  def withExposedHeaders(newValue: Seq[String]): CorsSettings = copy(exposedHeaders = newValue)
-  def withMaxAge(newValue: Option[Long]): CorsSettings = copy(maxAge = newValue)
+  def withAllowedHeaders(newValue: HttpHeaderRange): CorsSettings   = copy(allowedHeaders = newValue)
+  def withAllowedMethods(newValue: Seq[HttpMethod]): CorsSettings   = copy(allowedMethods = newValue)
+  def withExposedHeaders(newValue: Seq[String]): CorsSettings       = copy(exposedHeaders = newValue)
+  def withMaxAge(newValue: Option[Long]): CorsSettings              = copy(maxAge = newValue)
 
   private[akka] def preflightResponseHeaders(origins: Seq[HttpOrigin], requestHeaders: Seq[String]): List[HttpHeader]
   private[akka] def actualResponseHeaders(origins: Seq[HttpOrigin]): List[HttpHeader]
-
 }
 
 object CorsSettings {
-
   private val prefix = "akka-http-cors"
 
   def apply(system: ActorSystem): CorsSettings = apply(system.settings.config)
-  def apply(config: Config): CorsSettings = fromSubConfig(config.getConfig(prefix))
+  def apply(config: Config): CorsSettings      = fromSubConfig(config.getConfig(prefix))
   def apply(configOverrides: String): CorsSettings = apply(
     ConfigFactory.parseString(configOverrides).withFallback(ConfigFactory.defaultReference(getClass.getClassLoader))
   )
 
   def fromSubConfig(config: Config): CorsSettings = {
-
     def parseStringList(path: String): List[String] =
-      Try(config.getStringList(path).asScala.toList)
-        .recover {
-          case _: WrongType => config.getString(path).split(" ").toList
-        }
-        .get
+      Try(config.getStringList(path).asScala.toList).recover {
+        case _: WrongType => config.getString(path).split(" ").toList
+      }.get
 
     def parseSeconds(path: String): Option[Long] =
-      Try(Some(config.getLong(path)))
-        .recover {
-          case _: WrongType => Some(config.getDuration(path, TimeUnit.SECONDS))
-          case _: Missing => None
-        }
-        .get
-
+      Try(Some(config.getLong(path))).recover {
+        case _: WrongType => Some(config.getDuration(path, TimeUnit.SECONDS))
+        case _: Missing   => None
+      }.get
 
     CorsSettingsImpl(
       allowGenericHttpRequests = config.getBoolean("allow-generic-http-requests"),
       allowCredentials = config.getBoolean("allow-credentials"),
       allowedOrigins = parseStringList("allowed-origins") match {
         case List("*") => HttpOriginMatcher.*
-        case origins => HttpOriginMatcher(origins.map(HttpOrigin(_)): _*)
+        case origins   => HttpOriginMatcher(origins.map(HttpOrigin(_)): _*)
       },
       allowedHeaders = parseStringList("allowed-headers") match {
         case List("*") => HttpHeaderRange.*
-        case headers => HttpHeaderRange(headers: _*)
+        case headers   => HttpHeaderRange(headers: _*)
       },
-      allowedMethods = parseStringList("allowed-methods").map(method =>
-        HttpMethods.getForKey(method).getOrElse(HttpMethod.custom(method))
-      ),
+      allowedMethods = parseStringList("allowed-methods")
+        .map(method => HttpMethods.getForKey(method).getOrElse(HttpMethod.custom(method))),
       exposedHeaders = parseStringList("exposed-headers"),
       maxAge = parseSeconds("max-age")
     )
   }
 
   val defaultSettings = apply(ConfigFactory.load(getClass.getClassLoader))
-
 }

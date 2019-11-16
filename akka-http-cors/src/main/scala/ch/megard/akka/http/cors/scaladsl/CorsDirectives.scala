@@ -18,7 +18,6 @@ import scala.collection.immutable.Seq
   *
   */
 trait CorsDirectives {
-
   import BasicDirectives._
   import RouteDirectives._
 
@@ -96,11 +95,9 @@ trait CorsDirectives {
       }
     }
   }
-
 }
 
 object CorsDirectives extends CorsDirectives {
-
   import RouteDirectives._
 
   private val headersToClean: List[String] = List(
@@ -112,20 +109,23 @@ object CorsDirectives extends CorsDirectives {
     `Access-Control-Max-Age`
   ).map(_.lowercaseName)
 
-  def corsRejectionHandler: RejectionHandler = RejectionHandler.newBuilder().handle {
-    case CorsRejection(cause) =>
-      val message = cause match {
-        case CorsRejection.Malformed =>
-          "malformed request"
-        case CorsRejection.InvalidOrigin(origins) =>
-          val listOrNull = if (origins.isEmpty) "null" else origins.mkString(" ")
-          s"invalid origin '$listOrNull'"
-        case CorsRejection.InvalidMethod(method) =>
-          s"invalid method '${method.value}'"
-        case CorsRejection.InvalidHeaders(headers) =>
-          s"invalid headers '${headers.mkString(" ")}'"
+  def corsRejectionHandler: RejectionHandler =
+    RejectionHandler
+      .newBuilder()
+      .handle {
+        case CorsRejection(cause) =>
+          val message = cause match {
+            case CorsRejection.Malformed =>
+              "malformed request"
+            case CorsRejection.InvalidOrigin(origins) =>
+              val listOrNull = if (origins.isEmpty) "null" else origins.mkString(" ")
+              s"invalid origin '$listOrNull'"
+            case CorsRejection.InvalidMethod(method) =>
+              s"invalid method '${method.value}'"
+            case CorsRejection.InvalidHeaders(headers) =>
+              s"invalid headers '${headers.mkString(" ")}'"
+          }
+          complete((StatusCodes.BadRequest, s"CORS: $message"))
       }
-      complete((StatusCodes.BadRequest, s"CORS: $message"))
-  }.result()
-
+      .result()
 }

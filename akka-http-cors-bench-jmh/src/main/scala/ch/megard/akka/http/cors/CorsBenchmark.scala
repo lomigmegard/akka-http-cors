@@ -21,18 +21,17 @@ import scala.concurrent.{Await, ExecutionContext}
 @OutputTimeUnit(TimeUnit.SECONDS)
 @BenchmarkMode(Array(Mode.Throughput))
 class CorsBenchmark extends Directives with CorsDirectives {
-
   private val config = ConfigFactory.parseString("akka.loglevel = ERROR").withFallback(ConfigFactory.load())
 
-  private implicit val system: ActorSystem = ActorSystem("CorsBenchmark", config)
-  private implicit val materializer: ActorMaterializer = ActorMaterializer()
-  private implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.global
+  implicit private val system: ActorSystem             = ActorSystem("CorsBenchmark", config)
+  implicit private val materializer: ActorMaterializer = ActorMaterializer()
+  implicit private val ec: ExecutionContext            = scala.concurrent.ExecutionContext.global
 
   private val http = Http()
 
-  private var binding: ServerBinding = _
-  private var request: HttpRequest = _
-  private var requestCors: HttpRequest = _
+  private var binding: ServerBinding        = _
+  private var request: HttpRequest          = _
+  private var requestCors: HttpRequest      = _
   private var requestPreflight: HttpRequest = _
 
   @Setup
@@ -95,5 +94,4 @@ class CorsBenchmark extends Directives with CorsDirectives {
     val f = http.singleRequest(requestPreflight).flatMap(r => Unmarshal(r.entity).to[String])
     assert(Await.result(f, 1.second) == "")
   }
-
 }

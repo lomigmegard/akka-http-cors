@@ -8,7 +8,6 @@ import ch.megard.akka.http.cors.javadsl.settings.CorsSettings
 import ch.megard.akka.http.cors.scaladsl
 
 object CorsDirectives {
-
   def cors(inner: Supplier[Route]): Route = RouteAdapter {
     scaladsl.CorsDirectives.cors() {
       inner.get() match {

@@ -4,6 +4,7 @@
 
   - Update Scala to 2.12.10 and 2.13.1.
   - Update akka-http to 10.1.10.
+  - Use Scalafmt for formatting.
 
 ## 0.4.1 (2019-06-12)
 

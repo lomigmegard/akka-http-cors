@@ -7,7 +7,6 @@ import com.typesafe.config.{ConfigFactory, ConfigValueFactory}
 import org.scalatest.{Matchers, WordSpec}
 
 class CorsSettingsSpec extends WordSpec with Matchers {
-
   import HttpMethods._
 
   private val validConfigStr =
@@ -77,5 +76,4 @@ class CorsSettingsSpec extends WordSpec with Matchers {
       corsSettings.maxAge shouldBe None
     }
   }
-
 }

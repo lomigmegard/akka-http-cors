@@ -6,7 +6,6 @@ import ch.megard.akka.http.cors.javadsl
 
 import scala.collection.immutable.Seq
 
-
 /**
   * [[HttpOrigin]] matcher.
   */
@@ -23,7 +22,6 @@ object HttpOriginMatcher {
   }
 
   final case class Default(origins: Seq[HttpOrigin]) extends HttpOriginMatcher {
-
     private class StrictHostMatcher(origin: HttpOrigin) extends (HttpOrigin => Boolean) {
       override def apply(origin: HttpOrigin): Boolean = origin == this.origin
     }
@@ -32,8 +30,8 @@ object HttpOriginMatcher {
       private val suffix: String = wildcardOrigin.host.host.address.stripPrefix("*")
       override def apply(origin: HttpOrigin): Boolean = {
         origin.scheme == wildcardOrigin.scheme &&
-          origin.host.port == wildcardOrigin.host.port &&
-          origin.host.host.address.endsWith(suffix)
+        origin.host.port == wildcardOrigin.host.port &&
+        origin.host.host.address.endsWith(suffix)
       }
     }
 
@@ -43,13 +41,13 @@ object HttpOriginMatcher {
       }
     }
 
-    override def matches(origin: HttpOrigin): Boolean = matchers.exists(_ apply origin)
-    override def toString: String = origins.mkString(" ")
+    override def matches(origin: HttpOrigin): Boolean = matchers.exists(_.apply(origin))
+    override def toString: String                     = origins.mkString(" ")
   }
 
   final case class Strict(origins: Seq[HttpOrigin]) extends HttpOriginMatcher {
     override def matches(origin: HttpOrigin): Boolean = origins contains origin
-    override def toString: String = origins.mkString(" ")
+    override def toString: String                     = origins.mkString(" ")
   }
 
   private def hasWildcard(origin: HttpOrigin): Boolean =

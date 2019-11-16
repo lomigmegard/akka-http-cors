@@ -4,8 +4,6 @@ import akka.http.scaladsl.model.headers.HttpOrigin
 import org.scalatest.{Inspectors, Matchers, WordSpec}
 
 class HttpOriginMatcherSpec extends WordSpec with Matchers with Inspectors {
-
-
   "The `*` matcher" should {
     "match any Origin" in {
       val origins = Seq(
@@ -63,14 +61,13 @@ class HttpOriginMatcherSpec extends WordSpec with Matchers with Inspectors {
 
   "The apply() method" should {
     "build a matcher accepting sub-domains with wildcards" in {
-
       val matcher = HttpOriginMatcher(
         Seq(
           "http://test.com",
           "https://test.ch:12345",
           "https://*.test.uk.co",
           "http://*.abc.com:8080",
-          "http://*abc.com", // Must start with `*.`
+          "http://*abc.com",        // Must start with `*.`
           "http://abc.*.middle.com" // The wildcard can't be in the middle
         ).map(HttpOrigin.apply): _*
       )
@@ -86,8 +83,8 @@ class HttpOriginMatcherSpec extends WordSpec with Matchers with Inspectors {
       val negatives = Seq(
         "http://test.com:8080",
         "http://sub.test.uk.co", // must compare the scheme
-        "http://sub.abc.com", // must compare the port
-        "http://abc.test.com", // no wildcard
+        "http://sub.abc.com",    // must compare the port
+        "http://abc.test.com",   // no wildcard
         "http://sub.abc.com",
         "http://subabc.com",
         "http://abc.sub.middle.com",
@@ -108,5 +105,4 @@ class HttpOriginMatcherSpec extends WordSpec with Matchers with Inspectors {
       matcher.toString shouldBe "http://test.com https://*.test.ch:12345"
     }
   }
-
 }

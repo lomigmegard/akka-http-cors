@@ -15,7 +15,6 @@ import scala.collection.immutable.Seq
 final case class CorsRejection(cause: CorsRejection.Cause) extends javadsl.CorsRejection with Rejection
 
 object CorsRejection {
-
   /**
     * Signals the cause of the failed CORS request.
     */
@@ -47,5 +46,4 @@ object CorsRejection {
   final case class InvalidHeaders(headers: Seq[String]) extends javadsl.CorsRejection.InvalidHeaders with Cause {
     override def getHeaders = headers.asJava
   }
-
 }

@@ -7,7 +7,6 @@ import akka.http.scaladsl.server._
   * Example of a Scala HTTP server using the CORS directive.
   */
 object CorsServer extends HttpApp {
-
   def main(args: Array[String]): Unit = {
     CorsServer.startServer("127.0.0.1", 9000)
   }
@@ -18,7 +17,7 @@ object CorsServer extends HttpApp {
     // Your CORS settings are loaded from `application.conf`
 
     // Your rejection handler
-    val rejectionHandler = corsRejectionHandler withFallback RejectionHandler.default
+    val rejectionHandler = corsRejectionHandler.withFallback(RejectionHandler.default)
 
     // Your exception handler
     val exceptionHandler = ExceptionHandler {
@@ -30,6 +29,7 @@ object CorsServer extends HttpApp {
 
     // Note how rejections and exceptions are handled *before* the CORS directive (in the inner route).
     // This is required to have the correct CORS headers in the response even when an error occurs.
+    // format: off
     handleErrors {
       cors() {
         handleErrors {
@@ -42,6 +42,6 @@ object CorsServer extends HttpApp {
         }
       }
     }
+    // format: on
   }
-
 }
