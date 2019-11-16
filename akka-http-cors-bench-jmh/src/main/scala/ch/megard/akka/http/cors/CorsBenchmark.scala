@@ -5,8 +5,8 @@ import java.util.concurrent.TimeUnit
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.Http.ServerBinding
-import akka.http.scaladsl.model.{HttpMethods, HttpRequest}
 import akka.http.scaladsl.model.headers.{Origin, `Access-Control-Request-Method`}
+import akka.http.scaladsl.model.{HttpMethods, HttpRequest}
 import akka.http.scaladsl.server.Directives
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
@@ -14,31 +14,26 @@ import ch.megard.akka.http.cors.scaladsl.CorsDirectives
 import com.typesafe.config.ConfigFactory
 import org.openjdk.jmh.annotations._
 
-import scala.concurrent.Await
 import scala.concurrent.duration._
+import scala.concurrent.{Await, ExecutionContext}
 
-/**
-  * @author Lomig Mégard
-  */
 @State(Scope.Benchmark)
 @OutputTimeUnit(TimeUnit.SECONDS)
 @BenchmarkMode(Array(Mode.Throughput))
 class CorsBenchmark extends Directives with CorsDirectives {
 
-  val config = ConfigFactory.parseString(
-    """
-      akka {
-        loglevel = "ERROR"
-      }""".stripMargin).withFallback(ConfigFactory.load())
+  private val config = ConfigFactory.parseString("akka.loglevel = ERROR").withFallback(ConfigFactory.load())
 
-  implicit val system = ActorSystem("CorsBenchmark", config)
-  implicit val materializer = ActorMaterializer()
-  implicit val dispatcher = system.dispatcher
+  private implicit val system: ActorSystem = ActorSystem("CorsBenchmark", config)
+  private implicit val materializer: ActorMaterializer = ActorMaterializer()
+  private implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.global
 
-  var binding: ServerBinding = _
-  var request: HttpRequest = _
-  var requestCors: HttpRequest = _
-  var requestPreflight: HttpRequest = _
+  private val http = Http()
+
+  private var binding: ServerBinding = _
+  private var request: HttpRequest = _
+  private var requestCors: HttpRequest = _
+  private var requestPreflight: HttpRequest = _
 
   @Setup
   def setup(): Unit = {
@@ -57,7 +52,7 @@ class CorsBenchmark extends Directives with CorsDirectives {
     }
     val origin = Origin("http://example.com")
 
-    binding = Await.result(Http().bindAndHandle(route, "127.0.0.1", 0), 1.second)
+    binding = Await.result(http.bindAndHandle(route, "127.0.0.1", 0), 1.second)
     val base = s"http://${binding.localAddress.getHostString}:${binding.localAddress.getPort}"
 
     request = HttpRequest(uri = base + "/baseline")
@@ -75,27 +70,30 @@ class CorsBenchmark extends Directives with CorsDirectives {
 
   @TearDown
   def shutdown(): Unit = {
-    Await.ready(Http().shutdownAllConnectionPools(), 1.second)
-    binding.unbind()
-    Await.result(system.terminate(), 5.seconds)
+    val f = for {
+      _ <- http.shutdownAllConnectionPools()
+      _ <- binding.terminate(1.second)
+      _ <- system.terminate()
+    } yield ()
+    Await.ready(f, 5.seconds)
   }
 
   @Benchmark
   def baseline(): Unit = {
-    val response = Await.result(Http().singleRequest(request), 1.second)
-    Await.result(Unmarshal(response.entity).to[String], 1.second)
+    val f = http.singleRequest(request).flatMap(r => Unmarshal(r.entity).to[String])
+    assert(Await.result(f, 1.second) == "ok")
   }
 
   @Benchmark
   def default_cors(): Unit = {
-    val response = Await.result(Http().singleRequest(requestCors), 1.second)
-    Await.result(Unmarshal(response.entity).to[String], 1.second)
+    val f = http.singleRequest(requestCors).flatMap(r => Unmarshal(r.entity).to[String])
+    assert(Await.result(f, 1.second) == "ok")
   }
 
   @Benchmark
   def default_preflight(): Unit = {
-    val response = Await.result(Http().singleRequest(requestPreflight), 1.second)
-    Await.result(Unmarshal(response.entity).to[String], 1.second)
+    val f = http.singleRequest(requestPreflight).flatMap(r => Unmarshal(r.entity).to[String])
+    assert(Await.result(f, 1.second) == "")
   }
 
 }
