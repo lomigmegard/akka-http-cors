@@ -5,6 +5,7 @@ import akka.http.scaladsl.model.headers._
 import akka.http.scaladsl.model.{HttpMethod, HttpResponse, StatusCodes}
 import akka.http.scaladsl.server._
 import akka.http.scaladsl.server.directives._
+import ch.megard.akka.http.cors.javadsl
 import ch.megard.akka.http.cors.scaladsl.model.HttpOriginMatcher
 import ch.megard.akka.http.cors.scaladsl.settings.CorsSettings
 
@@ -32,29 +33,29 @@ trait CorsDirectives {
   def cors(settings: CorsSettings = CorsSettings.defaultSettings): Directive0 = {
     import settings._
 
-    /** Return the invalid origins, or `None` if one is valid. */
-    def validateOrigins(origins: Seq[HttpOrigin]): Option[CorsRejection.Cause] =
+    /** Return the invalid origins, or `Nil` if one is valid. */
+    def validateOrigins(origins: Seq[HttpOrigin]): List[CorsRejection.Cause] =
       if (allowedOrigins == HttpOriginMatcher.* || origins.exists(allowedOrigins.matches)) {
-        None
+        Nil
       } else {
-        Some(CorsRejection.InvalidOrigin(origins))
+        CorsRejection.InvalidOrigin(origins) :: Nil
       }
 
-    /** Return the method if invalid, `None` otherwise. */
-    def validateMethod(method: HttpMethod): Option[CorsRejection.Cause] =
+    /** Return the method if invalid, `Nil` otherwise. */
+    def validateMethod(method: HttpMethod): List[CorsRejection.Cause] =
       if (allowedMethods.contains(method)) {
-        None
+        Nil
       } else {
-        Some(CorsRejection.InvalidMethod(method))
+        CorsRejection.InvalidMethod(method) :: Nil
       }
 
-    /** Return the list of invalid headers, or `None` if they are all valid. */
-    def validateHeaders(headers: Seq[String]): Option[CorsRejection.Cause] = {
+    /** Return the list of invalid headers, or `Nil` if they are all valid. */
+    def validateHeaders(headers: Seq[String]): List[CorsRejection.Cause] = {
       val invalidHeaders = headers.filterNot(allowedHeaders.matches)
       if (invalidHeaders.isEmpty) {
-        None
+        Nil
       } else {
-        Some(CorsRejection.InvalidHeaders(invalidHeaders))
+        CorsRejection.InvalidHeaders(invalidHeaders) :: Nil
       }
     }
 
@@ -67,20 +68,21 @@ trait CorsDirectives {
 
           val headers = header[`Access-Control-Request-Headers`].map(_.headers.toSeq).getOrElse(Seq.empty)
 
-          List(validateOrigins(origins), validateMethod(requestMethod), validateHeaders(headers))
-            .collectFirst { case Some(cause) => CorsRejection(cause) }
-            .fold(complete(HttpResponse(StatusCodes.OK, preflightResponseHeaders(origins, headers))))(reject(_))
+          validateOrigins(origins) ::: validateMethod(requestMethod) ::: validateHeaders(headers) match {
+            case Nil    => complete(HttpResponse(StatusCodes.OK, preflightResponseHeaders(origins, headers)))
+            case causes => reject(causes.map(CorsRejection(_)): _*)
+          }
 
         case (_, Some(origins), None) =>
           // Case 2: simple/actual CORS request
 
           validateOrigins(origins) match {
-            case None =>
+            case Nil =>
               mapResponseHeaders { oldHeaders =>
                 actualResponseHeaders(origins) ++ oldHeaders.filterNot(h => CorsDirectives.headersToClean.exists(h.is))
               }
-            case Some(cause) =>
-              reject(CorsRejection(cause))
+            case causes =>
+              reject(causes.map(CorsRejection(_)): _*)
           }
 
         case _ if allowGenericHttpRequests =>
@@ -112,20 +114,9 @@ object CorsDirectives extends CorsDirectives {
   def corsRejectionHandler: RejectionHandler =
     RejectionHandler
       .newBuilder()
-      .handle {
-        case CorsRejection(cause) =>
-          val message = cause match {
-            case CorsRejection.Malformed =>
-              "malformed request"
-            case CorsRejection.InvalidOrigin(origins) =>
-              val listOrNull = if (origins.isEmpty) "null" else origins.mkString(" ")
-              s"invalid origin '$listOrNull'"
-            case CorsRejection.InvalidMethod(method) =>
-              s"invalid method '${method.value}'"
-            case CorsRejection.InvalidHeaders(headers) =>
-              s"invalid headers '${headers.mkString(" ")}'"
-          }
-          complete((StatusCodes.BadRequest, s"CORS: $message"))
+      .handleAll[javadsl.CorsRejection] { rejections =>
+        val causes = rejections.map(_.cause.description).mkString(", ")
+        complete((StatusCodes.BadRequest, s"CORS: $causes"))
       }
       .result()
 }

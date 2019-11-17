@@ -23,27 +23,32 @@ object CorsRejection {
   /**
     * Signals the CORS request was malformed.
     */
-  case object Malformed extends javadsl.CorsRejection.Malformed with Cause
+  case object Malformed extends javadsl.CorsRejection.Malformed with Cause {
+    override def description: String = "malformed request"
+  }
 
   /**
     * Signals the CORS request was rejected because its origin was invalid.
     * An empty list means the Origin header was `null`.
     */
   final case class InvalidOrigin(origins: Seq[HttpOrigin]) extends javadsl.CorsRejection.InvalidOrigin with Cause {
-    override def getOrigins = (origins: Seq[akka.http.javadsl.model.headers.HttpOrigin]).asJava
+    override def description: String = s"invalid origin '${if (origins.isEmpty) "null" else origins.mkString(" ")}'"
+    override def getOrigins          = (origins: Seq[akka.http.javadsl.model.headers.HttpOrigin]).asJava
   }
 
   /**
     * Signals the CORS request was rejected because its method was invalid.
     */
   final case class InvalidMethod(method: HttpMethod) extends javadsl.CorsRejection.InvalidMethod with Cause {
-    override def getMethod = method
+    override def description: String = s"invalid method '${method.value}'"
+    override def getMethod           = method
   }
 
   /**
     * Signals the CORS request was rejected because its headers were invalid.
     */
   final case class InvalidHeaders(headers: Seq[String]) extends javadsl.CorsRejection.InvalidHeaders with Cause {
-    override def getHeaders = headers.asJava
+    override def description: String = s"invalid headers '${headers.mkString(" ")}'"
+    override def getHeaders          = headers.asJava
   }
 }
