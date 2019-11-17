@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.4.2 (unreleased)
+## 0.4.2 (2019-11-17)
 
   - Rejection handler handles all CorsRejection (#53).
   - Update Scala to 2.12.10 and 2.13.1.
