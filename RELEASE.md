@@ -1,8 +1,11 @@
 # Release
 
+Build the release with Java 8. For macOs:
+
 ```bash
-docker build . -t akka-http-cors:latest
-docker run -it --rm -v ~/.ivy2:/root/.ivy2 -v ~/.sbt:/root/.sbt -v ~/.gnupg:/root/.gnupg akka-http-cors:latest
+brew tap adoptopenjdk/openjdk
+brew cask install adoptopenjdk8
+sbt -v --java-home /Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home
 > + test
 > project akka-http-cors
 > + publishSigned
