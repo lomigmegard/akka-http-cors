@@ -321,5 +321,15 @@ class CorsDirectivesSpec extends WordSpec with Matchers with Directives with Sca
         entityAs[String] shouldBe s"CORS: invalid headers 'X-a X-b'"
       }
     }
+
+    "handle multiple CORS rejections" in {
+      Options() ~> Origin(HttpOrigin("http://invalid.com")) ~> `Access-Control-Request-Method`(PATCH) ~>
+        `Access-Control-Request-Headers`("X-a", "X-b") ~> {
+        sealedRoute
+      } ~> check {
+        status shouldBe StatusCodes.BadRequest
+        entityAs[String] shouldBe s"CORS: invalid origin 'http://invalid.com', invalid method 'PATCH', invalid headers 'X-a X-b'"
+      }
+    }
   }
 }

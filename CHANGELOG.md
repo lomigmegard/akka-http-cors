@@ -2,6 +2,7 @@
 
 ## 0.4.2 (unreleased)
 
+  - Rejection handler handles all CorsRejection (#53).
   - Update Scala to 2.12.10 and 2.13.1.
   - Update akka-http to 10.1.10.
   - Use Scalafmt for formatting.
