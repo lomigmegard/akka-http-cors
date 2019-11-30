@@ -4,9 +4,10 @@ import akka.http.scaladsl.model.headers.HttpOrigin
 import akka.http.scaladsl.model.{HttpMethod, HttpMethods}
 import ch.megard.akka.http.cors.scaladsl.model.{HttpHeaderRange, HttpOriginMatcher}
 import com.typesafe.config.{ConfigFactory, ConfigValueFactory}
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class CorsSettingsSpec extends WordSpec with Matchers {
+class CorsSettingsSpec extends AnyWordSpec with Matchers {
   import HttpMethods._
 
   private val validConfigStr =
