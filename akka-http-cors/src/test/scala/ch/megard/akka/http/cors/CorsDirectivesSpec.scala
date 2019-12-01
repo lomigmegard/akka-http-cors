@@ -7,11 +7,12 @@ import akka.http.scaladsl.testkit.ScalatestRouteTest
 import ch.megard.akka.http.cors.scaladsl.CorsRejection
 import ch.megard.akka.http.cors.scaladsl.model.{HttpHeaderRange, HttpOriginMatcher}
 import ch.megard.akka.http.cors.scaladsl.settings.CorsSettings
-import org.scalatest.{Matchers, WordSpec}
 
 import scala.collection.immutable.Seq
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class CorsDirectivesSpec extends WordSpec with Matchers with Directives with ScalatestRouteTest {
+class CorsDirectivesSpec extends AnyWordSpec with Matchers with Directives with ScalatestRouteTest {
   import HttpMethods._
   import ch.megard.akka.http.cors.scaladsl.CorsDirectives._
 

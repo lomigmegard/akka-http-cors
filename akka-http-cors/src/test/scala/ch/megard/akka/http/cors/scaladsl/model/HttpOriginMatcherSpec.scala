@@ -1,9 +1,11 @@
 package ch.megard.akka.http.cors.scaladsl.model
 
 import akka.http.scaladsl.model.headers.HttpOrigin
-import org.scalatest.{Inspectors, Matchers, WordSpec}
+import org.scalatest.Inspectors
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class HttpOriginMatcherSpec extends WordSpec with Matchers with Inspectors {
+class HttpOriginMatcherSpec extends AnyWordSpec with Matchers with Inspectors {
   "The `*` matcher" should {
     "match any Origin" in {
       val origins = Seq(
