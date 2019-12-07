@@ -15,6 +15,7 @@ import scala.collection.immutable.Seq
 final case class CorsRejection(cause: CorsRejection.Cause) extends javadsl.CorsRejection with Rejection
 
 object CorsRejection {
+
   /**
     * Signals the cause of the failed CORS request.
     */

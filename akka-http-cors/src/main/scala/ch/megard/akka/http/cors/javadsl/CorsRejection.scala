@@ -13,10 +13,12 @@ trait CorsRejection extends CustomRejection {
 }
 
 object CorsRejection {
+
   /**
     * Signals the cause of the failed CORS request.
     */
   trait Cause {
+
     /**
       * Description of this Cause in a human-readable format.
       * Can be used for debugging or custom Rejection handlers.
