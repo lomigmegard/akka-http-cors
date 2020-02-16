@@ -1,5 +1,10 @@
 # Changelog
 
+## [unreleased]
+
+  - Drop support for Scala 2.11.
+  - Update akka to 2.6.3 (#73).
+
 ## 0.4.2 (2019-11-17)
 
   - Rejection handler handles all CorsRejection (#53).

@@ -9,7 +9,6 @@ import akka.http.scaladsl.model.headers.{Origin, `Access-Control-Request-Method`
 import akka.http.scaladsl.model.{HttpMethods, HttpRequest}
 import akka.http.scaladsl.server.Directives
 import akka.http.scaladsl.unmarshalling.Unmarshal
-import akka.stream.ActorMaterializer
 import ch.megard.akka.http.cors.scaladsl.CorsDirectives
 import com.typesafe.config.ConfigFactory
 import org.openjdk.jmh.annotations._
@@ -23,9 +22,8 @@ import scala.concurrent.{Await, ExecutionContext}
 class CorsBenchmark extends Directives with CorsDirectives {
   private val config = ConfigFactory.parseString("akka.loglevel = ERROR").withFallback(ConfigFactory.load())
 
-  implicit private val system: ActorSystem             = ActorSystem("CorsBenchmark", config)
-  implicit private val materializer: ActorMaterializer = ActorMaterializer()
-  implicit private val ec: ExecutionContext            = scala.concurrent.ExecutionContext.global
+  implicit private val system: ActorSystem  = ActorSystem("CorsBenchmark", config)
+  implicit private val ec: ExecutionContext = scala.concurrent.ExecutionContext.global
 
   private val http = Http()
 

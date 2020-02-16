@@ -2,7 +2,7 @@ lazy val commonSettings = Seq(
   organization := "ch.megard",
   version := "0.4.3-SNAPSHOT",
   scalaVersion := "2.12.10",
-  crossScalaVersions := Seq(scalaVersion.value, "2.11.12", "2.13.1"),
+  crossScalaVersions := Seq(scalaVersion.value, "2.13.1"),
   scalacOptions ++= Seq(
     "-unchecked",
     "-deprecation",
@@ -62,7 +62,7 @@ lazy val root = (project in file("."))
   .settings(commonSettings)
   .settings(dontPublishSettings)
 
-lazy val akkaVersion = "2.5.29"
+lazy val akkaVersion = "2.6.3"
 lazy val akkaHttpVersion = "10.1.11"
 
 lazy val `akka-http-cors` = project
