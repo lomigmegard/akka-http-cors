@@ -13,7 +13,7 @@ import com.typesafe.config.ConfigException.{Missing, WrongType}
 import com.typesafe.config.{Config, ConfigFactory}
 
 import scala.collection.JavaConverters._
-import scala.collection.immutable.Seq
+import scala.collection.immutable.{ListMap, Seq}
 import scala.compat.java8.OptionConverters
 import scala.util.Try
 
@@ -159,14 +159,47 @@ abstract class CorsSettings private[akka] () extends javadsl.settings.CorsSettin
 }
 
 object CorsSettings {
-  private val prefix = "akka-http-cors"
+  private val prefix          = "akka-http-cors"
+  final private val MaxCached = 8
+  private[this] var cache     = ListMap.empty[ActorSystem, CorsSettings]
 
-  def apply(system: ActorSystem): CorsSettings = apply(system.settings.config)
-  def apply(config: Config): CorsSettings      = fromSubConfig(config.getConfig(prefix))
+  /**
+    * Creates an instance of settings using the given Config.
+    */
+  def apply(config: Config): CorsSettings =
+    fromSubConfig(config.getConfig(prefix))
+
+  /**
+    * Create an instance of settings using the given String of config overrides to override
+    * settings set in the class loader of this class (i.e. by application.conf or reference.conf files in
+    * the class loader of this class).
+    */
   def apply(configOverrides: String): CorsSettings =
     apply(
       ConfigFactory.parseString(configOverrides).withFallback(ConfigFactory.defaultReference(getClass.getClassLoader))
     )
+
+  /**
+    * Creates an instance of CorsSettings using the configuration provided by the given ActorSystem.
+    */
+  def apply(system: ActorSystem): CorsSettings =
+    // From private akka.http.impl.util.SettingsCompanionImpl implementation
+    cache.getOrElse(
+      system, {
+        val settings = apply(system.settings.config)
+        val c        = if (cache.size < MaxCached) cache else cache.tail
+        cache = c.updated(system, settings)
+        settings
+      }
+    )
+
+  /**
+    * Creates an instance of CorsSettings using the configuration provided by the given ActorSystem.
+    */
+  implicit def default(implicit system: ActorSystem): CorsSettings = apply(system)
+
+  @deprecated("Use either `CorsSetting.default` or `CorsSettings.apply` instead", "1.0.0")
+  def defaultSettings: CorsSettings = apply(ConfigFactory.load(getClass.getClassLoader))
 
   def fromSubConfig(config: Config): CorsSettings = {
     def parseStringList(path: String): List[String] =
@@ -198,5 +231,4 @@ object CorsSettings {
     )
   }
 
-  val defaultSettings = apply(ConfigFactory.load(getClass.getClassLoader))
 }

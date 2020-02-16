@@ -8,7 +8,7 @@ import akka.http.javadsl.model.HttpMethod
 import ch.megard.akka.http.cors.javadsl.model.{HttpHeaderRange, HttpOriginMatcher}
 import ch.megard.akka.http.cors.scaladsl
 import ch.megard.akka.http.cors.scaladsl.settings.CorsSettingsImpl
-import com.typesafe.config.Config
+import com.typesafe.config.{Config, ConfigFactory}
 
 /**
   * Public API but not intended for subclassing
@@ -36,7 +36,7 @@ abstract class CorsSettings { self: CorsSettingsImpl =>
 object CorsSettings {
   def create(config: Config): CorsSettings          = scaladsl.settings.CorsSettings(config)
   def create(configOverrides: String): CorsSettings = scaladsl.settings.CorsSettings(configOverrides)
-  def create(system: ActorSystem): CorsSettings     = create(system.settings.config)
-
-  def defaultSettings: CorsSettings = scaladsl.settings.CorsSettings.defaultSettings
+  def create(system: ActorSystem): CorsSettings     = scaladsl.settings.CorsSettings(system)
+  @deprecated("Use `CorsSetting.create` instead", "1.0.0")
+  def defaultSettings: CorsSettings = create(ConfigFactory.load(getClass.getClassLoader))
 }
