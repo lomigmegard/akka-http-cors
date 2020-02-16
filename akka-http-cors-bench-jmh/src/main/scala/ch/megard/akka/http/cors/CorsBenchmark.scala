@@ -40,7 +40,7 @@ class CorsBenchmark extends Directives with CorsDirectives {
           complete("ok")
         }
       } ~ path("cors") {
-        cors() {
+        cors {
           get {
             complete("ok")
           }

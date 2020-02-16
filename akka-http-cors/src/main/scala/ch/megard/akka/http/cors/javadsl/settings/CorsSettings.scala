@@ -36,7 +36,5 @@ abstract class CorsSettings { self: CorsSettingsImpl =>
 object CorsSettings {
   def create(config: Config): CorsSettings          = scaladsl.settings.CorsSettings(config)
   def create(configOverrides: String): CorsSettings = scaladsl.settings.CorsSettings(configOverrides)
-  def create(system: ActorSystem): CorsSettings     = create(system.settings.config)
-
-  def defaultSettings: CorsSettings = scaladsl.settings.CorsSettings.defaultSettings
+  def create(system: ActorSystem): CorsSettings     = scaladsl.settings.CorsSettings(system)
 }

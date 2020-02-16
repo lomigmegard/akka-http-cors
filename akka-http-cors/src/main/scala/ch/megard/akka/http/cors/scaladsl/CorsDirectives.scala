@@ -28,9 +28,23 @@ trait CorsDirectives {
     * In particular the recommendation written by the W3C in https://www.w3.org/TR/cors/ is
     * implemented by this directive.
     *
+    * The settings are loaded from the Actor System configuration.
+    */
+  def cors: Directive0 = {
+    extractActorSystem.flatMap { system =>
+      corsWithSettings(CorsSettings(system))
+    }
+  }
+
+  /**
+    * Wraps its inner route with support for the CORS mechanism, enabling cross origin requests.
+    *
+    * In particular the recommendation written by the W3C in https://www.w3.org/TR/cors/ is
+    * implemented by this directive.
+    *
     * @param settings the settings used by the CORS filter
     */
-  def cors(settings: CorsSettings = CorsSettings.defaultSettings): Directive0 = {
+  def corsWithSettings(settings: CorsSettings): Directive0 = {
     import settings._
 
     /** Return the invalid origins, or `Nil` if one is valid. */

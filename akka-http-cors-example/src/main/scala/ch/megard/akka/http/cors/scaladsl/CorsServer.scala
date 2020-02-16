@@ -31,7 +31,7 @@ object CorsServer extends HttpApp {
     // This is required to have the correct CORS headers in the response even when an error occurs.
     // format: off
     handleErrors {
-      cors() {
+      cors {
         handleErrors {
           path("ping") {
             complete("pong")
