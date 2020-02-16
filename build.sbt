@@ -44,7 +44,7 @@ lazy val publishSettings = Seq(
       <developer>
         <id>lomigmegard</id>
         <name>Lomig Mégard</name>
-        <url>http://lomig.megard.ch</url>
+        <url>https://lomig.ch</url>
       </developer>
     </developers>
   },
