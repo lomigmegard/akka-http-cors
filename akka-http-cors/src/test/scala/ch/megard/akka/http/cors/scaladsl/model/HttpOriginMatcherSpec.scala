@@ -17,9 +17,7 @@ class HttpOriginMatcherSpec extends AnyWordSpec with Matchers with Inspectors {
         "https://test.com:4433"
       ).map(HttpOrigin.apply)
 
-      forAll(origins) { o =>
-        HttpOriginMatcher.*.matches(o) shouldBe true
-      }
+      forAll(origins) { o => HttpOriginMatcher.*.matches(o) shouldBe true }
     }
 
     "be printed as `*`" in {
@@ -46,13 +44,9 @@ class HttpOriginMatcherSpec extends AnyWordSpec with Matchers with Inspectors {
 
       val matcher = HttpOriginMatcher.strict(positives: _*)
 
-      forAll(positives) { o =>
-        matcher.matches(o) shouldBe true
-      }
+      forAll(positives) { o => matcher.matches(o) shouldBe true }
 
-      forAll(negatives) { o =>
-        matcher.matches(o) shouldBe false
-      }
+      forAll(negatives) { o => matcher.matches(o) shouldBe false }
     }
 
     "build a matcher with a toString() method that is a valid range" in {
@@ -93,13 +87,9 @@ class HttpOriginMatcherSpec extends AnyWordSpec with Matchers with Inspectors {
         "http://abc.middle.com"
       ).map(HttpOrigin.apply)
 
-      forAll(positives) { o =>
-        matcher.matches(o) shouldBe true
-      }
+      forAll(positives) { o => matcher.matches(o) shouldBe true }
 
-      forAll(negatives) { o =>
-        matcher.matches(o) shouldBe false
-      }
+      forAll(negatives) { o => matcher.matches(o) shouldBe false }
     }
 
     "build a matcher with a toString() method that is a valid range" in {
