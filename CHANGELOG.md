@@ -1,6 +1,6 @@
 # Changelog
 
-## [unreleased]
+## 0.4.3 (2020-04-18)
 
   - Drop support for Scala 2.11.
   - Update akka to 2.6.4 (#73).
