@@ -10,6 +10,7 @@ import akka.http.scaladsl.model.{HttpMethods, HttpRequest}
 import akka.http.scaladsl.server.Directives
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import ch.megard.akka.http.cors.scaladsl.CorsDirectives
+import ch.megard.akka.http.cors.scaladsl.settings.CorsSettings
 import com.typesafe.config.ConfigFactory
 import org.openjdk.jmh.annotations._
 
@@ -27,13 +28,15 @@ class CorsBenchmark extends Directives with CorsDirectives {
 
   private val http = Http()
 
-  private var binding: ServerBinding        = _
-  private var request: HttpRequest          = _
-  private var requestCors: HttpRequest      = _
-  private var requestPreflight: HttpRequest = _
+  private var binding: ServerBinding               = _
+  private var request: HttpRequest                 = _
+  private var requestCors: HttpRequest             = _
+  private var requestCorsWithSettings: HttpRequest = _
+  private var requestPreflight: HttpRequest        = _
 
   @Setup
   def setup(): Unit = {
+    val explicitSettings = CorsSettings.default
     val route = {
       path("baseline") {
         get {
@@ -41,6 +44,12 @@ class CorsBenchmark extends Directives with CorsDirectives {
         }
       } ~ path("cors") {
         cors {
+          get {
+            complete("ok")
+          }
+        }
+      } ~ path("corsWithSettings") {
+        corsWithSettings(explicitSettings) {
           get {
             complete("ok")
           }
@@ -56,6 +65,11 @@ class CorsBenchmark extends Directives with CorsDirectives {
     requestCors = HttpRequest(
       method = HttpMethods.GET,
       uri = base + "/cors",
+      headers = List(origin)
+    )
+    requestCorsWithSettings = HttpRequest(
+      method = HttpMethods.GET,
+      uri = base + "/corsWithSettings",
       headers = List(origin)
     )
     requestPreflight = HttpRequest(
@@ -91,5 +105,11 @@ class CorsBenchmark extends Directives with CorsDirectives {
   def default_preflight(): Unit = {
     val f = http.singleRequest(requestPreflight).flatMap(r => Unmarshal(r.entity).to[String])
     assert(Await.result(f, 1.second) == "")
+  }
+
+  @Benchmark
+  def default_cors_with_settings(): Unit = {
+    val f = http.singleRequest(requestCorsWithSettings).flatMap(r => Unmarshal(r.entity).to[String])
+    assert(Await.result(f, 1.second) == "ok")
   }
 }
