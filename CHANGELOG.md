@@ -5,6 +5,7 @@
   - Drop support for Scala 2.11.
   - Update akka to 2.6.3 (#73).
   - Update akka-http to 10.1.11.
+  - Update Scala to 2.12.11.
 
 ## 0.4.2 (2019-11-17)
 

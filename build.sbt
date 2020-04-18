@@ -1,7 +1,7 @@
 lazy val commonSettings = Seq(
   organization := "ch.megard",
   version := "0.4.3-SNAPSHOT",
-  scalaVersion := "2.12.10",
+  scalaVersion := "2.12.11",
   crossScalaVersions := Seq(scalaVersion.value, "2.13.1"),
   scalacOptions ++= Seq(
     "-unchecked",
