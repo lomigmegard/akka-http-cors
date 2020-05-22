@@ -1,5 +1,9 @@
 # Changelog
 
+## [unreleased]
+
+  - Update akka-http to 10.1.12.
+
 ## 0.4.3 (2020-04-18)
 
   - Drop support for Scala 2.11.
