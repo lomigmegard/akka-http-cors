@@ -20,9 +20,10 @@ class CorsDirectivesSpec extends AnyWordSpec with Matchers with Directives with 
   val exampleOrigin = HttpOrigin("http://example.com")
   val exampleStatus = StatusCodes.Created
 
-  def route(settings: CorsSettings, responseHeaders: Seq[HttpHeader] = Nil): Route = cors(settings) {
-    complete(HttpResponse(exampleStatus, responseHeaders, HttpEntity(actual)))
-  }
+  def route(settings: CorsSettings, responseHeaders: Seq[HttpHeader] = Nil): Route =
+    cors(settings) {
+      complete(HttpResponse(exampleStatus, responseHeaders, HttpEntity(actual)))
+    }
 
   "The cors directive" should {
     "not affect actual requests when not strict" in {
@@ -329,7 +330,8 @@ class CorsDirectivesSpec extends AnyWordSpec with Matchers with Directives with 
         sealedRoute
       } ~> check {
         status shouldBe StatusCodes.BadRequest
-        entityAs[String] shouldBe s"CORS: invalid origin 'http://invalid.com', invalid method 'PATCH', invalid headers 'X-a X-b'"
+        entityAs[String] shouldBe
+          s"CORS: invalid origin 'http://invalid.com', invalid method 'PATCH', invalid headers 'X-a X-b'"
       }
     }
   }

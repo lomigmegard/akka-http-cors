@@ -163,9 +163,10 @@ object CorsSettings {
 
   def apply(system: ActorSystem): CorsSettings = apply(system.settings.config)
   def apply(config: Config): CorsSettings      = fromSubConfig(config.getConfig(prefix))
-  def apply(configOverrides: String): CorsSettings = apply(
-    ConfigFactory.parseString(configOverrides).withFallback(ConfigFactory.defaultReference(getClass.getClassLoader))
-  )
+  def apply(configOverrides: String): CorsSettings =
+    apply(
+      ConfigFactory.parseString(configOverrides).withFallback(ConfigFactory.defaultReference(getClass.getClassLoader))
+    )
 
   def fromSubConfig(config: Config): CorsSettings = {
     def parseStringList(path: String): List[String] =
