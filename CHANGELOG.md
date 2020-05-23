@@ -3,6 +3,7 @@
 ## [unreleased]
 
   - Update akka-http to 10.1.12.
+  - Update Scala to 2.13.2.
 
 ## 0.4.3 (2020-04-18)
 
