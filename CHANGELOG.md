@@ -2,8 +2,19 @@
 
 ## [unreleased]
 
+This release changes how settings are passed to the `cors` directive, 
+extracting them from the Actor System configuration if not provided (see #72).
+
+The `CorsSettings.defaultSettings` member has been deprecated in favor of explicitly 
+passing the configuration to build the `CorsSettings`. 
+Use the `CorsSettings.default` helper that takes an implicit Actor System, or the 
+`CorsSettings.apply` functions. To get the reference configuration, you can use the 
+`CorsSettings("")` construct.
+
+  - Load settings from the current Actor System (#37, #72).
   - Update akka-http to 10.1.12.
   - Update Scala to 2.13.2.
+  - Use sbt-sonatype plugin for release.
 
 ## 0.4.3 (2020-04-18)
 
