@@ -6,6 +6,6 @@ jdk:
   - openjdk11
 scala:
   - 2.12.11
-  - 2.13.1
+  - 2.13.2
 script:
   - sbt ++$TRAVIS_SCALA_VERSION clean scalafmtCheckAll test;
