@@ -12,48 +12,28 @@ lazy val commonSettings = Seq(
     "-Ywarn-numeric-widen",
     "-Ywarn-unused",
   ),
+  homepage := Some(url("https://github.com/lomigmegard/akka-http-cors")),
+  licenses := Seq("Apache 2" -> url("https://www.apache.org/licenses/LICENSE-2.0.txt")),
+  scmInfo := Some(
+    ScmInfo(
+      url("https://github.com/lomigmegard/akka-http-cors"),
+      "scm:git@github.com:lomigmegard/akka-http-cors.git"
+    )
+  ),
+  developers := List(
+    Developer(id="lomigmegard", name="Lomig Mégard", email="", url=url("https://lomig.ch"))
+  ),
 )
 
 lazy val publishSettings = Seq(
   publishMavenStyle := true,
   publishArtifact in Test := false,
   pomIncludeRepository := { _ => false },
-
-  publishTo := {
-    val nexus = "https://oss.sonatype.org/"
-    if (isSnapshot.value)
-      Some("snapshots" at nexus + "content/repositories/snapshots")
-    else
-      Some("releases"  at nexus + "service/local/staging/deploy/maven2")
-  },
-
-  pomExtra := {
-    <url>https://github.com/lomigmegard/akka-http-cors</url>
-    <licenses>
-      <license>
-        <name>Apache 2</name>
-        <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
-      </license>
-    </licenses>
-    <scm>
-      <url>git@github.com:lomigmegard/akka-http-cors.git</url>
-      <connection>scm:git:git@github.com:lomigmegard/akka-http-cors.git</connection>
-    </scm>
-    <developers>
-      <developer>
-        <id>lomigmegard</id>
-        <name>Lomig Mégard</name>
-        <url>https://lomig.ch</url>
-      </developer>
-    </developers>
-  },
+  publishTo := sonatypePublishToBundle.value,
 )
 
 lazy val dontPublishSettings = Seq(
-  //publishSigned := (()),
-  publish := (()),
-  publishLocal := (()),
-  publishArtifact := false,
+  skip in publish := true,
 )
 
 lazy val root = (project in file("."))

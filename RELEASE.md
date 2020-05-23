@@ -9,4 +9,5 @@ sbt -v --java-home /Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents
 > + test
 > project akka-http-cors
 > + publishSigned
+> sonatypeBundleRelease
 ```
