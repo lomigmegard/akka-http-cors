@@ -8,7 +8,6 @@ lazy val commonSettings = Seq(
     "-deprecation",
     "-target:jvm-1.8",
     "-encoding", "utf8",
-    "-Xfuture",
     "-Ywarn-dead-code",
     "-Ywarn-numeric-widen",
     "-Ywarn-unused",

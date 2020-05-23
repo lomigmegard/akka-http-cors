@@ -43,11 +43,9 @@ public class CorsServer extends HttpApp {
 
         // Note how rejections and exceptions are handled *before* the CORS directive (in the inner route).
         // This is required to have the correct CORS headers in the response even when an error occurs.
-        return handleErrors.apply(() -> cors(() -> handleErrors.apply(() -> route(
-                path("ping", () ->
-                        complete("pong")),
-                path("pong", () ->
-                        failWith(new NoSuchElementException("pong not found, try with ping")))
+        return handleErrors.apply(() -> cors(() -> handleErrors.apply(() -> concat(
+                path("ping", () -> complete("pong")),
+                path("pong", () -> failWith(new NoSuchElementException("pong not found, try with ping")))
         ))));
     }
 

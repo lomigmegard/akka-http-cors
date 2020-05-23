@@ -10,6 +10,7 @@ import akka.http.scaladsl.model.{HttpMethods, HttpRequest}
 import akka.http.scaladsl.server.Directives
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import ch.megard.akka.http.cors.scaladsl.CorsDirectives
+import ch.megard.akka.http.cors.scaladsl.settings.CorsSettings
 import com.typesafe.config.ConfigFactory
 import org.openjdk.jmh.annotations._
 
@@ -25,7 +26,8 @@ class CorsBenchmark extends Directives with CorsDirectives {
   implicit private val system: ActorSystem  = ActorSystem("CorsBenchmark", config)
   implicit private val ec: ExecutionContext = scala.concurrent.ExecutionContext.global
 
-  private val http = Http()
+  private val http         = Http()
+  private val corsSettings = CorsSettings.default
 
   private var binding: ServerBinding        = _
   private var request: HttpRequest          = _
@@ -40,7 +42,7 @@ class CorsBenchmark extends Directives with CorsDirectives {
           complete("ok")
         }
       } ~ path("cors") {
-        cors() {
+        cors(corsSettings) {
           get {
             complete("ok")
           }
