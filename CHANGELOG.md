@@ -1,6 +1,6 @@
 # Changelog
 
-## [unreleased]
+## 1.0.0 (2020-05-25)
 
 This release changes how settings are passed to the `cors` directive, 
 extracting them from the Actor System configuration if not provided (see #72).
