@@ -7,7 +7,7 @@ import ch.megard.akka.http.cors.javadsl
 import scala.collection.immutable.Seq
 
 /**
-  * [[HttpOrigin]] matcher.
+  * HttpOrigin matcher.
   */
 abstract class HttpOriginMatcher extends javadsl.model.HttpOriginMatcher {
   def matches(origin: HttpOrigin): Boolean

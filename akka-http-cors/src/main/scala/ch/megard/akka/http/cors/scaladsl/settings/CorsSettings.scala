@@ -170,14 +170,12 @@ object CorsSettings {
     fromSubConfig(config.getConfig(prefix))
 
   /**
-    * Create an instance of settings using the given String of config overrides to override
+    * Creates an instance of settings using the given String of config overrides to override
     * settings set in the class loader of this class (i.e. by application.conf or reference.conf files in
     * the class loader of this class).
     */
   def apply(configOverrides: String): CorsSettings =
-    apply(
-      ConfigFactory.parseString(configOverrides).withFallback(ConfigFactory.defaultReference(getClass.getClassLoader))
-    )
+    apply(ConfigFactory.parseString(configOverrides).withFallback(ConfigFactory.load(getClass.getClassLoader)))
 
   /**
     * Creates an instance of CorsSettings using the configuration provided by the given ActorSystem.
@@ -198,7 +196,11 @@ object CorsSettings {
     */
   implicit def default(implicit system: ActorSystem): CorsSettings = apply(system)
 
-  @deprecated("Use either `CorsSetting.default` or `CorsSettings.apply` instead", "1.0.0")
+  /**
+    * Settings from the default loaded configuration.
+    * Note that application code may want to use the `apply()` methods instead
+    * to have more control over the source of the configuration.
+    */
   def defaultSettings: CorsSettings = apply(ConfigFactory.load(getClass.getClassLoader))
 
   def fromSubConfig(config: Config): CorsSettings = {

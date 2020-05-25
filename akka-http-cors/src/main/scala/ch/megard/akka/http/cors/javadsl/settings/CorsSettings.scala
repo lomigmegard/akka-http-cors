@@ -8,7 +8,7 @@ import akka.http.javadsl.model.HttpMethod
 import ch.megard.akka.http.cors.javadsl.model.{HttpHeaderRange, HttpOriginMatcher}
 import ch.megard.akka.http.cors.scaladsl
 import ch.megard.akka.http.cors.scaladsl.settings.CorsSettingsImpl
-import com.typesafe.config.{Config, ConfigFactory}
+import com.typesafe.config.Config
 
 /**
   * Public API but not intended for subclassing
@@ -34,9 +34,28 @@ abstract class CorsSettings { self: CorsSettingsImpl =>
 }
 
 object CorsSettings {
-  def create(config: Config): CorsSettings          = scaladsl.settings.CorsSettings(config)
+
+  /**
+    * Creates an instance of settings using the given Config.
+    */
+  def create(config: Config): CorsSettings = scaladsl.settings.CorsSettings(config)
+
+  /**
+    * Creates an instance of settings using the given String of config overrides to override
+    * settings set in the class loader of this class (i.e. by application.conf or reference.conf files in
+    * the class loader of this class).
+    */
   def create(configOverrides: String): CorsSettings = scaladsl.settings.CorsSettings(configOverrides)
-  def create(system: ActorSystem): CorsSettings     = scaladsl.settings.CorsSettings(system)
-  @deprecated("Use `CorsSetting.create` instead", "1.0.0")
-  def defaultSettings: CorsSettings = create(ConfigFactory.load(getClass.getClassLoader))
+
+  /**
+    * Creates an instance of CorsSettings using the configuration provided by the given ActorSystem.
+    */
+  def create(system: ActorSystem): CorsSettings = scaladsl.settings.CorsSettings(system)
+
+  /**
+    * Settings from the default loaded configuration.
+    * Note that application code may want to use the `apply()` methods instead
+    * to have more control over the source of the configuration.
+    */
+  def defaultSettings: CorsSettings = scaladsl.settings.CorsSettings.defaultSettings
 }
