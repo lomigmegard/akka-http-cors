@@ -12,13 +12,12 @@ This is a Scala/Java implementation for the server-side targeting the [akka-http
 
 | Version  | Release date | Akka Http version | Scala versions                   |
 | -------- | ------------ | ----------------- | -------------------------------- |
-| `1.0.0-RC1` | 2020-05-23   | `10.1.12`      | `2.12.11`, `2.13.2`              |
-| `0.4.3 ` | 2020-04-18   | `10.1.11`         | `2.12.11`, `2.13.1`              |
-| `0.4.0 ` | 2019-03-09   | `10.1.7`          | `2.11.12`, `2.12.8`, `2.13.0-M5` |
-| `0.3.4 ` | 2019-01-17   | `10.1.7`          | `2.11.12`, `2.12.8`, `2.13.0-M5` |
-| `0.3.0 ` | 2018-03-24   | `10.1.0`          | `2.11.12`, `2.12.5`, `2.13.0-M3` |
-| `0.2.2 ` | 2017-09-25   | `10.0.10`         | `2.11.11`, `2.12.3`              |
-| `0.2.1 ` | 2017-04-03   | `10.0.5`          | `2.11.8`, `2.12.1`               |
+| `1.0.0`  | 2020-05-25   | `10.1.12`         | `2.12.11`, `2.13.2`              |
+| `0.4.0`  | 2019-03-09   | `10.1.7`          | `2.11.12`, `2.12.8`, `2.13.0-M5` |
+| `0.3.4`  | 2019-01-17   | `10.1.7`          | `2.11.12`, `2.12.8`, `2.13.0-M5` |
+| `0.3.0`  | 2018-03-24   | `10.1.0`          | `2.11.12`, `2.12.5`, `2.13.0-M3` |
+| `0.2.2`  | 2017-09-25   | `10.0.10`         | `2.11.11`, `2.12.3`              |
+| `0.2.1`  | 2017-04-03   | `10.0.5`          | `2.11.8`, `2.12.1`               |
 | `0.1.11` | 2017-01-31   | `10.0.3`          | `2.11.8`, `2.12.1`               |
 | `0.1.0`  | 2016-03-20   | `2.4.2`           | `2.11.8`                         |
 
@@ -27,7 +26,7 @@ Some less interesting versions are not listed in the above table. The complete l
 ## Getting Akka Http Cors
 akka-http-cors is deployed to Maven Central. Add it to your `build.sbt` or `Build.scala`:
 ```scala
-libraryDependencies += "ch.megard" %% "akka-http-cors" % "0.4.3"
+libraryDependencies += "ch.megard" %% "akka-http-cors" % "1.0.0"
 ```
 
 ## Quick Start
@@ -44,7 +43,7 @@ val route: Route = cors() {
 
 The settings can be updated programmatically too.
 ```scala
-val settings = CorsSettings.defaultSettings.withAllowGenericHttpRequests(false)
+val settings = CorsSettings(...).withAllowGenericHttpRequests(false)
 val strictRoute: Route = cors(settings) {
   complete(...)
 }
