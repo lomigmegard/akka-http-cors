@@ -16,7 +16,6 @@ import scala.collection.immutable.Seq
   *
   * @see [[https://www.w3.org/TR/cors/ CORS W3C Recommendation]]
   * @see [[https://www.ietf.org/rfc/rfc6454.txt RFC 6454]]
-  *
   */
 trait CorsDirectives {
   import BasicDirectives._
