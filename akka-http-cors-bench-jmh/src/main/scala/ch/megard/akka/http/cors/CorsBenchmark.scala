@@ -51,7 +51,7 @@ class CorsBenchmark extends Directives with CorsDirectives {
     }
     val origin = Origin("http://example.com")
 
-    binding = Await.result(http.bindAndHandle(route, "127.0.0.1", 0), 1.second)
+    binding = Await.result(http.newServerAt("127.0.0.1", 0).bind(route), 1.second)
     val base = s"http://${binding.localAddress.getHostString}:${binding.localAddress.getPort}"
 
     request = HttpRequest(uri = base + "/baseline")
