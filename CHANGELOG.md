@@ -1,5 +1,9 @@
 # Changelog
 
+## unreleased
+
+  - Update Scala to 2.13.3 and 2.12.12.
+
 ## 1.0.0 (2020-05-25)
 
 This release changes how settings are passed to the `cors` directive, 
