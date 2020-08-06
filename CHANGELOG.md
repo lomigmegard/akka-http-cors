@@ -1,7 +1,9 @@
 # Changelog
 
-## unreleased
+## 1.1.0 (2020-08-06)
 
+  - Update akka-http to 10.2.0.
+  - Update akka to 2.6.8.
   - Update Scala to 2.13.3 and 2.12.12.
 
 ## 1.0.0 (2020-05-25)
