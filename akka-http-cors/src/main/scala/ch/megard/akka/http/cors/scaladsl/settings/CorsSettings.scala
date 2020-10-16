@@ -17,16 +17,14 @@ import scala.collection.immutable.{ListMap, Seq}
 import scala.compat.java8.OptionConverters
 import scala.util.Try
 
-/**
-  * Settings used by the CORS directives.
+/** Settings used by the CORS directives.
   *
   * Public API but not intended for subclassing.
   */
 @DoNotInherit
 abstract class CorsSettings private[akka] () extends javadsl.settings.CorsSettings { self: CorsSettingsImpl =>
 
-  /**
-    * If `true`, allow generic requests (that are outside the scope of the specification)
+  /** If `true`, allow generic requests (that are outside the scope of the specification)
     * to pass through the directive. Else, strict CORS filtering is applied and any
     * invalid request will be rejected.
     *
@@ -34,8 +32,7 @@ abstract class CorsSettings private[akka] () extends javadsl.settings.CorsSettin
     */
   def allowGenericHttpRequests: Boolean
 
-  /**
-    * Indicates whether the resource supports user credentials.  If `true`, the header
+  /** Indicates whether the resource supports user credentials.  If `true`, the header
     * `Access-Control-Allow-Credentials` is set in the response, indicating that the
     * actual request can include user credentials. Examples of user credentials are:
     * cookies, HTTP authentication or client-side certificates.
@@ -46,8 +43,7 @@ abstract class CorsSettings private[akka] () extends javadsl.settings.CorsSettin
     */
   def allowCredentials: Boolean
 
-  /**
-    * List of origins that the CORS filter must allow. Can also be set to `*` to allow
+  /** List of origins that the CORS filter must allow. Can also be set to `*` to allow
     * access to the resource from any origin. Controls the content of the
     * `Access-Control-Allow-Origin` response header: if parameter is `*` and credentials
     * are not allowed, a `*` is set in `Access-Control-Allow-Origin`. Otherwise, the
@@ -65,8 +61,7 @@ abstract class CorsSettings private[akka] () extends javadsl.settings.CorsSettin
     */
   def allowedOrigins: HttpOriginMatcher
 
-  /**
-    * List of request headers that can be used when making an actual request. Controls
+  /** List of request headers that can be used when making an actual request. Controls
     * the content of the `Access-Control-Allow-Headers` header in a preflight response:
     * if parameter is `*`, the headers from `Access-Control-Request-Headers` are echoed.
     * Otherwise the parameter list is returned as part of the header.
@@ -77,8 +72,7 @@ abstract class CorsSettings private[akka] () extends javadsl.settings.CorsSettin
     */
   def allowedHeaders: HttpHeaderRange
 
-  /**
-    * List of methods that can be used when making an actual request. The list is
+  /** List of methods that can be used when making an actual request. The list is
     * returned as part of the `Access-Control-Allow-Methods` preflight response header.
     *
     * The preflight request will be rejected if the `Access-Control-Request-Method`
@@ -90,8 +84,7 @@ abstract class CorsSettings private[akka] () extends javadsl.settings.CorsSettin
     */
   def allowedMethods: Seq[HttpMethod]
 
-  /**
-    * List of headers (other than simple response headers) that browsers are allowed to access.
+  /** List of headers (other than simple response headers) that browsers are allowed to access.
     * If not empty, this list is returned as part of the `Access-Control-Expose-Headers`
     * header in the actual response.
     *
@@ -102,8 +95,7 @@ abstract class CorsSettings private[akka] () extends javadsl.settings.CorsSettin
     */
   def exposedHeaders: Seq[String]
 
-  /**
-    * When set, the amount of seconds the browser is allowed to cache the results of a preflight request.
+  /** When set, the amount of seconds the browser is allowed to cache the results of a preflight request.
     * This value is returned as part of the `Access-Control-Max-Age` preflight response header.
     * If `None`, the header is not added to the preflight response.
     *
@@ -163,22 +155,19 @@ object CorsSettings {
   final private val MaxCached = 8
   private[this] var cache     = ListMap.empty[ActorSystem, CorsSettings]
 
-  /**
-    * Creates an instance of settings using the given Config.
+  /** Creates an instance of settings using the given Config.
     */
   def apply(config: Config): CorsSettings =
     fromSubConfig(config.getConfig(prefix))
 
-  /**
-    * Creates an instance of settings using the given String of config overrides to override
+  /** Creates an instance of settings using the given String of config overrides to override
     * settings set in the class loader of this class (i.e. by application.conf or reference.conf files in
     * the class loader of this class).
     */
   def apply(configOverrides: String): CorsSettings =
     apply(ConfigFactory.parseString(configOverrides).withFallback(ConfigFactory.load(getClass.getClassLoader)))
 
-  /**
-    * Creates an instance of CorsSettings using the configuration provided by the given ActorSystem.
+  /** Creates an instance of CorsSettings using the configuration provided by the given ActorSystem.
     */
   def apply(system: ActorSystem): CorsSettings =
     // From private akka.http.impl.util.SettingsCompanionImpl implementation
@@ -191,13 +180,11 @@ object CorsSettings {
       }
     )
 
-  /**
-    * Creates an instance of CorsSettings using the configuration provided by the given ActorSystem.
+  /** Creates an instance of CorsSettings using the configuration provided by the given ActorSystem.
     */
   implicit def default(implicit system: ActorSystem): CorsSettings = apply(system)
 
-  /**
-    * Settings from the default loaded configuration.
+  /** Settings from the default loaded configuration.
     * Note that application code may want to use the `apply()` methods instead
     * to have more control over the source of the configuration.
     */
@@ -205,8 +192,8 @@ object CorsSettings {
 
   def fromSubConfig(config: Config): CorsSettings = {
     def parseStringList(path: String): List[String] =
-      Try(config.getStringList(path).asScala.toList).recover {
-        case _: WrongType => config.getString(path).split(" ").toList
+      Try(config.getStringList(path).asScala.toList).recover { case _: WrongType =>
+        config.getString(path).split(" ").toList
       }.get
 
     def parseSeconds(path: String): Option[Long] =

@@ -6,8 +6,7 @@ import ch.megard.akka.http.cors.javadsl
 
 import scala.collection.immutable.Seq
 
-/**
-  * HttpOrigin matcher.
+/** HttpOrigin matcher.
   */
 abstract class HttpOriginMatcher extends javadsl.model.HttpOriginMatcher {
   def matches(origin: HttpOrigin): Boolean
@@ -53,15 +52,13 @@ object HttpOriginMatcher {
   private def hasWildcard(origin: HttpOrigin): Boolean =
     origin.host.host.isNamedHost && origin.host.host.address.startsWith("*.")
 
-  /**
-    * Build a matcher that will accept any of the given origins.
+  /** Build a matcher that will accept any of the given origins.
     * Wildcard in the hostname will not be interpreted.
     */
   def strict(origins: HttpOrigin*): HttpOriginMatcher =
     Strict(origins.toList)
 
-  /**
-    * Build a matcher that will accept any of the given origins.
+  /** Build a matcher that will accept any of the given origins.
     * Hostname starting with `*.` will match any sub-domain.
     * The scheme and the port are always strictly matched.
     */

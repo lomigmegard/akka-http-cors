@@ -272,10 +272,10 @@ class CorsDirectivesSpec extends AnyWordSpec with Matchers with Directives with 
       val invalidHeader = "X-header"
       Options() ~> Origin(exampleOrigin) ~> `Access-Control-Request-Method`(GET) ~>
         `Access-Control-Request-Headers`(invalidHeader) ~> {
-        route(settings)
-      } ~> check {
-        rejection shouldBe CorsRejection(CorsRejection.InvalidHeaders(Seq(invalidHeader)))
-      }
+          route(settings)
+        } ~> check {
+          rejection shouldBe CorsRejection(CorsRejection.InvalidHeaders(Seq(invalidHeader)))
+        }
     }
 
     "reject pre-flight requests with multiple origins" in {
@@ -343,22 +343,22 @@ class CorsDirectivesSpec extends AnyWordSpec with Matchers with Directives with 
     "handle a pre-flight request with invalid headers" in {
       Options() ~> Origin(exampleOrigin) ~> `Access-Control-Request-Method`(GET) ~>
         `Access-Control-Request-Headers`("X-a", "X-b") ~> {
-        sealedRoute
-      } ~> check {
-        status shouldBe StatusCodes.BadRequest
-        entityAs[String] shouldBe s"CORS: invalid headers 'X-a X-b'"
-      }
+          sealedRoute
+        } ~> check {
+          status shouldBe StatusCodes.BadRequest
+          entityAs[String] shouldBe s"CORS: invalid headers 'X-a X-b'"
+        }
     }
 
     "handle multiple CORS rejections" in {
       Options() ~> Origin(HttpOrigin("http://invalid.com")) ~> `Access-Control-Request-Method`(PATCH) ~>
         `Access-Control-Request-Headers`("X-a", "X-b") ~> {
-        sealedRoute
-      } ~> check {
-        status shouldBe StatusCodes.BadRequest
-        entityAs[String] shouldBe
-          s"CORS: invalid origin 'http://invalid.com', invalid method 'PATCH', invalid headers 'X-a X-b'"
-      }
+          sealedRoute
+        } ~> check {
+          status shouldBe StatusCodes.BadRequest
+          entityAs[String] shouldBe
+            s"CORS: invalid origin 'http://invalid.com', invalid method 'PATCH', invalid headers 'X-a X-b'"
+        }
     }
   }
 }

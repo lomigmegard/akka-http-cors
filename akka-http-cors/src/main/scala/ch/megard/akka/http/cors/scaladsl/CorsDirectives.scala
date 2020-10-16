@@ -11,8 +11,7 @@ import ch.megard.akka.http.cors.scaladsl.settings.CorsSettings
 
 import scala.collection.immutable.Seq
 
-/**
-  * Provides directives that implement the CORS mechanism, enabling cross origin requests.
+/** Provides directives that implement the CORS mechanism, enabling cross origin requests.
   *
   * @see [[https://www.w3.org/TR/cors/ CORS W3C Recommendation]]
   * @see [[https://www.ietf.org/rfc/rfc6454.txt RFC 6454]]
@@ -21,8 +20,7 @@ trait CorsDirectives {
   import BasicDirectives._
   import RouteDirectives._
 
-  /**
-    * Wraps its inner route with support for the CORS mechanism, enabling cross origin requests.
+  /** Wraps its inner route with support for the CORS mechanism, enabling cross origin requests.
     *
     * In particular the recommendation written by the W3C in https://www.w3.org/TR/cors/ is
     * implemented by this directive.
@@ -35,8 +33,7 @@ trait CorsDirectives {
     }
   }
 
-  /**
-    * Wraps its inner route with support for the CORS mechanism, enabling cross origin requests.
+  /** Wraps its inner route with support for the CORS mechanism, enabling cross origin requests.
     *
     * In particular the recommendation written by the W3C in https://www.w3.org/TR/cors/ is
     * implemented by this directive.

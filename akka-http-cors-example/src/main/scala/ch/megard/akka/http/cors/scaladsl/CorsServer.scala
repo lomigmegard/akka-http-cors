@@ -3,8 +3,7 @@ package ch.megard.akka.http.cors.scaladsl
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server._
 
-/**
-  * Example of a Scala HTTP server using the CORS directive.
+/** Example of a Scala HTTP server using the CORS directive.
   */
 object CorsServer extends HttpApp {
   def main(args: Array[String]): Unit = {
@@ -20,8 +19,8 @@ object CorsServer extends HttpApp {
     val rejectionHandler = corsRejectionHandler.withFallback(RejectionHandler.default)
 
     // Your exception handler
-    val exceptionHandler = ExceptionHandler {
-      case e: NoSuchElementException => complete(StatusCodes.NotFound -> e.getMessage)
+    val exceptionHandler = ExceptionHandler { case e: NoSuchElementException =>
+      complete(StatusCodes.NotFound -> e.getMessage)
     }
 
     // Combining the two handlers only for convenience
