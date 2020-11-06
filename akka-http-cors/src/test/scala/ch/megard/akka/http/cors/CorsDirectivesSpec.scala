@@ -12,6 +12,9 @@ import scala.collection.immutable.Seq
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
+import scala.concurrent.Future
+import scala.concurrent.duration.DurationInt
+
 class CorsDirectivesSpec extends AnyWordSpec with Matchers with Directives with ScalatestRouteTest {
   import HttpMethods._
   import ch.megard.akka.http.cors.scaladsl.CorsDirectives._
@@ -103,8 +106,28 @@ class CorsDirectivesSpec extends AnyWordSpec with Matchers with Directives with 
       }
     }
 
+    "return cors headers after request timeout" in {
+      val settings = referenceSettings
+
+      val timeoutRoute = cors(settings) {
+        withRequestTimeout(1.nano) {
+          import akka.http.scaladsl.marshalling.GenericMarshallers._
+          complete(Future.never.map(_ => "OK"))
+        }
+      }
+
+      Get() ~> Origin(exampleOrigin) ~!> timeoutRoute ~> check {
+        status shouldBe StatusCodes.ServiceUnavailable
+        response.headers should contain allElementsOf Seq(
+          `Access-Control-Allow-Origin`(exampleOrigin),
+          `Access-Control-Allow-Credentials`(true)
+        )
+      }
+    }
+
     "reject pre-flight requests with a null origin when allowed-origins != `*`" in {
-      val settings = referenceSettings.withAllowedOrigins(HttpOriginMatcher(exampleOrigin))
+      val settings =
+        referenceSettings.withAllowedOrigins(HttpOriginMatcher(exampleOrigin))
       Options() ~> Origin(Seq.empty) ~> `Access-Control-Request-Method`(GET) ~> {
         route(settings)
       } ~> check {
@@ -127,8 +150,9 @@ class CorsDirectivesSpec extends AnyWordSpec with Matchers with Directives with 
     }
 
     "accept actual requests with an Origin matching an allowed subdomain" in {
-      val subdomainMatcher = HttpOriginMatcher(HttpOrigin("http://*.example.com"))
-      val subdomainOrigin  = HttpOrigin("http://sub.example.com")
+      val subdomainMatcher =
+        HttpOriginMatcher(HttpOrigin("http://*.example.com"))
+      val subdomainOrigin = HttpOrigin("http://sub.example.com")
 
       val settings = referenceSettings.withAllowedOrigins(subdomainMatcher)
       Get() ~> Origin(subdomainOrigin) ~> {
@@ -229,7 +253,8 @@ class CorsDirectivesSpec extends AnyWordSpec with Matchers with Directives with 
 
     "reject actual requests with invalid origin" when {
       "the origin is null" in {
-        val settings = referenceSettings.withAllowedOrigins(HttpOriginMatcher(exampleOrigin))
+        val settings =
+          referenceSettings.withAllowedOrigins(HttpOriginMatcher(exampleOrigin))
         Get() ~> Origin(Seq.empty) ~> {
           route(settings)
         } ~> check {
@@ -237,7 +262,8 @@ class CorsDirectivesSpec extends AnyWordSpec with Matchers with Directives with 
         }
       }
       "there is one origin" in {
-        val settings      = referenceSettings.withAllowedOrigins(HttpOriginMatcher(exampleOrigin))
+        val settings =
+          referenceSettings.withAllowedOrigins(HttpOriginMatcher(exampleOrigin))
         val invalidOrigin = HttpOrigin("http://invalid.com")
         Get() ~> Origin(invalidOrigin) ~> {
           route(settings)
@@ -248,7 +274,8 @@ class CorsDirectivesSpec extends AnyWordSpec with Matchers with Directives with 
     }
 
     "reject pre-flight requests with invalid origin" in {
-      val settings      = referenceSettings.withAllowedOrigins(HttpOriginMatcher(exampleOrigin))
+      val settings =
+        referenceSettings.withAllowedOrigins(HttpOriginMatcher(exampleOrigin))
       val invalidOrigin = HttpOrigin("http://invalid.com")
       Options() ~> Origin(invalidOrigin) ~> `Access-Control-Request-Method`(GET) ~> {
         route(settings)

@@ -2,7 +2,7 @@ package ch.megard.akka.http.cors.scaladsl
 
 import akka.http.scaladsl.model.HttpMethods._
 import akka.http.scaladsl.model.headers._
-import akka.http.scaladsl.model.{HttpMethod, HttpResponse, StatusCodes}
+import akka.http.scaladsl.model.{HttpHeader, HttpMethod, HttpRequest, HttpResponse, StatusCodes}
 import akka.http.scaladsl.server._
 import akka.http.scaladsl.server.directives._
 import ch.megard.akka.http.cors.javadsl
@@ -18,6 +18,7 @@ import scala.collection.immutable.Seq
   */
 trait CorsDirectives {
   import BasicDirectives._
+  import TimeoutDirectives._
   import RouteDirectives._
 
   /** Wraps its inner route with support for the CORS mechanism, enabling cross origin requests.
@@ -76,20 +77,34 @@ trait CorsDirectives {
         case (OPTIONS, Some(origins), Some(requestMethod)) if origins.lengthCompare(1) <= 0 =>
           // Case 1: pre-flight CORS request
 
-          val headers = header[`Access-Control-Request-Headers`].map(_.headers.toSeq).getOrElse(Seq.empty)
+          val headers = header[`Access-Control-Request-Headers`]
+            .map(_.headers.toSeq)
+            .getOrElse(Seq.empty)
 
           validateOrigins(origins) ::: validateMethod(requestMethod) ::: validateHeaders(headers) match {
-            case Nil    => complete(HttpResponse(StatusCodes.OK, preflightResponseHeaders(origins, headers)))
+            case Nil =>
+              complete(HttpResponse(StatusCodes.OK, preflightResponseHeaders(origins, headers)))
             case causes => reject(causes.map(CorsRejection(_)): _*)
           }
 
         case (_, Some(origins), None) =>
           // Case 2: simple/actual CORS request
+          val addCorsHeaders: Seq[HttpHeader] => Seq[HttpHeader] = { oldHeaders =>
+            actualResponseHeaders(origins) ++ oldHeaders.filterNot(h => CorsDirectives.headersToClean.exists(h.is))
+          }
 
           validateOrigins(origins) match {
             case Nil =>
-              mapResponseHeaders { oldHeaders =>
-                actualResponseHeaders(origins) ++ oldHeaders.filterNot(h => CorsDirectives.headersToClean.exists(h.is))
+              val timeoutHandler: HttpRequest => HttpResponse = { req: HttpRequest =>
+                HttpResponse(
+                  StatusCodes.ServiceUnavailable,
+                  entity =
+                    "The server was not able to produce a timely response to your request.\r\nPlease try again in a short while!",
+                  headers = addCorsHeaders(req.headers)
+                )
+              }
+              withRequestTimeoutResponse(timeoutHandler).tflatMap { _ =>
+                mapResponseHeaders(addCorsHeaders)
               }
             case causes =>
               reject(causes.map(CorsRejection(_)): _*)
