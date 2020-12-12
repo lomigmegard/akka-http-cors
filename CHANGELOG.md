@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.1 (2020-12-12)
+
+  - Update akka-http to 10.2.2.
+  - Update akka to 2.6.10.
+
 ## 1.1.0 (2020-08-06)
 
   - Update akka-http to 10.2.0.
