@@ -41,8 +41,8 @@ lazy val root = (project in file("."))
   .settings(commonSettings)
   .settings(dontPublishSettings)
 
-lazy val akkaVersion = "2.6.12"
-lazy val akkaHttpVersion = "10.2.4"
+lazy val akkaVersion = "2.6.13"
+lazy val akkaHttpVersion = "10.2.3"
 
 lazy val `akka-http-cors` = project
   .settings(commonSettings)
@@ -58,7 +58,7 @@ lazy val `akka-http-cors` = project
     libraryDependencies += "com.typesafe.akka" %% "akka-stream"         % akkaVersion      % Provided,
     libraryDependencies += "com.typesafe.akka" %% "akka-http-testkit"   % akkaHttpVersion  % Test,
     libraryDependencies += "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion      % Test,
-    libraryDependencies += "org.scalatest"     %% "scalatest"           % "3.2.4"          % Test,
+    libraryDependencies += "org.scalatest"     %% "scalatest"           % "3.2.5"          % Test,
   )
 
 lazy val `akka-http-cors-example` = project
