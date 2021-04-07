@@ -27,13 +27,13 @@ lazy val commonSettings = Seq(
 
 lazy val publishSettings = Seq(
   publishMavenStyle := true,
-  publishArtifact in Test := false,
+  Test / publishArtifact := false,
   pomIncludeRepository := { _ => false },
   publishTo := sonatypePublishToBundle.value,
 )
 
 lazy val dontPublishSettings = Seq(
-  skip in publish := true,
+  publish / skip := true,
 )
 
 lazy val root = (project in file("."))
@@ -50,7 +50,7 @@ lazy val `akka-http-cors` = project
   .settings(
 
     // Java 9 Automatic-Module-Name (http://openjdk.java.net/projects/jigsaw/spec/issues/#AutomaticModuleNames)
-    packageOptions in (Compile, packageBin) += Package.ManifestAttributes(
+    Compile / packageBin / packageOptions += Package.ManifestAttributes(
       "Automatic-Module-Name" -> "ch.megard.akka.http.cors"
     ),
 
