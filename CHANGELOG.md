@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.2 (2021-08-01)
+
+- Update akka-http to 10.2.5.
+- Update akka to 2.6.15.
+- Update Scala to 2.13.6 and 2.12.14.
+
 ## 1.1.1 (2020-12-12)
 
   - Update akka-http to 10.2.2.
