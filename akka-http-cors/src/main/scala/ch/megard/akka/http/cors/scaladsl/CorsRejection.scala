@@ -8,8 +8,8 @@ import ch.megard.akka.http.cors.javadsl
 import scala.collection.JavaConverters._
 import scala.collection.immutable.Seq
 
-/** Rejection created by the CORS directives.
-  * Signal the CORS request was rejected. The reason of the rejection is specified in the cause.
+/** Rejection created by the CORS directives. Signal the CORS request was rejected. The reason of the rejection is
+  * specified in the cause.
   */
 final case class CorsRejection(cause: CorsRejection.Cause) extends javadsl.CorsRejection with Rejection
 
@@ -25,8 +25,8 @@ object CorsRejection {
     override def description: String = "malformed request"
   }
 
-  /** Signals the CORS request was rejected because its origin was invalid.
-    * An empty list means the Origin header was `null`.
+  /** Signals the CORS request was rejected because its origin was invalid. An empty list means the Origin header was
+    * `null`.
     */
   final case class InvalidOrigin(origins: Seq[HttpOrigin]) extends javadsl.CorsRejection.InvalidOrigin with Cause {
     override def description: String = s"invalid origin '${if (origins.isEmpty) "null" else origins.mkString(" ")}'"
