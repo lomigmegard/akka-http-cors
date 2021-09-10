@@ -38,9 +38,8 @@ object CorsSettings {
     */
   def create(config: Config): CorsSettings = scaladsl.settings.CorsSettings(config)
 
-  /** Creates an instance of settings using the given String of config overrides to override
-    * settings set in the class loader of this class (i.e. by application.conf or reference.conf files in
-    * the class loader of this class).
+  /** Creates an instance of settings using the given String of config overrides to override settings set in the class
+    * loader of this class (i.e. by application.conf or reference.conf files in the class loader of this class).
     */
   def create(configOverrides: String): CorsSettings = scaladsl.settings.CorsSettings(configOverrides)
 
@@ -48,9 +47,8 @@ object CorsSettings {
     */
   def create(system: ActorSystem): CorsSettings = scaladsl.settings.CorsSettings(system)
 
-  /** Settings from the default loaded configuration.
-    * Note that application code may want to use the `apply()` methods instead
-    * to have more control over the source of the configuration.
+  /** Settings from the default loaded configuration. Note that application code may want to use the `apply()` methods
+    * instead to have more control over the source of the configuration.
     */
   def defaultSettings: CorsSettings = scaladsl.settings.CorsSettings.defaultSettings
 }
