@@ -4,8 +4,8 @@ import akka.http.javadsl.model.HttpMethod
 import akka.http.javadsl.model.headers.HttpOrigin
 import akka.http.javadsl.server.CustomRejection
 
-/** Rejection created by the CORS directives.
-  * Signal the CORS request was rejected. The reason of the rejection is specified in the cause.
+/** Rejection created by the CORS directives. Signal the CORS request was rejected. The reason of the rejection is
+  * specified in the cause.
   */
 trait CorsRejection extends CustomRejection {
   def cause: CorsRejection.Cause
@@ -17,8 +17,7 @@ object CorsRejection {
     */
   trait Cause {
 
-    /** Description of this Cause in a human-readable format.
-      * Can be used for debugging or custom Rejection handlers.
+    /** Description of this Cause in a human-readable format. Can be used for debugging or custom Rejection handlers.
       */
     def description: String
   }
@@ -27,8 +26,8 @@ object CorsRejection {
     */
   trait Malformed extends Cause
 
-  /** Signals the CORS request was rejected because its origin was invalid.
-    * An empty list means the Origin header was `null`.
+  /** Signals the CORS request was rejected because its origin was invalid. An empty list means the Origin header was
+    * `null`.
     */
   trait InvalidOrigin extends Cause {
     def getOrigins: java.util.List[HttpOrigin]
