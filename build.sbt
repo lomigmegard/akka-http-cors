@@ -1,7 +1,7 @@
 lazy val commonSettings = Seq(
-  organization := "ch.megard",
-  version := "1.1.3-SNAPSHOT",
-  scalaVersion := "2.13.6",
+  organization       := "ch.megard",
+  version            := "1.1.3-SNAPSHOT",
+  scalaVersion       := "2.13.6",
   crossScalaVersions := Seq(scalaVersion.value, "2.12.15"),
   scalacOptions ++= Seq(
     "-unchecked",
@@ -27,10 +27,10 @@ lazy val commonSettings = Seq(
 )
 
 lazy val publishSettings = Seq(
-  publishMavenStyle := true,
+  publishMavenStyle      := true,
   Test / publishArtifact := false,
-  pomIncludeRepository := { _ => false },
-  publishTo := sonatypePublishToBundle.value
+  pomIncludeRepository   := { _ => false },
+  publishTo              := sonatypePublishToBundle.value
 )
 
 lazy val dontPublishSettings = Seq(
@@ -42,7 +42,7 @@ lazy val root = (project in file("."))
   .settings(commonSettings)
   .settings(dontPublishSettings)
 
-lazy val akkaVersion     = "2.6.17"
+lazy val akkaVersion     = "2.6.18"
 lazy val akkaHttpVersion = "10.2.7"
 
 lazy val `akka-http-cors` = project
@@ -66,7 +66,7 @@ lazy val `akka-http-cors-example` = project
   .settings(dontPublishSettings)
   .settings(
     libraryDependencies += "com.typesafe.akka" %% "akka-stream" % akkaVersion
-    //libraryDependencies += "ch.megard" %% "akka-http-cors" % version.value
+    // libraryDependencies += "ch.megard" %% "akka-http-cors" % version.value
   )
 
 lazy val `akka-http-cors-bench-jmh` = project
