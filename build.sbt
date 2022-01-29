@@ -57,7 +57,7 @@ lazy val `akka-http-cors` = project
     libraryDependencies += "com.typesafe.akka" %% "akka-stream"         % akkaVersion     % Provided,
     libraryDependencies += "com.typesafe.akka" %% "akka-http-testkit"   % akkaHttpVersion % Test,
     libraryDependencies += "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion     % Test,
-    libraryDependencies += "org.scalatest"     %% "scalatest"           % "3.2.10"        % Test
+    libraryDependencies += "org.scalatest"     %% "scalatest"           % "3.2.11"        % Test
   )
 
 lazy val `akka-http-cors-example` = project
