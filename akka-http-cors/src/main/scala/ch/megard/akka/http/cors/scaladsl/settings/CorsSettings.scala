@@ -107,13 +107,13 @@ abstract class CorsSettings private[akka] () extends javadsl.settings.CorsSettin
 
   /* Java APIs */
 
-  override def getAllowGenericHttpRequests = allowGenericHttpRequests
-  override def getAllowCredentials         = allowCredentials
-  override def getAllowedOrigins           = allowedOrigins
-  override def getAllowedHeaders           = allowedHeaders
-  override def getAllowedMethods           = (allowedMethods: Seq[akka.http.javadsl.model.HttpMethod]).asJava
-  override def getExposedHeaders           = exposedHeaders.asJava
-  override def getMaxAge                   = OptionConverters.toJava(maxAge)
+  override def getAllowGenericHttpRequests = this.allowGenericHttpRequests
+  override def getAllowCredentials         = this.allowCredentials
+  override def getAllowedOrigins           = this.allowedOrigins
+  override def getAllowedHeaders           = this.allowedHeaders
+  override def getAllowedMethods           = (this.allowedMethods: Seq[akka.http.javadsl.model.HttpMethod]).asJava
+  override def getExposedHeaders           = this.exposedHeaders.asJava
+  override def getMaxAge                   = OptionConverters.toJava(this.maxAge)
 
   // Currently the easiest way to go from Java models to their Scala equivalent is to cast.
   // See https://github.com/akka/akka-http/issues/661 for a potential opening of the JavaMapping API.
