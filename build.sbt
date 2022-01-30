@@ -4,14 +4,16 @@ lazy val commonSettings = Seq(
   scalaVersion       := "2.13.8",
   crossScalaVersions := Seq(scalaVersion.value, "2.12.15", "3.1.1"),
   scalacOptions ++= Seq(
+    "-encoding",
+    "UTF-8",
     "-unchecked",
     "-deprecation",
-    "-target:jvm-1.8",
+  ),
+  javacOptions ++= Seq(
     "-encoding",
-    "utf8",
-    "-Ywarn-dead-code",
-    "-Ywarn-numeric-widen",
-    "-Ywarn-unused"
+    "UTF-8",
+    "-source", "8",
+    "-target", "8",
   ),
   homepage := Some(url("https://github.com/lomigmegard/akka-http-cors")),
   licenses := Seq("Apache 2" -> url("https://www.apache.org/licenses/LICENSE-2.0.txt")),
