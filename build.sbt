@@ -2,7 +2,7 @@ lazy val commonSettings = Seq(
   organization       := "ch.megard",
   version            := "1.1.3-SNAPSHOT",
   scalaVersion       := "2.13.8",
-  crossScalaVersions := Seq(scalaVersion.value, "2.12.15"),
+  crossScalaVersions := Seq(scalaVersion.value, "2.12.15", "3.1.1"),
   scalacOptions ++= Seq(
     "-unchecked",
     "-deprecation",
@@ -53,11 +53,11 @@ lazy val `akka-http-cors` = project
     Compile / packageBin / packageOptions += Package.ManifestAttributes(
       "Automatic-Module-Name" -> "ch.megard.akka.http.cors"
     ),
-    libraryDependencies += "com.typesafe.akka" %% "akka-http"           % akkaHttpVersion,
-    libraryDependencies += "com.typesafe.akka" %% "akka-stream"         % akkaVersion     % Provided,
-    libraryDependencies += "com.typesafe.akka" %% "akka-http-testkit"   % akkaHttpVersion % Test,
-    libraryDependencies += "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion     % Test,
-    libraryDependencies += "org.scalatest"     %% "scalatest"           % "3.2.11"        % Test
+    libraryDependencies += "com.typesafe.akka" %% "akka-http"   % akkaHttpVersion cross CrossVersion.for3Use2_13,
+    libraryDependencies += "com.typesafe.akka" %% "akka-stream" % akkaVersion % Provided cross CrossVersion.for3Use2_13,
+    libraryDependencies += "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpVersion % Test cross CrossVersion.for3Use2_13,
+    libraryDependencies += "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion % Test cross CrossVersion.for3Use2_13,
+    libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.11" % Test
   )
 
 lazy val `akka-http-cors-example` = project
@@ -65,7 +65,7 @@ lazy val `akka-http-cors-example` = project
   .settings(commonSettings)
   .settings(dontPublishSettings)
   .settings(
-    libraryDependencies += "com.typesafe.akka" %% "akka-stream" % akkaVersion
+    libraryDependencies += "com.typesafe.akka" %% "akka-stream" % akkaVersion cross CrossVersion.for3Use2_13
     // libraryDependencies += "ch.megard" %% "akka-http-cors" % version.value
   )
 
@@ -75,5 +75,5 @@ lazy val `akka-http-cors-bench-jmh` = project
   .settings(commonSettings)
   .settings(dontPublishSettings)
   .settings(
-    libraryDependencies += "com.typesafe.akka" %% "akka-stream" % akkaVersion
+    libraryDependencies += "com.typesafe.akka" %% "akka-stream" % akkaVersion cross CrossVersion.for3Use2_13
   )
