@@ -7,7 +7,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [ '8', '11' ]
+        java: [ '8', '11', '17' ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -16,6 +16,6 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: ${{ matrix.java }}
-          distribution: 'adopt'
+          distribution: 'temurin'
       - name: Build and Test
         run: sbt -v scalafmtCheckAll +test
