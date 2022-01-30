@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.3 (2022-01-30)
+
+Cross-build against Scala 3, still using the 2.13 akka dependencies.
+
+- Update akka-http to 10.2.7.
+- Update akka to 2.6.18.
+- Update Scala to 2.13.8, 2.12.15 and 3.1.1.
+
 ## 1.1.2 (2021-08-01)
 
 - Update akka-http to 10.2.5.
