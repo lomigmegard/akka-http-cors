@@ -7,13 +7,15 @@ lazy val commonSettings = Seq(
     "-encoding",
     "UTF-8",
     "-unchecked",
-    "-deprecation",
+    "-deprecation"
   ),
   javacOptions ++= Seq(
     "-encoding",
     "UTF-8",
-    "-source", "8",
-    "-target", "8",
+    "-source",
+    "8",
+    "-target",
+    "8"
   ),
   homepage := Some(url("https://github.com/lomigmegard/akka-http-cors")),
   licenses := Seq("Apache 2" -> url("https://www.apache.org/licenses/LICENSE-2.0.txt")),
