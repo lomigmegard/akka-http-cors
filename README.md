@@ -7,6 +7,8 @@ CORS (Cross Origin Resource Sharing) is a mechanism to enable cross origin reque
 
 This is a Scala/Java implementation for the server-side targeting the [akka-http](https://github.com/akka/akka-http) library.
 
+A version supporting the [Apache Pekko](https://pekko.apache.org) fork is also available in [pekko-http-cors](https://github.com/lomigmegard/pekko-http-cors). 
+
 ## Versions
 
 | Version | Release date | Akka Http version | Scala versions                |
