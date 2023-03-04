@@ -9,19 +9,19 @@ This is a Scala/Java implementation for the server-side targeting the [akka-http
 
 ## Versions
 
-| Version  | Release date | Akka Http version | Scala versions                   |
-|----------|--------------|-------------------|----------------------------------|
-| `1.1.3`  | 2022-01-30   | `10.2.7`          | `2.12.15`, `2.13.8`, `3.1.1`     |
-| `1.1.2`  | 2021-08-01   | `10.2.5`          | `2.12.14`, `2.13.6`              |
-| `1.0.0`  | 2020-05-25   | `10.1.12`         | `2.12.11`, `2.13.2`              |
-| `0.1.0`  | 2016-03-20   | `2.4.2`           | `2.11.8`                         |
+| Version | Release date | Akka Http version | Scala versions                |
+|---------|--------------|-------------------|-------------------------------|
+| `1.2.0` | 2023-03-04   | `10.2.10`         | `2.12.17`, `2.13.10`, `3.2.2` |
+| `1.1.3` | 2022-01-30   | `10.2.7`          | `2.12.15`, `2.13.8`, `3.1.1`  |
+| `1.0.0` | 2020-05-25   | `10.1.12`         | `2.12.11`, `2.13.2`           |
+| `0.1.0` | 2016-03-20   | `2.4.2`           | `2.11.8`                      |
 
 Some less interesting versions are not listed in the above table. The complete list can be found in the [CHANGELOG](CHANGELOG.md) file.
 
 ## Getting Akka Http Cors
 akka-http-cors is deployed to Maven Central. Add it to your `build.sbt` or `Build.scala`:
 ```scala
-libraryDependencies += "ch.megard" %% "akka-http-cors" % "1.1.3"
+libraryDependencies += "ch.megard" %% "akka-http-cors" % "1.2.0"
 ```
 
 ## Quick Start

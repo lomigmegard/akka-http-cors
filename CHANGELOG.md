@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.2.0 (2023-03-04)
+
+Scala 3 minor version 3.2.x.
+
+This release still targets akka with the Apache 2 license.
+
+- Update akka-http to 10.2.10
+- Update akka to 2.6.20
+- Update Scala to 2.13.10, 2.12.17 and 3.2.2
+
 ## 1.1.3 (2022-01-30)
 
 Cross-build against Scala 3, still using the 2.13 akka dependencies.
