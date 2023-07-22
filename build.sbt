@@ -1,5 +1,7 @@
 lazy val commonSettings = Seq(
   organization       := "ch.megard",
+  organizationName   := "Lomig Mégard",
+  startYear          := Some(2016),
   version            := "1.2.1-SNAPSHOT",
   scalaVersion       := "2.13.11",
   crossScalaVersions := Seq(scalaVersion.value, "2.12.18", "3.3.0"),
@@ -18,7 +20,7 @@ lazy val commonSettings = Seq(
     "8"
   ),
   homepage := Some(url("https://github.com/lomigmegard/akka-http-cors")),
-  licenses := Seq("Apache 2" -> url("https://www.apache.org/licenses/LICENSE-2.0.txt")),
+  licenses := Seq("Apache-2.0" -> url("https://www.apache.org/licenses/LICENSE-2.0.txt")),
   scmInfo := Some(
     ScmInfo(
       url("https://github.com/lomigmegard/akka-http-cors"),
