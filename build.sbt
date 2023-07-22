@@ -71,7 +71,8 @@ lazy val `akka-http-cors-example` = project
   .settings(commonSettings)
   .settings(dontPublishSettings)
   .settings(
-    libraryDependencies += "com.typesafe.akka" %% "akka-stream" % akkaVersion cross CrossVersion.for3Use2_13
+    libraryDependencies += "com.typesafe.akka" %% "akka-stream" % akkaVersion cross CrossVersion.for3Use2_13,
+    libraryDependencies += "com.typesafe.akka" %% "akka-actor-typed" % akkaVersion cross CrossVersion.for3Use2_13
     // libraryDependencies += "ch.megard" %% "akka-http-cors" % version.value
   )
 

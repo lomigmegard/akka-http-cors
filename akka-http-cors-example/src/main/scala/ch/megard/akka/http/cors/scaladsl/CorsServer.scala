@@ -16,17 +16,40 @@
 
 package ch.megard.akka.http.cors.scaladsl
 
+import akka.actor.typed.ActorSystem
+import akka.actor.typed.scaladsl.Behaviors
+import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.StatusCodes
+import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
+
+import scala.io.StdIn
+import scala.util.{Failure, Success}
 
 /** Example of a Scala HTTP server using the CORS directive.
   */
-object CorsServer extends HttpApp {
+object CorsServer {
   def main(args: Array[String]): Unit = {
-    CorsServer.startServer("127.0.0.1", 9000)
+    implicit val system: ActorSystem[Nothing] = ActorSystem(Behaviors.empty, "cors-server")
+    import system.executionContext
+
+    val futureBinding = Http().newServerAt("localhost", 8080).bind(route)
+
+    futureBinding.onComplete {
+      case Success(_) =>
+        system.log.info("Server online at http://localhost:8080/\nPress RETURN to stop...")
+      case Failure(exception) =>
+        system.log.error("Failed to bind HTTP endpoint, terminating system", exception)
+        system.terminate()
+    }
+
+    StdIn.readLine() // let it run until user presses return
+    futureBinding
+      .flatMap(_.unbind())
+      .onComplete(_ => system.terminate())
   }
 
-  protected def routes: Route = {
+  private def route: Route = {
     import CorsDirectives._
 
     // Your CORS settings are loaded from `application.conf`
