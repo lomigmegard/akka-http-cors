@@ -4,7 +4,7 @@ lazy val commonSettings = Seq(
   startYear          := Some(2016),
   version            := "1.2.1-SNAPSHOT",
   scalaVersion       := "2.13.11",
-  crossScalaVersions := Seq(scalaVersion.value, "2.12.18", "3.3.0"),
+  crossScalaVersions := Seq(scalaVersion.value, "2.12.19", "3.3.0"),
   scalacOptions ++= Seq(
     "-encoding",
     "UTF-8",
