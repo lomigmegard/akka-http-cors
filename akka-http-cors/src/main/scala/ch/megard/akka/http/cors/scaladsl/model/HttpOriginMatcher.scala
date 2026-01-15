@@ -42,7 +42,7 @@ object HttpOriginMatcher {
     }
 
     private class WildcardHostMatcher(wildcardOrigin: HttpOrigin) extends (HttpOrigin => Boolean) {
-      private val suffix: String = wildcardOrigin.host.host.address.stripPrefix("*")
+      private val suffix: String                      = wildcardOrigin.host.host.address.stripPrefix("*")
       override def apply(origin: HttpOrigin): Boolean = {
         origin.scheme == wildcardOrigin.scheme &&
         origin.host.port == wildcardOrigin.host.port &&

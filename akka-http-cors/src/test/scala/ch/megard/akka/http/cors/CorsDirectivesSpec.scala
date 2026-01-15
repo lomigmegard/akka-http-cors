@@ -189,7 +189,7 @@ class CorsDirectivesSpec extends AnyWordSpec with Matchers with Directives with 
     }
 
     "remove CORS-related headers from the original response before adding the new ones" in {
-      val settings = referenceSettings.withExposedHeaders(Seq("X-good"))
+      val settings        = referenceSettings.withExposedHeaders(Seq("X-good"))
       val responseHeaders = Seq(
         Host("my-host"),                                  // untouched
         `Access-Control-Allow-Origin`("http://bad.com"),  // replaced
