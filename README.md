@@ -13,6 +13,7 @@ A version supporting the [Apache Pekko](https://pekko.apache.org) fork is also a
 
 | Version | Release date | Akka Http version | Scala versions                |
 |---------|--------------|-------------------|-------------------------------|
+| `1.3.0` | 2026-xx-xx   | `10.4.0`          | `2.12.21`, `2.13.18`, `3.3.7` |
 | `1.2.0` | 2023-03-04   | `10.2.10`         | `2.12.17`, `2.13.10`, `3.2.2` |
 | `1.1.3` | 2022-01-30   | `10.2.7`          | `2.12.15`, `2.13.8`, `3.1.1`  |
 | `1.0.0` | 2020-05-25   | `10.1.12`         | `2.12.11`, `2.13.2`           |
@@ -23,7 +24,7 @@ Some less interesting versions are not listed in the above table. The complete l
 ## Getting Akka Http Cors
 akka-http-cors is deployed to Maven Central. Add it to your `build.sbt` or `Build.scala`:
 ```scala
-libraryDependencies += "ch.megard" %% "akka-http-cors" % "1.2.0"
+libraryDependencies += "ch.megard" %% "akka-http-cors" % "1.3.0"
 ```
 
 ## Quick Start
