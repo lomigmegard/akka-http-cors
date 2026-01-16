@@ -2,9 +2,9 @@ lazy val commonSettings = Seq(
   organization       := "ch.megard",
   organizationName   := "Lomig Mégard",
   startYear          := Some(2016),
-  version            := "1.2.1-SNAPSHOT",
-  scalaVersion       := "2.13.11",
-  crossScalaVersions := Seq(scalaVersion.value, "2.12.18", "3.3.0"),
+  version            := "1.3.0-SNAPSHOT",
+  scalaVersion       := "2.13.18",
+  crossScalaVersions := Seq(scalaVersion.value, "2.12.21", "3.3.7"),
   scalacOptions ++= Seq(
     "-encoding",
     "UTF-8",
@@ -21,7 +21,7 @@ lazy val commonSettings = Seq(
   ),
   homepage := Some(url("https://github.com/lomigmegard/akka-http-cors")),
   licenses := Seq("Apache-2.0" -> url("https://www.apache.org/licenses/LICENSE-2.0.txt")),
-  scmInfo := Some(
+  scmInfo  := Some(
     ScmInfo(
       url("https://github.com/lomigmegard/akka-http-cors"),
       "scm:git@github.com:lomigmegard/akka-http-cors.git"
@@ -48,8 +48,8 @@ lazy val root = (project in file("."))
   .settings(commonSettings)
   .settings(dontPublishSettings)
 
-lazy val akkaVersion     = "2.6.20"
-lazy val akkaHttpVersion = "10.2.10"
+lazy val akkaVersion     = "2.7.0"
+lazy val akkaHttpVersion = "10.4.0"
 
 lazy val `akka-http-cors` = project
   .settings(commonSettings)
@@ -63,7 +63,7 @@ lazy val `akka-http-cors` = project
     libraryDependencies += "com.typesafe.akka" %% "akka-stream" % akkaVersion % Provided cross CrossVersion.for3Use2_13,
     libraryDependencies += "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpVersion % Test cross CrossVersion.for3Use2_13,
     libraryDependencies += "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion % Test cross CrossVersion.for3Use2_13,
-    libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.17" % Test
+    libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.19" % Test
   )
 
 lazy val `akka-http-cors-example` = project
