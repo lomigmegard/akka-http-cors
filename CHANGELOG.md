@@ -1,13 +1,12 @@
 # Changelog
 
-## 1.3.0 (unreleased)
+## 1.3.0 (2026-01-16)
 
 Update to Akka 2.7 and Akka HTTP 10.4 which are now available under Apache 2.0 license.
 
 - Update akka-http to 10.4.0
 - Update akka to 2.7.0
 - Update Scala to 2.13.18, 2.12.21 and 3.3.7
-- Update scalatest to 3.2.19
 
 ## 1.2.0 (2023-03-04)
 
