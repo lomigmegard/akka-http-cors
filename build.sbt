@@ -2,7 +2,7 @@ lazy val commonSettings = Seq(
   organization       := "ch.megard",
   organizationName   := "Lomig Mégard",
   startYear          := Some(2016),
-  version            := "1.3.0-SNAPSHOT",
+  version            := "1.3.0",
   scalaVersion       := "2.13.18",
   crossScalaVersions := Seq(scalaVersion.value, "2.12.21", "3.3.7"),
   scalacOptions ++= Seq(
@@ -36,7 +36,11 @@ lazy val publishSettings = Seq(
   publishMavenStyle      := true,
   Test / publishArtifact := false,
   pomIncludeRepository   := { _ => false },
-  publishTo              := sonatypePublishToBundle.value
+  publishTo              := {
+    val centralSnapshots = "https://central.sonatype.com/repository/maven-snapshots/"
+    if (isSnapshot.value) Some("central-snapshots" at centralSnapshots)
+    else localStaging.value
+  }
 )
 
 lazy val dontPublishSettings = Seq(
