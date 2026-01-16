@@ -48,6 +48,13 @@ lazy val root = (project in file("."))
   .settings(commonSettings)
   .settings(dontPublishSettings)
 
+// Akka 2.7.0 and Akka HTTP 10.4.0 were released in October 2022 under BSL and converted to
+// Apache 2.0 in October 2025 (after the 3-year BSL conversion period). Newer versions remain
+// under BSL until their respective conversion dates:
+//   - Akka 2.8.x / HTTP 10.5.x → Apache 2.0 on Feb-Mar 2026
+//   - Akka 2.9.x / HTTP 10.6.x → Apache 2.0 on Oct 2026
+//   - Akka HTTP 10.7.x → Apache 2.0 on Oct 2027
+//   - Akka 2.10.x → Apache 2.0 on Dec 2028
 lazy val akkaVersion     = "2.7.0"
 lazy val akkaHttpVersion = "10.4.0"
 
