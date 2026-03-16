@@ -24,7 +24,7 @@ Some less interesting versions are not listed in the above table. The complete l
 ## Getting Akka Http Cors
 akka-http-cors is deployed to Maven Central. Add it to your `build.sbt` or `Build.scala`:
 ```scala
-libraryDependencies += "ch.megard" %% "akka-http-cors" % "1.3.0"
+libraryDependencies += "ch.megard" %% "akka-http-cors" % "1.3.1"
 ```
 
 ## Quick Start
